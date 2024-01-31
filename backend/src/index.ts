@@ -2,9 +2,6 @@ import "reflect-metadata";
 import { dataSource } from "./datasource";
 import { buildSchema } from "type-graphql";
 import { ApolloServer } from "@apollo/server";
-import { TagsResolver } from "./resolvers/Tags";
-import { AdsResolver } from "./resolvers/Ads";
-import { CategoriesResolver } from "./resolvers/Categories";
 import { UsersResolver } from "./resolvers/Users";
 import { ContextType, customAuthChecker } from "./auth";
 import { expressMiddleware } from '@apollo/server/express4';
@@ -16,7 +13,7 @@ import cors from 'cors';
 async function start(){
   await dataSource.initialize();
   const schema = await buildSchema({
-    resolvers: [TagsResolver, AdsResolver, CategoriesResolver, UsersResolver],
+    resolvers: [UsersResolver],
     authChecker: customAuthChecker
   })
 
