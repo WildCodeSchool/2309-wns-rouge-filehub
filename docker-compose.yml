@@ -1,0 +1,23 @@
+services:
+  db:
+      image: postgres
+      ports:
+        - 5433:5432
+      volumes:
+        - ./data:/var/lib/postgresql/data
+      env_file: .env
+  backend:
+    build: ./backend
+    ports:
+      - 5000:5000
+    volumes:
+      - ./backend/src:/app/src
+    env_file: ./backend/.env
+  #frontend:
+    #build: ./frontend
+    #ports:
+    #  - 3000:3000
+    #volumes:
+    #  - ./frontend/src:/app/src
+  
+        
