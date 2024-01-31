@@ -27,8 +27,8 @@ npm run dev
 ```
 
 ### Contribution
-@Daryl-Ch
-@FlavinouTheOne
-@PierreQuignon
-@remi59800
-@nguyen-tt
+- [Daryl-Ch](https://github.com/Daryl-Ch)
+- [FlavinouTheOne](https://github.com/FlavinouTheOne)
+- [PierreQuignon](https://github.com/PierreQuignon)
+- [remi59800](https://github.com/remi59800)
+- [nguyen-tt](https://github.com/nguyen-tt)
