@@ -1,32 +1,33 @@
 # FileHub
 
-(Description du projet)
+Transfer with confidence, share with ease.
 
-## Démarrage du Projet
+## Getting Started
 
-Ce projet se compose de deux parties principales : le backend et le frontend.
+This project contains the backend and the frontend.
 
-### Prérequis
+### Prerequisites
 
 - Docker
 - Node.js
 - npm
 
-### Démarrage du Serveur et de la Base de Données
+### Starting the Server and Database
 
-Exécutez cette commande à la racine du projet pour démarrer le serveur et la base de données :
+Run this command at the root of the project to start the server and database:
 
-```bash
+```
 docker compose up --build
 ```
 
-### Démarrage du Frontend
+### Starting the Frontend
 
 ```
 npm run dev
 ```
 
-### Contribution
+### Contributors
+
 - [Daryl-Ch](https://github.com/Daryl-Ch)
 - [FlavinouTheOne](https://github.com/FlavinouTheOne)
 - [PierreQuignon](https://github.com/PierreQuignon)
