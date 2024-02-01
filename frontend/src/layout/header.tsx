@@ -1,11 +1,12 @@
 import React from 'react';
+import {TestStyled} from "@/components/TestStyled";
 
 
 export default function Header(): React.ReactNode {
     return (
         <header style={headerStyle}>
             <div style={containerStyle}>
-                <img src='/Logo-fileHub-v1.png' alt="Logo" style={logoStyle} />
+                <TestStyled/>
                 <div style={linksContainerStyle}>
                     <a href="/moncompte" style={linkStyle}>
                         <svg width="18px" height="18px" viewBox="0 0 24 24" fill="none"
