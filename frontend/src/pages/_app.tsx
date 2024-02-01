@@ -10,7 +10,7 @@ import {ThemeProvider} from "@mui/material/styles";
 import {theme} from "@/styles/theme";
 
 const link = createHttpLink({
-  uri: "http://localhost:5000",
+  uri: "http://localhost:5001",
   credentials: "include",
 });
 
