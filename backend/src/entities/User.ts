@@ -1,6 +1,7 @@
 import {
   BaseEntity,
   Column,
+  CreateDateColumn,
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -8,6 +9,7 @@ import {
 
 import { Field, ID, ObjectType, InputType } from "type-graphql";
 import { IsEmail, Matches } from "class-validator";
+import { File } from "./File";
 
 @Entity()
 @ObjectType()
@@ -16,10 +18,14 @@ export class User extends BaseEntity {
   @Field(() => ID)
   id!: number;
 
-  @Column({ length: 255 })
-  hashedPassword!: string;
+  @Column({ length: 255, unique: true })
+  @Field()
+  email!: string;
 
-  @Column()
+  @Column({ length: 255 })
+  password!: string;
+
+  @CreateDateColumn()
   createdAt!: Date;
 
   @OneToMany(() => File, (file) => file.createdBy)
