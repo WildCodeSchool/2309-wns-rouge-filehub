@@ -1,9 +1,8 @@
-import { useRouter } from "next/router";
+import {TestStyled} from "@/components/testStyled";
+import {useRouter} from "next/router";
 
 export default function Home(): React.ReactNode {
   const router = useRouter();
 
-  return (
-    <>TEST</>
-  );
+  return <TestStyled />;
 }
