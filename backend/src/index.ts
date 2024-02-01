@@ -44,9 +44,9 @@ async function start() {
   );
 
   await new Promise<void>((resolve) =>
-    httpServer.listen({port: 5000}, resolve)
+    httpServer.listen({port: 5001}, resolve)
   );
-  console.log(`🚀 Server ready at http://localhost:5000/`);
+  console.log(`🚀 Server ready at http://localhost:5001/`);
 }
 
 start();

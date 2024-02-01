@@ -9,7 +9,7 @@ services:
   backend:
     build: ./backend
     ports:
-      - 5000:5000
+      - 5001:5001
     volumes:
       - ./backend/src:/app/src
     env_file: ./backend/.env
