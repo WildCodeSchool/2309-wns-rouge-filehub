@@ -17,8 +17,8 @@ export class User extends BaseEntity{
     @Column({length: 255})
     hashedPassword!: string;
 
-    @Column({length: 255})
-    CreatedAt!:Timestamp
+    @Column()
+    createdAt!: Date
 }
 
 @InputType()
