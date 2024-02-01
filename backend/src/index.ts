@@ -23,7 +23,7 @@ async function start() {
 
   const server = new ApolloServer<ContextType>({
     schema,
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+    plugins: [ApolloServerPluginDrainHttpServer({httpServer})],
   });
   await server.start();
 
@@ -34,6 +34,7 @@ async function start() {
       credentials: true,
     }),
     express.json({ limit: "50mb" }),
+
     expressMiddleware(server, {
       context: async (args) => {
         return {
@@ -45,9 +46,9 @@ async function start() {
   );
 
   await new Promise<void>((resolve) =>
-    httpServer.listen({ port: 5000 }, resolve)
+    httpServer.listen({port: 5001}, resolve)
   );
-  console.log(`🚀 Server ready at http://localhost:5000/`);
+  console.log(`🚀 Server ready at http://localhost:5001/`);
 }
 
 start();
