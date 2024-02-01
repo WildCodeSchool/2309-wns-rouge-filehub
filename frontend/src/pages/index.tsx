@@ -1,15 +1,18 @@
-import { useRouter } from "next/router";
+import {useRouter} from "next/router";
 import Header from "@/layout/header";
+import {TestStyled} from '@/components/TestStyled';
+
 
 export default function Home(): React.ReactNode {
-  const router = useRouter();
+    const router = useRouter();
 
-  return (
-      <div>
-      <Header />
-    <>TEST</>
-      </div>
-  );
+
+    return (
+        <div>
+            <Header/>
+            <TestStyled/>
+        </div>
+    )
 }
 
 
