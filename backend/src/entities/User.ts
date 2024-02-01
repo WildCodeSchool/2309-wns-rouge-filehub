@@ -1,4 +1,4 @@
-import {BaseEntity, Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import {BaseEntity, Column, Entity, PrimaryGeneratedColumn, Timestamp} from "typeorm";
 import { Field, ID, ObjectType, InputType } from "type-graphql";
 import { IsEmail, Matches } from "class-validator";
 
@@ -16,6 +16,9 @@ export class User extends BaseEntity{
 
     @Column({length: 255})
     hashedPassword!: string;
+
+    @Column({length: 255})
+    CreatedAt!:Timestamp
 }
 
 @InputType()
@@ -26,4 +29,11 @@ export class UserCreateInput{
     @Field()
     @Matches(/^.{8,50}$/)
     password!: string;
+}
+
+@InputType()
+export class UserUpdateInput{
+    @Field()
+    @Matches(/^.{8,50}$/)
+    password?: string;
 }
