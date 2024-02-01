@@ -24,6 +24,9 @@ export class User extends BaseEntity{
 @InputType()
 export class UserCreateInput{
     @Field()
+    @IsEmail()
+    email!: string;
+    @Field()
     @Matches(/^.{8,50}$/)
     password!: string;
 }
