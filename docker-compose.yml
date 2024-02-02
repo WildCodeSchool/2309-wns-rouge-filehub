@@ -1,11 +1,11 @@
 services:
   db:
-      image: postgres
-      ports:
-        - 5433:5432
-      volumes:
-        - /var/lib/postgresql/data
-      env_file: .env
+    image: postgres
+    ports:
+      - 5433:5432
+    volumes:
+      - /var/lib/postgresql/data
+    env_file: .env
   backend:
     build: ./backend
     ports:
@@ -14,7 +14,7 @@ services:
       - ./backend/src:/app/src
     env_file: ./backend/.env
     depends_on:
-        - db
+      - db
     healthcheck:
       test: curl --fail http://localhost:5433/ || exit 1
       interval: 10s
