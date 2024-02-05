@@ -3,31 +3,11 @@ import { useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
 
-const ButtonText = styled(Button)`
-    &.MuiButtonBase-root{
-        color: ${theme.palette.secondary.main};
-        border-radius: 50px;
-        padding: 0;
-        display: flex;
-        justify-content: left;
-        text-transform: none;
-        width: 100%;
-    }
-`;
-
-const ButtonConfirm = styled(Button)`
-    &.MuiButtonBase-root{
-        background: linear-gradient(90deg, rgba(250,209,38,1) 0%, rgba(255,84,79,1) 75%, rgba(255,84,79,1) 100%);;
-        color: white;
-        border-radius: 50px;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        text-transform: none;
-        width: 95%;
-        margin: 1vmin 0 0 0;
-        padding: 1vmin 0 1vmin 5%;
-    }
+const UserProfileContent = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 `;
 
 const UserInfo = styled.div`
@@ -83,6 +63,53 @@ const InputField = styled.input`
     }
 `
 
+const ButtonText = styled(Button)`
+    &.MuiButtonBase-root{
+        color: ${theme.palette.secondary.main};
+        border-radius: 50px;
+        padding: 0;
+        display: flex;
+        justify-content: left;
+        text-transform: none;
+        width: 100%;
+    }
+`;
+
+const ButtonConfirm = styled(Button)`
+    &.MuiButtonBase-root{
+        position: relative;
+        background: linear-gradient(90deg, rgba(250,209,38,1) 0%, rgba(255,84,79,1) 75%, rgba(255,84,79,1) 100%);;
+        color: white;
+        border-radius: 50px;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        text-transform: none;
+        width: 95%;
+        height: 50px;
+        margin: 1vmin 0 0 0;
+    }
+`;
+
+const DivLoadFile = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50vmin;
+`
+
+const ButtonSVGContainer = styled.div`
+    position: absolute;
+    right: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border-radius: 100%;
+    height: 40px;
+    width: 40px;
+`
+
 function UserProfile(): React.ReactNode {
     const [toggleModif, setToggleModif] = useState(false);
     const [email, setEmail] = useState("Wilder@Wild.com");
@@ -90,9 +117,18 @@ function UserProfile(): React.ReactNode {
     const [newPassWord, setNewPassWord] = useState("");
     const [secNewPassWord, setSecNewPassWord] = useState("");
 
+    const changePassword = ()=>{
+        console.log(passWord);
+        console.log(newPassWord);
+        console.log(secNewPassWord);
+        setPassWord("");
+        setNewPassWord("");
+        setSecNewPassWord("");
+        setToggleModif(!toggleModif);
+    }
 
     return (
-        <>
+        <UserProfileContent>
             <UserInfo>
                 <Title>Information de mon compte</Title>
                 <Label>
@@ -121,18 +157,32 @@ function UserProfile(): React.ReactNode {
                         <Field>As if we would show it</Field>
                     </Label>
                 }
-                {toggleModif ? 
-                <ButtonConfirm onClick={()=>setToggleModif(!toggleModif)}>
+                {toggleModif ? <>
+                <ButtonConfirm onClick={changePassword}>
                     Confirmer
                 </ButtonConfirm>
+                <ButtonText onClick={()=>setToggleModif(!toggleModif)}>
+                    Abandon
+                </ButtonText></> 
                 :
                 <ButtonText onClick={()=>setToggleModif(!toggleModif)}>
                     Modifier mon mot de passe
                 </ButtonText>
                 }
-                
             </UserInfo>
-        </>
+            <DivLoadFile>
+                <ButtonConfirm onClick={()=>{console.log("charger un fichier")}}>
+                    Charger un nouveau fichier
+                    <ButtonSVGContainer>
+                        <svg width="40%" height="40%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g id="Interface / Download">
+                                <path id="Vector" d="M6 21H18M12 3V17M12 17L17 12M12 17L7 12" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </g>
+                        </svg>
+                    </ButtonSVGContainer>
+                </ButtonConfirm>
+            </DivLoadFile>
+        </UserProfileContent>
     )
 }
 
