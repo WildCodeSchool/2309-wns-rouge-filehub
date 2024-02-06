@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
@@ -46,20 +46,19 @@ const FieldTitle = styled.p`
 
 const Field = styled.p`
     width: 95%;
+    height: 25px;
     margin: 2px 0;
     border: 1px solid ${theme.palette.secondary.main};
     border-radius: 50px;
     padding: 2vmin 0 2vmin 5%;
 `
 
-const InputField = styled.input`
-    width: 95%;
-    margin: 2px 0;
-    border: 1px solid ${theme.palette.secondary.main};
-    border-radius: 50px;
-    padding: 2vmin 0 2vmin 5%;
-    &::placeholder{
-        color: ${theme.palette.secondary.main};
+const InputField = styled(TextField)`
+    & .MuiOutlinedInput-root{
+        height: 55px;
+        margin: 2px 0;
+        border-radius: 55px;
+        padding: 2vmin 0 2vmin 5%;
     }
 `
 
@@ -87,7 +86,7 @@ const ButtonConfirm = styled(Button)`
         text-transform: none;
         width: 95%;
         height: 50px;
-        margin: 1vmin 0 0 0;
+        margin: 2vmin 0 0 0;
     }
 `;
 
@@ -138,17 +137,17 @@ function UserProfile(): React.ReactNode {
                 {toggleModif ? 
                 <>
                     <Label>
-                        <FieldTitle>Entrez votre mot de passe :</FieldTitle>
-                        <InputField type="password" value={passWord} placeholder="Password"
+                        <InputField label="Password" variant="outlined" 
+                        helperText="Entrez votre mot de passe actuel" type="password" value={passWord} 
                         onChange={(e)=>setPassWord(e.target.value)}/>
-                    </Label>
-                    <Label>
-                        <FieldTitle>Entrez votre nouveau mot de passe :</FieldTitle>
-                        <InputField type="password" value={newPassWord} placeholder="New password"
+
+                        <InputField label="New Password" variant="outlined" 
+                        helperText="Entrez votre nouveau mot de passe" type="password" value={newPassWord} 
                         onChange={(e)=>setNewPassWord(e.target.value)}/>
-                        <FieldTitle>Entrez le une seconde fois :</FieldTitle>
-                        <InputField type="password" value={secNewPassWord} placeholder="New password"
-                        onChange={(e)=>setSecNewPassWord(e.target.value)}/>
+                        
+                        <InputField label="New Password" variant="outlined" 
+                        helperText="Confirmez votre nouveau mot de passe" type="password" 
+                        value={secNewPassWord} onChange={(e)=>setSecNewPassWord(e.target.value)}/>
                     </Label>
                 </>
                 :
