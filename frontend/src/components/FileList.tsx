@@ -23,57 +23,88 @@ const StyledCard = styled(Card)`
   margin: auto;
   margin-top: 16px;
   max-width: 900px;
+  border-radius: 15px !important;
 `;
 
-const StyledButton = styled(Button)`
-  margin-left: 8px;
-  background-color: orange !important;
-  color: white !important;
+const TableContainerWrapper = styled.div`
+  border-radius: 15px;
+  overflow: hidden;
 `;
-const UploadButton = styled(Button)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0%;
+
+const StyledTableCell = styled(TableCell)`
+    
+`;
+
+const StyledButtonIcon = styled(IconButton)`
+  background-color: transparent !important;
+  color: orange !important;
  
-  width: 70%;
-  margin: 0 auto;
-  background: linear-gradient(to right, yellow, rgba(255, 99, 71, 0.8)); /* Modification de la couleur rouge avec une opacité réduite */
 `;
 
-const FileUploadIconStyled = styled(FileUploadIcon)`
-  margin-left: 80px;
+const DivLoadFile = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 16px;
 `;
 
-const ButtonContainer = styled.div`
-  text-align: center;
+const ButtonConfirm = styled(Button)`
+  &.MuiButtonBase-root{
+    position: relative;
+    background: linear-gradient(90deg, rgba(250,209,38,1) 0%, rgba(255,84,79,1) 75%, rgba(255,84,79,1) 100%);
+    color: white;
+    border-radius: 50px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    text-transform: none;
+    width: 70%;
+    height: 50px; 
+    margin-top: 1vmin;
+    font-size: 14px;
+  }
 `;
+
+const ButtonSVGContainer = styled.div`
+  position: absolute;
+  right: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border-radius: 100%;
+  height: 40px;
+  width: 40px;
+  color: black !important;
+`;
+
 
 const FileListItem = ({files}) => {
     const [copied, setCopied] = useState(false);
 
-    const handleCopy = (link) => {
+    const handleCopy = (link : any) => {
         navigator.clipboard.writeText(link);
         setCopied(true);
     };
 
-    const handleDelete = (file) => {
+    const handleDelete = (file : any) => {
     };
 
     return (
         <StyledCard>
+            <TableContainerWrapper>
             <CardContent>
                 <Typography variant="h4" style={{marginBottom: '16px'}}>Mes fichiers</Typography>
                 <TableContainer>
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell>Date d'ajout</TableCell>
-                                <TableCell>Nom du fichier</TableCell>
-                                <TableCell>Date d'expiration</TableCell>
-                                <TableCell>Télécharger</TableCell>
-                                <TableCell>Copier le lien</TableCell>
-                                <TableCell>Supprimer</TableCell>
+                                <StyledTableCell>Date d'ajout</StyledTableCell>
+                                <StyledTableCell>Nom du fichier</StyledTableCell>
+                                <StyledTableCell>Date d'expiration</StyledTableCell>
+                                <StyledTableCell style={{textAlign: 'center'}}>Télécharger</StyledTableCell>
+                                <StyledTableCell style={{textAlign: 'center'}}>Copier le lien</StyledTableCell>
+                                <StyledTableCell style={{textAlign: 'center'}}>Supprimer</StyledTableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -82,23 +113,23 @@ const FileListItem = ({files}) => {
                                     <TableCell>{file.addedDate}</TableCell>
                                     <TableCell>{file.name}</TableCell>
                                     <TableCell>{file.expirationDate}</TableCell>
-                                    <TableCell>
-                                        <StyledButton variant="contained" href={file.link}>
+                                    <TableCell style={{textAlign: 'center'}}>
+                                        <StyledButtonIcon href={file.link}>
                                             <DownloadIcon/>
-                                        </StyledButton>
+                                        </StyledButtonIcon>
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell style={{textAlign: 'center' , marginRight: '5px'}}>
                                         <Tooltip title={copied ? 'Lien copié !' : 'Copier le lien'}>
-                                            <IconButton onClick={() => handleCopy(file.link)} aria-label="copy">
+                                            <StyledButtonIcon onClick={() => handleCopy(file.link)} aria-label="copy">
                                                 <InsertLinkIcon/>
-                                            </IconButton>
+                                            </StyledButtonIcon>
                                         </Tooltip>
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell style={{textAlign: 'center'}}>
                                         <Tooltip title="Supprimer">
-                                            <IconButton onClick={() => handleDelete(file)} aria-label="delete">
+                                            <StyledButtonIcon onClick={() => handleDelete(file)} aria-label="delete">
                                                 <DeleteIcon/>
-                                            </IconButton>
+                                            </StyledButtonIcon>
                                         </Tooltip>
                                     </TableCell>
                                 </TableRow>
@@ -107,12 +138,15 @@ const FileListItem = ({files}) => {
                     </Table>
                 </TableContainer>
             </CardContent>
-            <ButtonContainer>
-                <UploadButton style={{margin: "20px auto"}}>
+            <DivLoadFile>
+                <ButtonConfirm onClick={()=>{console.log("charger un fichier")}}>
                     Charger un nouveau fichier
-                    <FileUploadIconStyled style={{justifyContent: "right"}}  />
-                </UploadButton>
-            </ButtonContainer>
+                    <ButtonSVGContainer>
+                        <FileUploadIcon />
+                    </ButtonSVGContainer>
+                </ButtonConfirm>
+            </DivLoadFile>
+                </TableContainerWrapper>
         </StyledCard>
     );
 };

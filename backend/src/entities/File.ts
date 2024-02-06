@@ -54,3 +54,9 @@ export class FileCreateInput {
   @Field()
   createdBy!: ObjectId;
 }
+
+@InputType()
+export class FileUpdateInput {
+  @Field()
+  name!: string;
+}
