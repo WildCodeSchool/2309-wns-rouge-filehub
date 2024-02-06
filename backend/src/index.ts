@@ -1,19 +1,20 @@
 import "reflect-metadata";
-import {dataSource} from "./datasource";
-import {buildSchema} from "type-graphql";
-import {ApolloServer} from "@apollo/server";
-import {UsersResolver} from "./resolvers/Users";
-import {ContextType, customAuthChecker} from "./auth";
-import {expressMiddleware} from "@apollo/server/express4";
-import {ApolloServerPluginDrainHttpServer} from "@apollo/server/plugin/drainHttpServer";
+import { dataSource } from "./datasource";
+import { buildSchema } from "type-graphql";
+import { ApolloServer } from "@apollo/server";
+import { UsersResolver } from "./resolvers/Users";
+import { ContextType, customAuthChecker } from "./auth";
+import { expressMiddleware } from "@apollo/server/express4";
+import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import express from "express";
 import http from "http";
 import cors from "cors";
+import { FilesResolver } from "./resolvers/Files";
 
 async function start() {
   await dataSource.initialize();
   const schema = await buildSchema({
-    resolvers: [UsersResolver],
+    resolvers: [UsersResolver, FilesResolver],
     authChecker: customAuthChecker,
   });
 
@@ -32,7 +33,8 @@ async function start() {
       origin: "http://localhost:3000",
       credentials: true,
     }),
-    express.json({limit: "50mb"}),
+    express.json({ limit: "50mb" }),
+
     expressMiddleware(server, {
       context: async (args) => {
         return {
