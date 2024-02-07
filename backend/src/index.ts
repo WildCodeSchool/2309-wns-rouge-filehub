@@ -6,6 +6,7 @@ import { UsersResolver } from './resolvers/Users';
 import { ContextType, customAuthChecker } from './auth';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import express, { Request } from 'express';
+import { expressMiddleware } from '@apollo/server/express4';
 import http from 'http';
 import cors from 'cors';
 import multer from 'multer';
@@ -62,13 +63,33 @@ async function start() {
     },
   });
 
-  // UPLOAD FILE
+  // UPLOAD FILE WITH CONTROLLER
 
   const uploadFileController = new UploadFileController();
   app.post(
     '/upload',
     upload.single('file'),
     uploadFileController.uploadSingleFile
+  );
+
+  app.use(
+    '/',
+    cors<cors.CorsRequest>({
+      origin: 'http://localhost:3000',
+      credentials: true,
+    }),
+    // 50mb is the limit that `startStandaloneServer` uses, but you may configure this to suit your needs
+    express.json({ limit: '50mb' }),
+    // expressMiddleware accepts the same arguments:
+    // an Apollo Server instance and optional configuration options
+    expressMiddleware(server, {
+      context: async (args) => {
+        return {
+          req: args.req,
+          res: args.res,
+        };
+      },
+    })
   );
 
   await new Promise<void>((resolve) =>
