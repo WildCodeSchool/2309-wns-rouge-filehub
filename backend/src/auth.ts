@@ -1,37 +1,54 @@
 import Cookies from "cookies";
-import { AuthChecker } from "type-graphql";
 import jwt from "jsonwebtoken";
+import { AuthChecker } from "type-graphql";
 import { User } from "./entities/User";
 
 export type ContextType = {
-    req: any,
-    res:any,
-    user?:User
+  req: any;
+  res: any;
+  user?: User;
+};
+
+export async function getUserFromReq(req: any, res: any): Promise<User | null> {
+  const cookies = new Cookies(req, res);
+  const token = cookies.get("token");
+
+  if (!token) {
+    console.error("missing token");
+    return null;
+  }
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET || "supersecret");
+
+    if (typeof payload === "object" && "userId" in payload) {
+      const user = await User.findOneBy({ id: payload.userId });
+
+      if (user !== null) {
+        return Object.assign(user, { hashedPassword: undefined });
+      } else {
+        console.error("user not found");
+        return null;
+      }
+    } else {
+      console.error("invalid token, msising userid");
+      return null;
+    }
+  } catch {
+    console.error("invalid token");
+    return null;
+  }
 }
 
-export const customAuthChecker: AuthChecker<ContextType> = async(
-        { root, args, context, info }, roles,
-    ) => {
-    const cookies = new Cookies(context.req, context.res);
-    const token = cookies.get('token');
+export const customAuthChecker: AuthChecker<ContextType> = async ({
+  context,
+}) => {
+  const connectedUser = await getUserFromReq(context.req, context.res);
 
-    if(!token){
-        return false;
-    }
-    try{
-        const payload = jwt.verify(token, process.env.JWT_SECRET||"test");
-        if(typeof payload === "object" && "userId" in payload){
-            const user = await User.findOneBy({id:payload.userId});
-            if(user !== null){
-                context.user = user;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    } catch {
-        return false;
-    }
+  if (connectedUser) {
+    context.user = connectedUser;
     return true;
-  };
+  } else {
+    return false;
+  }
+};
