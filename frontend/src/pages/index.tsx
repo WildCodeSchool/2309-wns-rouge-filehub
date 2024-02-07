@@ -1,7 +1,4 @@
-import {useRouter} from "next/router";
 import Header from "@/layout/header";
-import {TestStyled} from '@/components/TestStyled';
-import UserProfile from "@/components/UserProfile";
 import styled from "styled-components";
 
 export const MainContent = styled.div`
@@ -16,7 +13,6 @@ export const MainContent = styled.div`
 `
 
 export default function Home(): React.ReactNode {
-    const router = useRouter();
 
     return (
         <>
@@ -24,6 +20,5 @@ export default function Home(): React.ReactNode {
             <MainContent>
             </MainContent>
         </>
-
     )
 }
