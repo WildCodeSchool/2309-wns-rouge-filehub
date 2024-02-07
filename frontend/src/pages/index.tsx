@@ -1,7 +1,7 @@
-import {useRouter} from "next/router";
-import Header from "@/layout/header";
-import {TestStyled} from '@/components/TestStyled';
-import UserProfile from "@/components/UserProfile";
+import { useRouter } from 'next/router';
+import Header from '@/layout/header';
+import { TestStyled } from '@/components/TestStyled';
+import { UploadFile } from '@/components/UploadFile';
 import styled from "styled-components";
 
 export const MainContent = styled.div`
@@ -23,7 +23,7 @@ export default function Home(): React.ReactNode {
             <Header/>
             <MainContent>
             </MainContent>
+            <UploadFile />
         </>
-
-    )
+  );
 }
