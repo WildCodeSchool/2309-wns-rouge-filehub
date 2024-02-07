@@ -9,6 +9,7 @@ import { mutationSignup } from "@/graphql/mutationSignup";
 import { mutationSignin } from "@/graphql/mutationSignin";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from "next/router";
 
 export const TextFieldStyled = styled(TextField)`
   & .MuiOutlinedInput-root {
@@ -68,6 +69,7 @@ const CustomTab = styled(Tab)`
 
 export default function Login(): React.ReactNode {
   const [activeTab, setActiveTab] = useState(0);
+  const router = useRouter();
 
   const [signinEmail, setSigninEmail] = useState("");
   const [signinPassword, setSigninPassword] = useState("");
@@ -87,10 +89,11 @@ export default function Login(): React.ReactNode {
           const { data } = await signin({
             variables: { email: signinEmail, password: signinPassword },
           });
-          console.log(data);
           if (data.item) {
             toast.success("Connexion réussie !");
-            // Ajouter une redirection après x secondes
+            setTimeout(() => {
+              router.push("/fileUpload");
+            }, 3000);
           } else {
             toast.error("Email ou mot de passe incorrect.");
           }
@@ -113,10 +116,14 @@ export default function Login(): React.ReactNode {
                 },
               },
             });
-            console.log(data);
             if (data.item) {
               toast.success("Inscription réussie !");
-              // Ajouter une redirection après x secondes
+              setTimeout(() => {
+                setActiveTab(0);
+                setSignupEmail("");
+                setSignupPassword("");
+                setSignupConfirmPassword("");
+              }, 3000);
             }
           } catch (error) {
             console.error(error);
