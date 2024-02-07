@@ -3,12 +3,10 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToOne,
   PrimaryGeneratedColumn,
-} from "typeorm";
-import { Field, ID, ObjectType, Int, InputType } from "type-graphql";
-import { User } from "./User";
-import { ObjectId } from "./ObjectId";
+} from 'typeorm';
+import { Field, ID, InputType, Int, ObjectType } from 'type-graphql';
+import { ObjectId } from './ObjectId';
 
 @Entity()
 @ObjectType()
@@ -17,33 +15,29 @@ export class File extends BaseEntity {
   @Field(() => ID)
   id!: number;
 
-  @Column({ length: 100 })
+  @Column({ length: 255 })
   @Field()
   name!: string;
 
-  @Column({ length: 20 })
+  @Column({ length: 255 })
   @Field()
-  type!: string;
+  mimeType!: string;
 
   @Column()
   @Field(() => Int)
   size!: number;
 
-  @Column({ length: 200 })
+  @Column({ length: 255 })
+  @Field()
+  path!: string;
+
+  @Column({ length: 255 })
   @Field()
   url!: string;
-
-  //   @Column()
-  //   @Field()
-  //   private!: Boolean;
 
   @CreateDateColumn()
   @Field()
   uploadAt!: Date;
-
-  @ManyToOne(() => User, (user) => user.files)
-  @Field(() => User)
-  createdBy!: User;
 }
 
 @InputType()

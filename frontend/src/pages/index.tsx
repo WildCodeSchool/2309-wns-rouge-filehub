@@ -1,8 +1,14 @@
+import { useRouter } from "next/router";
 import Header from "@/layout/header";
-import UserProfile from "@/components/UserProfile";
+import { TestStyled } from "@/components/TestStyled";
+import { UploadFile } from "@/components/UploadFile";
 import styled from "styled-components";
 
-const MainContent = styled.div`
+export const MainContent = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
   position: fixed;
   top: 66px;
   width: 100%;
@@ -10,12 +16,13 @@ const MainContent = styled.div`
 `;
 
 export default function Home(): React.ReactNode {
+  const router = useRouter();
+
   return (
     <>
       <Header />
-      <MainContent>
-        <UserProfile />
-      </MainContent>
+      <MainContent></MainContent>
+      <UploadFile />
     </>
   );
 }

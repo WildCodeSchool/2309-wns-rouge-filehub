@@ -1,6 +1,6 @@
-import { Arg, Ctx, ID, Mutation, Query, Resolver } from "type-graphql";
-import { File, FileCreateInput, FileUpdateInput } from "../entities/File";
-import { validate } from "class-validator";
+import { Arg, ID, Mutation, Query, Resolver } from 'type-graphql';
+import { File, FileCreateInput, FileUpdateInput } from '../entities/File';
+import { validate } from 'class-validator';
 
 @Resolver(File)
 export class FilesResolver {
@@ -12,14 +12,14 @@ export class FilesResolver {
 
   @Mutation(() => File)
   async createFile(
-    @Arg("data", () => FileCreateInput) data: FileCreateInput
+    @Arg('data', () => FileCreateInput) data: FileCreateInput
   ): Promise<File> {
     try {
       const newFile = new File();
       Object.assign(newFile, data);
       newFile.size = 20;
-      newFile.type = "mb";
-      newFile.url = "essaiurl";
+      newFile.mimeType = 'mb';
+      newFile.url = 'essaiurl';
       newFile.uploadAt = new Date();
       await newFile.save();
       return newFile;
@@ -29,7 +29,7 @@ export class FilesResolver {
   }
 
   @Mutation(() => File, { nullable: true })
-  async deleteFile(@Arg("id", () => ID) id: number): Promise<File | null> {
+  async deleteFile(@Arg('id', () => ID) id: number): Promise<File | null> {
     const file = await File.findOne({
       where: { id: id },
     });
@@ -42,8 +42,8 @@ export class FilesResolver {
 
   @Mutation(() => File, { nullable: true })
   async updateFile(
-    @Arg("id", () => ID) id: number,
-    @Arg("data") data: FileUpdateInput
+    @Arg('id', () => ID) id: number,
+    @Arg('data') data: FileUpdateInput
   ): Promise<File | null> {
     const file = await File.findOne({
       where: { id: id },
