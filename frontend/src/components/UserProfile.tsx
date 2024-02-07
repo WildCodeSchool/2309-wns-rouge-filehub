@@ -3,17 +3,19 @@ import { useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
 import { useRouter } from "next/router";
-import PublishIcon from '@mui/icons-material/Publish';
 import KeyIcon from '@mui/icons-material/Key';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
+import PersonIcon from '@mui/icons-material/Person';
 
-const UserProfileContent = styled.div`
+export const UserProfileContent = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
 `;
 
-const UserInfo = styled.div`
+export const UserInfo = styled.div`
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -40,12 +42,12 @@ export const Label = styled.label`
     font-size: 2.5vmin;
 `
 
-const FieldTitle = styled.p`
+export const FieldTitle = styled.p`
     width: 100%;
     margin: 0;
 `
 
-const Field = styled.p`
+export const Field = styled.p`
     width: 95%;
     height: 25px;
     margin: 2px 0;
@@ -63,7 +65,7 @@ export const InputField = styled(TextField)`
     }
 `
 
-const ButtonText = styled(Button)`
+export const ButtonText = styled(Button)`
     &.MuiButtonBase-root{
         color: ${theme.palette.secondary.main};
         border-radius: 50px;
@@ -90,7 +92,7 @@ export const ButtonConfirm = styled(Button)`
     }
 `;
 
-const DivLoadFile = styled.div`
+export const DivLoadFile = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
@@ -120,6 +122,18 @@ export const Container = styled.div`
     margin: 1rem 0;
 `;
 
+export const MenuIcon = styled.div`
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    right: 0;
+    top: 0;
+    height: 50px;
+    width: 50px;
+    border-radius: 100%;
+`;
+
 function UserProfile(): React.ReactNode {
     const router = useRouter();
     const [toggleModif, setToggleModif] = useState(false);
@@ -138,6 +152,9 @@ function UserProfile(): React.ReactNode {
     return (
         <UserProfileContent>
             <UserInfo>
+                <MenuIcon>
+                    <PersonIcon color="primary" fontSize="large"/>
+                </MenuIcon>
                 <Title>Information de mon compte</Title>
                 <Container>
                     <Label>
@@ -185,10 +202,10 @@ function UserProfile(): React.ReactNode {
                 </Container>
             </UserInfo>
             <DivLoadFile>
-                <ButtonConfirm onClick={()=>{router.push("/fileUpload")}}>
+                <ButtonConfirm onClick={()=>{router.push("/fileUploadPage")}}>
                     Charger un nouveau fichier
                     <ButtonSVGContainer>
-                        <PublishIcon color="primary"/>
+                        <FileUploadIcon color="primary"/>
                     </ButtonSVGContainer>
                 </ButtonConfirm>
             </DivLoadFile>

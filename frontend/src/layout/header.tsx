@@ -63,7 +63,7 @@ const Header = (): React.ReactNode => {
                         <Inventory2Icon />
                         Mes Fichiers
                     </StyledLink>
-                    <StyledLink onClick={() => router.push("/userProfile")}>
+                    <StyledLink onClick={() => router.push("/userProfilePage")}>
                         <PersonIcon />
                         Mon Compte
                     </StyledLink>
