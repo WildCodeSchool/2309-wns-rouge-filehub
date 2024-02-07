@@ -18,6 +18,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import InsertLinkIcon from '@mui/icons-material/InsertLink';
 import DownloadIcon from '@mui/icons-material/Download';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
+import { useRouter } from 'next/router';
 
 const StyledCard = styled(Card)`
   margin: auto;
@@ -81,6 +82,7 @@ const ButtonSVGContainer = styled.div`
 
 const FileListItem = ({files}) => {
     const [copied, setCopied] = useState(false);
+    const router = useRouter();
 
     const handleCopy = (link : any) => {
         navigator.clipboard.writeText(link);
@@ -139,7 +141,7 @@ const FileListItem = ({files}) => {
                 </TableContainer>
             </CardContent>
             <DivLoadFile>
-                <ButtonConfirm onClick={()=>{console.log("charger un fichier")}}>
+                <ButtonConfirm onClick={()=>router.push("/fileUploadPage")}>
                     Charger un nouveau fichier
                     <ButtonSVGContainer>
                         <FileUploadIcon />

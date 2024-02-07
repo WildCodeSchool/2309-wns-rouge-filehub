@@ -5,11 +5,14 @@ import { theme } from "@/styles/theme";
 import { Label, InputField, ButtonSVGContainer, ButtonConfirm, Container, Title, MenuIcon } from "./UserProfile";
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import LinkIcon from '@mui/icons-material/Link';
+import FileOpenIcon from '@mui/icons-material/FileOpen';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import AddIcon from '@mui/icons-material/Add';
+import axios from 'axios';
+import { dataBaseFile } from "./FileUploaded";
 
 interface fileUploadProps {
-    setFileUploaded: (fun: boolean) => void
+    setFileUploaded: (fun: dataBaseFile | undefined) => void
 }
 
 export const FileUploadContent = styled.div`
@@ -82,8 +85,27 @@ function FileUpload({setFileUploaded}: fileUploadProps): React.ReactNode {
         }
     }, [file])
 
-    const handleUpload = ()=>{
-        setFileUploaded(true);
+    const handleUpload = async()=>{
+        if (!file) {
+            console.log('Aucun fichier sélectionné.');
+            return;
+        }
+        const formData = new FormData();
+        formData.append('file', file);
+        try {
+            await axios.post('http://localhost:5001/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                withCredentials: true,
+            })
+            .then((res)=>{
+                console.log(res.data);
+                setFileUploaded(res.data);
+            });
+        } catch (error) {
+            console.error('Erreur lors du chargement du fichier :', error);
+        }
     }
 
     return(
@@ -97,9 +119,9 @@ function FileUpload({setFileUploaded}: fileUploadProps): React.ReactNode {
                     <FileButton variant="contained" sx={file === undefined ? {background: theme.palette.secondary.main} 
                     : {background: "linear-gradient(90deg, rgba(250,209,38,1) 0%, rgba(255,84,79,1) 75%, rgba(255,84,79,1) 100%)"}}>
                         <LabelButton>
-                            Charger un fichier
+                            Déposer un fichier
                             <ButtonSVGContainer>
-                                <FileUploadIcon color="primary"/>
+                                <FileOpenIcon color="primary"/>
                             </ButtonSVGContainer>
                             <input hidden type="file" onChange={(e)=>{setFileInfo(e)}}/>
                         </LabelButton>
@@ -112,7 +134,7 @@ function FileUpload({setFileUploaded}: fileUploadProps): React.ReactNode {
                 </Container>
                 <Container>
                     <Label>
-                        <InputField label="Nom du Fichier à télécharger" variant="outlined" type="text"
+                        <InputField label="Nom du fichier" variant="outlined" type="text"
                         value={fileName} onChange={(e)=>{setFileName(e.target.value)}}/>
                     </Label>
                 </Container>

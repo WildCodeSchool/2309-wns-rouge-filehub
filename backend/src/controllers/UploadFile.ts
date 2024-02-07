@@ -17,7 +17,7 @@ export class UploadFileController {
 
       await newFile.save();
 
-      res.send('File uploaded successfully');
+      res.send(newFile);
     } catch (error) {
       console.error('Error uploading file:', error);
       res.status(500).send('An error occurred while uploading the file');
