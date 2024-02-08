@@ -17,7 +17,11 @@ export class File extends BaseEntity {
 
   @Column({ length: 255 })
   @Field()
-  name!: string;
+  originalName!: string;
+
+  @Column({ length: 255 })
+  @Field()
+  uniqueName!: string;
 
   @Column({ length: 255 })
   @Field()
