@@ -1,4 +1,4 @@
-import type {AppProps} from "next/app";
+import type { AppProps } from "next/app";
 import dynamic from "next/dynamic";
 import {
   ApolloClient,
@@ -12,6 +12,7 @@ import {theme} from "@/styles/theme";
 import { useRouter } from "next/router";
 import { ReactNode, useEffect } from "react";
 import { queryMe } from "@/graphql/queryMe";
+import Head from "next/head";
 
 const link = createHttpLink({
   uri: "http://localhost:5001",
@@ -63,17 +64,21 @@ function Auth(props: { children: ReactNode}){
   }
 }
 
-function App({Component, pageProps}: AppProps): React.ReactNode {
+function App({ Component, pageProps }: AppProps): React.ReactNode {
   return (
     <ApolloProvider client={client}>
-      <Auth>
-        <ThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
+        <Auth>
+          <Head>
+            <title>FileHub</title>
+            <link rel="icon" href="/favicon.png" />
+          </Head>
           <Component {...pageProps} />
-        </ThemeProvider>
-      </Auth>
+        </Auth>
+      </ThemeProvider>
     </ApolloProvider>
   );
 }
 
 // Disabling SSR
-export default dynamic(() => Promise.resolve(App), {ssr: false});
+export default dynamic(() => Promise.resolve(App), { ssr: false });
