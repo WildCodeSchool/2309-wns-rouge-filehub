@@ -10,22 +10,12 @@ export class FilesResolver {
     return files;
   }
 
-  @Mutation(() => File)
-  async createFile(
-    @Arg('data', () => FileCreateInput) data: FileCreateInput
-  ): Promise<File> {
-    try {
-      const newFile = new File();
-      Object.assign(newFile, data);
-      newFile.size = 20;
-      newFile.mimeType = 'mb';
-      newFile.url = 'essaiurl';
-      newFile.uploadAt = new Date();
-      await newFile.save();
-      return newFile;
-    } catch (error) {
-      throw new Error(`An error occured: ${error}`);
-    }
+  @Query(() => File)
+  async getFile(@Arg('uniqueName') uniqueName: string): Promise<File | null> {
+    const file = await File.findOne({
+      where: { uniqueName },
+    });
+    return file;
   }
 
   @Mutation(() => File, { nullable: true })

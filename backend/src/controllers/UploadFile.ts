@@ -4,15 +4,16 @@ import { File } from '../entities/File';
 export class UploadFileController {
   uploadSingleFile = async (req: Request, res: Response) => {
     try {
-      const { originalname, mimetype, size, path } =
+      const { originalname, filename, mimetype, size, path } =
         req.file as Express.Multer.File;
       const newFile = File.create({
-        name: originalname,
+        originalName: originalname,
+        uniqueName: filename,
         mimeType: mimetype,
         size: size,
         path: path,
         uploadAt: new Date(),
-        url: '',
+        url: `http://localhost:3000/downloads/${filename}`,
       });
 
       await newFile.save();
