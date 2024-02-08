@@ -5,11 +5,11 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from 'typeorm';
 
-import { Field, ID, ObjectType, InputType } from "type-graphql";
-import { IsEmail, Matches } from "class-validator";
-import { File } from "./File";
+import { Field, ID, ObjectType, InputType } from 'type-graphql';
+import { IsEmail, Matches } from 'class-validator';
+import { File } from './File';
 
 @Entity()
 @ObjectType()
@@ -28,9 +28,9 @@ export class User extends BaseEntity {
   @CreateDateColumn()
   createdAt!: Date;
 
-  @OneToMany(() => File, (file) => file.createdBy)
-  @Field(() => [File])
-  files!: File[];
+  // @OneToMany(() => File, (file) => file.createdBy)
+  // @Field(() => [File])
+  // files!: File[];
 }
 
 @InputType()
