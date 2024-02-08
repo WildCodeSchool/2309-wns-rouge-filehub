@@ -90,10 +90,7 @@ export default function Login(): React.ReactNode {
             variables: { email: signinEmail, password: signinPassword },
           });
           if (data.item) {
-            toast.success("Connexion réussie !");
-            setTimeout(() => {
-              router.push("/fileUpload");
-            }, 3000);
+            router.push("/fileUploadPage");
           } else {
             toast.error("Email ou mot de passe incorrect.");
           }
