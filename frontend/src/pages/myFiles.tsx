@@ -1,6 +1,6 @@
 import React from "react";
 import { useRouter } from "next/router";
-import Header from "@/layout/Header";
+import Header from "@/layout/header";
 import FileListItem from "@/components/FileList";
 import styled from "styled-components";
 
@@ -12,11 +12,10 @@ const MainContent = styled.div`
 `
 
 const myFiles: React.FC = () => {
-    const router = useRouter();
 
     const files = [
-        { name: 'Fichier1.txt', addedDate: '2024-02-02', expirationDate: '2024-05-02', link: '/path/to/file1' },
-        { name: 'Fichier2.txt', addedDate: '2024-02-02', expirationDate: '2024-05-02', link: '/path/to/file2' },
+        { id: 1 , name: 'Fichier1.txt', addedDate: '2024-02-02', expirationDate: '2024-05-02', link: '/path/to/file1' },
+        { id: 2 , name: 'Fichier2.txt', addedDate: '2024-02-02', expirationDate: '2024-05-02', link: '/path/to/file2' },
     ];
 
     return (
