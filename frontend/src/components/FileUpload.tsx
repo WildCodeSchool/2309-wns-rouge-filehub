@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
 import { Label, InputField, ButtonSVGContainer, ButtonConfirm, Container, Title, MenuIcon } from "./UserProfile";
-import FileUploadIcon from '@mui/icons-material/FileUpload';
 import LinkIcon from '@mui/icons-material/Link';
 import FileOpenIcon from '@mui/icons-material/FileOpen';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
@@ -88,6 +87,10 @@ function FileUpload({setFileUploaded}: fileUploadProps): React.ReactNode {
     const handleUpload = async()=>{
         if (!file) {
             console.log('Aucun fichier sélectionné.');
+            return;
+        }
+        if (file.size >= 50000) {
+            console.log('Taille du fichier supérieure à 50mo');
             return;
         }
         const formData = new FormData();

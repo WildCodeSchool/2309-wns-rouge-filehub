@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import Login from "@/components/Login";
+import FileUploadPage from "./fileUploadPage";
 
 export const MainContent = styled.div`
   display: flex;
@@ -14,5 +15,5 @@ export const MainContent = styled.div`
 
 export default function Home(): React.ReactNode {
 
-  return <Login />;
+  return <FileUploadPage />;
 }

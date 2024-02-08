@@ -4,6 +4,9 @@ import { LogoStyled } from "@/components/LogoComponent";
 import { useRouter } from "next/router";
 import PersonIcon from '@mui/icons-material/Person';
 import Inventory2Icon from '@mui/icons-material/Inventory2';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { mutationSignout } from '@/graphql/mutationSignout';
+import { useMutation } from '@apollo/client';
 
 const HeaderContainer = styled.header`
   border-bottom: 1px solid #ccc;
@@ -50,9 +53,12 @@ const StyledLink = styled.div`
 const Header = (): React.ReactNode => {
     const router = useRouter();
 
-    const navigateTo = (route: string) => {
-        router.push(route);
-    };
+    const [signOut] = useMutation(mutationSignout);
+
+    const doSignOut = async()=>{
+      const { data } = await signOut();
+      router.replace("/Login");
+    }
 
     return (
         <HeaderContainer>
@@ -66,6 +72,9 @@ const Header = (): React.ReactNode => {
                     <StyledLink onClick={() => router.push("/userProfilePage")}>
                         <PersonIcon />
                         Mon Compte
+                    </StyledLink>
+                    <StyledLink onClick={doSignOut}>
+                        <LogoutIcon />
                     </StyledLink>
                 </LinksContainer>
             </HeaderContent>
