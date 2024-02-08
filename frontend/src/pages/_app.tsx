@@ -1,4 +1,4 @@
-import type {AppProps} from "next/app";
+import type { AppProps } from "next/app";
 import dynamic from "next/dynamic";
 import {
   ApolloClient,
@@ -6,8 +6,9 @@ import {
   ApolloProvider,
   createHttpLink,
 } from "@apollo/client";
-import {ThemeProvider} from "@mui/material/styles";
-import {theme} from "@/styles/theme";
+import { ThemeProvider } from "@mui/material/styles";
+import { theme } from "@/styles/theme";
+import Head from "next/head";
 
 const link = createHttpLink({
   uri: "http://localhost:5001",
@@ -19,10 +20,14 @@ const client = new ApolloClient({
   link: link,
 });
 
-function App({Component, pageProps}: AppProps): React.ReactNode {
+function App({ Component, pageProps }: AppProps): React.ReactNode {
   return (
     <ApolloProvider client={client}>
       <ThemeProvider theme={theme}>
+        <Head>
+          <title>FileHub</title>
+          <link rel="icon" href="/favicon.png" />
+        </Head>
         <Component {...pageProps} />
       </ThemeProvider>
     </ApolloProvider>
@@ -30,4 +35,4 @@ function App({Component, pageProps}: AppProps): React.ReactNode {
 }
 
 // Disabling SSR
-export default dynamic(() => Promise.resolve(App), {ssr: false});
+export default dynamic(() => Promise.resolve(App), { ssr: false });
