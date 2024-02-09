@@ -6,6 +6,8 @@ import { useRouter } from "next/router";
 import KeyIcon from '@mui/icons-material/Key';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import PersonIcon from '@mui/icons-material/Person';
+import { queryMe } from "@/graphql/queryMe";
+import { useQuery } from "@apollo/client";
 
 export const UserProfileContent = styled.div`
     display: flex;
@@ -135,9 +137,9 @@ export const MenuIcon = styled.div`
 `;
 
 function UserProfile(): React.ReactNode {
+    const {data: me} = useQuery(queryMe, {fetchPolicy: "no-cache"});
     const router = useRouter();
     const [toggleModif, setToggleModif] = useState(false);
-    const [email, setEmail] = useState("Wilder@Wild.com");
     const [passWord, setPassWord] = useState("");
     const [newPassWord, setNewPassWord] = useState("");
     const [secNewPassWord, setSecNewPassWord] = useState("");
@@ -159,7 +161,7 @@ function UserProfile(): React.ReactNode {
                 <Container>
                     <Label>
                         <FieldTitle>Email :</FieldTitle>
-                        <Field>{email}</Field>
+                        <Field>{me && me.me.email}</Field>
                     </Label>
                 </Container>
                 <Container>

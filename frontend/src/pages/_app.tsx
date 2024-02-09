@@ -35,18 +35,16 @@ function Auth(props: { children: ReactNode }) {
   const authVerif = async () => {
     try {
       await refetch();
-      if (publicPages.includes(router.pathname) === false) {
-        console.log("page privée");
+      if(publicPages.includes(router.pathname) === false){
         //page privée
-        if (!data) {
-          console.log("pas connecté");
+        if(!data){
           //pas connecté
-          router.replace("/login");
+          router.replace("/Login");
         }
       }
     } catch (e) {
-      if (router.pathname !== "/login" && error) {
-        router.replace("/login");
+      if (router.pathname !== "/Login" && error) {
+        router.replace("/Login");
       }
     }
   };

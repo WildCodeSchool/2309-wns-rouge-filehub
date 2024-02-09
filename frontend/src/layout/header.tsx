@@ -6,7 +6,8 @@ import PersonIcon from '@mui/icons-material/Person';
 import Inventory2Icon from '@mui/icons-material/Inventory2';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { mutationSignout } from '@/graphql/mutationSignout';
-import { useMutation } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
+import { queryMe } from '@/graphql/queryMe';
 
 const HeaderContainer = styled.header`
   border-bottom: 1px solid #ccc;
@@ -51,6 +52,7 @@ const StyledLink = styled.div`
 `;
 
 const Header = (): React.ReactNode => {
+    const {data: me} = useQuery(queryMe, {fetchPolicy: "no-cache"});
     const router = useRouter();
 
     const [signOut] = useMutation(mutationSignout);
@@ -71,7 +73,7 @@ const Header = (): React.ReactNode => {
                     </StyledLink>
                     <StyledLink onClick={() => router.push("/userProfilePage")}>
                         <PersonIcon />
-                        Mon Compte
+                        {me && me.me.email}
                     </StyledLink>
                     <StyledLink onClick={doSignOut}>
                         <LogoutIcon />
