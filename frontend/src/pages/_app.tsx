@@ -34,10 +34,8 @@ function Auth(props: { children: ReactNode}){
     try {
       await refetch();
       if(publicPages.includes(router.pathname) === false){
-        console.log("page privée");
         //page privée
         if(!data){
-          console.log("pas connecté");
           //pas connecté
           router.replace("/Login");
         }
