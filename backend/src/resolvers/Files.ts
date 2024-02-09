@@ -1,5 +1,18 @@
-import { Arg, Authorized, Ctx, ID, Mutation, Query, Resolver } from 'type-graphql';
-import { File, FileCreateInput, FileUpdateInput, FilesWhere } from '../entities/File';
+import {
+  Arg,
+  Authorized,
+  Ctx,
+  ID,
+  Mutation,
+  Query,
+  Resolver,
+} from 'type-graphql';
+import {
+  File,
+  FileCreateInput,
+  FileUpdateInput,
+  FilesWhere,
+} from '../entities/File';
 import { validate } from 'class-validator';
 import { ContextType } from '../auth';
 
@@ -8,15 +21,19 @@ export class FilesResolver {
   @Authorized()
   @Query(() => [File])
   async allFiles(): Promise<File[]> {
-    const files = await File.find({relations : {
-      createdBy: true
-    },});
+    const files = await File.find({
+      relations: {
+        createdBy: true,
+      },
+    });
     return files;
   }
 
   @Authorized()
   @Query(() => [File])
-  async filesByFilter(@Arg('data', () => FilesWhere) data: FilesWhere): Promise<File[]> {
+  async filesByFilter(
+    @Arg('data', () => FilesWhere) data: FilesWhere
+  ): Promise<File[]> {
     const queryWhere: any = {};
 
     queryWhere.id = data?.id;
@@ -26,25 +43,26 @@ export class FilesResolver {
     queryWhere.mimeType = data?.mimeType;
     queryWhere.size = data?.size;
     queryWhere.url = data?.url;
-    queryWhere.createdBy =  {id: data?.createdBy};
+    queryWhere.createdBy = { id: data?.createdBy };
 
     const files = await File.find({
       where: queryWhere,
-      relations : {
-      createdBy: true
-    },});
+      relations: {
+        createdBy: true,
+      },
+    });
     return files;
   }
 
   @Authorized()
   @Query(() => [File])
   async filesCurrentUser(@Ctx() context: ContextType): Promise<File[]> {
-
     const files = await File.find({
       where: { createdBy: { id: context?.user?.id } },
-      relations : {
-      createdBy: true
-    },});
+      relations: {
+        createdBy: true,
+      },
+    });
     return files;
   }
 

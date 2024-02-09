@@ -1,9 +1,7 @@
 import 'reflect-metadata';
 import { dataSource } from './datasource';
-import { buildSchema } from 'type-graphql';
 import { ApolloServer } from '@apollo/server';
-import { UsersResolver } from './resolvers/Users';
-import { ContextType, customAuthChecker } from './auth';
+import { ContextType } from './auth';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import express, { Request } from 'express';
 import { expressMiddleware } from '@apollo/server/express4';
@@ -11,16 +9,14 @@ import http from 'http';
 import cors from 'cors';
 import multer from 'multer';
 import path from 'path';
-import { FilesResolver } from './resolvers/Files';
 import { UploadFileController } from './controllers/UploadFile';
 import { DownloadFileController } from './controllers/DownloadFile';
+import { getSchema } from './schema';
 
 async function start() {
   await dataSource.initialize();
-  const schema = await buildSchema({
-    resolvers: [UsersResolver, FilesResolver],
-    authChecker: customAuthChecker,
-  });
+
+  const schema = await getSchema();
 
   const app = express();
 
