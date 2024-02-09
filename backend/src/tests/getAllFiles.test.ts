@@ -1,9 +1,9 @@
 import { beforeAll, describe, expect, it } from '@jest/globals';
 import { GraphQLSchema, graphql, print } from 'graphql';
 import { DataSource } from 'typeorm';
-import { queryGetFile } from './graphql/queryGetFile';
 import { getSchema } from '../schema';
 import { dataSourceOptions } from '../datasource';
+import { queryGetAllFiles } from './graphql/queryGetAllFiles';
 
 let schema: GraphQLSchema;
 let dataSource: DataSource;
@@ -25,17 +25,21 @@ beforeAll(async () => {
   await dataSource.initialize();
 });
 
-describe('get file resolver', () => {
-  it('get a file by his unique name', async () => {
+describe('get all files resolver', () => {
+  it('get all files from db', async () => {
     const result = (await graphql({
       schema,
-      source: print(queryGetFile),
-      variableValues: {
-        uniqueName: '1707408560525test-image.png',
-      },
+      source: print(queryGetAllFiles),
     })) as any;
-    expect(result?.data?.getFile?.uniqueName).toBe(
-      '1707408560525test-image.png'
-    );
+    expect(result?.data?.allFiles).toEqual([
+      {
+        id: '1',
+        originalName: 'test-image.png',
+      },
+      {
+        id: '2',
+        originalName: 'test-image.png',
+      },
+    ]);
   });
 });
