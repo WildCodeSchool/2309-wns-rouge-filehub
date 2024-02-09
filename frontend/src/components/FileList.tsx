@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 import {
     Card,
@@ -19,9 +19,6 @@ import InsertLinkIcon from '@mui/icons-material/InsertLink';
 import DownloadIcon from '@mui/icons-material/Download';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { useRouter } from 'next/router';
-import { useQuery } from "@apollo/client";
-import { queryMe } from "@/graphql/queryMe";
-import { mutationFile } from "@/graphql/mutationFile";
 
 const StyledCard = styled(Card)`
   margin: auto;
@@ -35,11 +32,14 @@ const TableContainerWrapper = styled.div`
   overflow: hidden;
 `;
 
-const StyledTableCell = styled(TableCell)``;
+const StyledTableCell = styled(TableCell)`
+
+`;
 
 const StyledButtonIcon = styled(IconButton)`
   background-color: transparent !important;
   color: orange !important;
+ 
 `;
 
 const DivLoadFile = styled.div`
@@ -50,9 +50,9 @@ const DivLoadFile = styled.div`
 `;
 
 const ButtonConfirm = styled(Button)`
-  &.MuiButtonBase-root {
+  &.MuiButtonBase-root{
     position: relative;
-    background: linear-gradient(90deg, rgba(250, 209, 38, 1) 0%, rgba(255, 84, 79, 1) 75%, rgba(255, 84, 79, 1) 100%);
+    background: linear-gradient(90deg, rgba(250,209,38,1) 0%, rgba(255,84,79,1) 75%, rgba(255,84,79,1) 100%);
     color: white;
     border-radius: 50px;
     padding: 0;
@@ -60,7 +60,7 @@ const ButtonConfirm = styled(Button)`
     justify-content: center;
     text-transform: none;
     width: 70%;
-    height: 50px;
+    height: 50px; 
     margin-top: 1vmin;
     font-size: 14px;
   }
@@ -79,58 +79,68 @@ const ButtonSVGContainer = styled.div`
   color: black !important;
 `;
 
-const FileListItem = () => {
+interface FileData {
+    id: string;
+    originalName: string;
+    uploadAt: string;
+    expirationDate: string;
+    url: string;
+
+}
+
+const FileListItem = ({files} : { files: FileData[] }) => {
     const [copied, setCopied] = useState(false);
     const router = useRouter();
-    const { loading: meLoading, error: meError, data: meData } = useQuery(queryMe);
-    const userId = meData?.me?.id;
 
-    const { loading, error, data } = useQuery(mutationFile, {
-        variables: { userId },
-        skip: !userId, // Skip the query if user ID is not available
-    });
-
-    const handleCopy = (link) => {
+    const handleCopy = (link : any) => {
         navigator.clipboard.writeText(link);
         setCopied(true);
     };
 
-    const handleDelete = (file) => {};
+    const handleDelete = (file : any) => {
+    };
 
-    if (loading || meLoading) return <p>Loading...</p>;
-    if (error || meError) return <p>Error: {error?.message || meError?.message}</p>;
+    const formatDate = (dateString : string) => {
+        const date = new Date(dateString);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-based
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
+
+
 
     return (
         <StyledCard>
             <TableContainerWrapper>
                 <CardContent>
-                    <Typography variant="h4" style={{ marginBottom: '16px' }}>Mes fichiers</Typography>
+                    <Typography variant="h4" style={{marginBottom: '16px'}}>Mes fichiers</Typography>
                     <TableContainer>
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <StyledTableCell>Date d'ajout</StyledTableCell>
+                                    <StyledTableCell>Date d&apos;ajout</StyledTableCell>
                                     <StyledTableCell>Nom du fichier</StyledTableCell>
-                                    <StyledTableCell>Date d'expiration</StyledTableCell>
-                                    <StyledTableCell style={{ textAlign: 'center' }}>Télécharger</StyledTableCell>
-                                    <StyledTableCell style={{ textAlign: 'center' }}>Copier le lien</StyledTableCell>
-                                    <StyledTableCell style={{ textAlign: 'center' }}>Supprimer</StyledTableCell>
+                                    <StyledTableCell>Date d&apos;expiration</StyledTableCell>
+                                    <StyledTableCell style={{textAlign: 'center'}}>Télécharger</StyledTableCell>
+                                    <StyledTableCell style={{textAlign: 'center'}}>Copier le lien</StyledTableCell>
+                                    <StyledTableCell style={{textAlign: 'center'}}>Supprimer</StyledTableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {data.userFiles.map((file) => (
+                                {files.map((file) => (
                                     <TableRow key={file.id}>
-                                        <TableCell>{file.addedDate}</TableCell>
-                                        <TableCell>{file.name}</TableCell>
-                                        <TableCell>{file.expirationDate}</TableCell>
+                                        <TableCell>{formatDate(file.uploadAt)}</TableCell>
+                                        <TableCell>{file.originalName}</TableCell>
+                                        <TableCell>{formatDate(new Date(file.uploadAt).getTime() + (90 * 24 * 60 * 60 * 1000))}</TableCell>
                                         <TableCell style={{ textAlign: 'center' }}>
-                                            <StyledButtonIcon href={file.link}>
+                                            <StyledButtonIcon href={file.url}>
                                                 <DownloadIcon />
                                             </StyledButtonIcon>
                                         </TableCell>
                                         <TableCell style={{ textAlign: 'center', marginRight: '5px' }}>
-                                            <Tooltip title={copied ? 'Lien copié !' : 'Copier le lien'}>
-                                                <StyledButtonIcon onClick={() => handleCopy(file.link)} aria-label="copy">
+                                            <Tooltip title="Copier le lien">
+                                                <StyledButtonIcon onClick={() => handleCopy(file.url)} aria-label="copy">
                                                     <InsertLinkIcon />
                                                 </StyledButtonIcon>
                                             </Tooltip>
@@ -149,7 +159,7 @@ const FileListItem = () => {
                     </TableContainer>
                 </CardContent>
                 <DivLoadFile>
-                    <ButtonConfirm onClick={() => router.push("/fileUploadPage")}>
+                    <ButtonConfirm onClick={()=>router.push("/fileUploadPage")}>
                         Charger un nouveau fichier
                         <ButtonSVGContainer>
                             <FileUploadIcon />

@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const mutationFile = gql`
-  query GetUserFiles($userId: ID!) {
-    userFiles(userId: $userId) {
+  mutation CreateFile($data: FileCreateInput!) {
+    createFile(data: $data) {
       id
       originalName
       uniqueName
