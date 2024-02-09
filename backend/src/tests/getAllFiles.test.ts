@@ -57,6 +57,8 @@ beforeAll(async () => {
   await dataSource.initialize();
 });
 
+// pousser bcp plus le test avec plusieurs test avec creation d'un user avec inscription, connexion, puis creer fichier 1, creer fichier 2 puis faire le getAllFiles
+
 describe('get all files resolver', () => {
   it('get all files from db', async () => {
     const mock = mockContext(token);
