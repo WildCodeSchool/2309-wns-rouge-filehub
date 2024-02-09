@@ -19,7 +19,11 @@ export class File extends BaseEntity {
 
   @Column({ length: 255 })
   @Field()
-  name!: string;
+  originalName!: string;
+
+  @Column({ length: 255 })
+  @Field()
+  uniqueName!: string;
 
   @Column({ length: 255 })
   @Field()
@@ -52,7 +56,10 @@ export class FilesWhere {
   id?: number;
 
   @Field({nullable: true})
-  name?: string;
+  originalName?: string;
+
+  @Field({nullable: true})
+  uniqueName?: string;
 
   @Field({nullable: true})
   mimeType?: string;

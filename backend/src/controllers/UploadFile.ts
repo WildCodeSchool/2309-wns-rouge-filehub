@@ -18,15 +18,16 @@ export class UploadFileController {
         }
       }
 
-      const { originalname, mimetype, size, path } =
+      const { originalname, filename, mimetype, size, path } =
         req.file as Express.Multer.File;
       const newFile = File.create({
-        name: originalname,
+        originalName: originalname,
+        uniqueName: filename,
         mimeType: mimetype,
         size: size,
         path: path,
         uploadAt: new Date(),
-        url: '',
+        url: 'http://localhost:3000/downloads/${filename}',
         createdBy: {id: userId}
       });
 

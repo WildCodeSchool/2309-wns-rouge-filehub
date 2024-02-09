@@ -20,7 +20,8 @@ export class FilesResolver {
     const queryWhere: any = {};
 
     queryWhere.id = data?.id;
-    queryWhere.name = data?.name;
+    queryWhere.originalName = data?.originalName;
+    queryWhere.uniqueName = data?.uniqueName;
     queryWhere.path = data?.path;
     queryWhere.mimeType = data?.mimeType;
     queryWhere.size = data?.size;
@@ -45,6 +46,14 @@ export class FilesResolver {
       createdBy: true
     },});
     return files;
+  }
+
+  @Query(() => File)
+  async getFile(@Arg('uniqueName') uniqueName: string): Promise<File | null> {
+    const file = await File.findOne({
+      where: { uniqueName },
+    });
+    return file;
   }
 
   @Authorized()
