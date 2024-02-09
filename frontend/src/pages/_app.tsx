@@ -7,8 +7,8 @@ import {
   createHttpLink,
   useQuery,
 } from "@apollo/client";
-import {ThemeProvider} from "@mui/material/styles";
-import {theme} from "@/styles/theme";
+import { ThemeProvider } from "@mui/material/styles";
+import { theme } from "@/styles/theme";
 import { useRouter } from "next/router";
 import { ReactNode, useEffect } from "react";
 import { queryMe } from "@/graphql/queryMe";
@@ -24,41 +24,43 @@ const client = new ApolloClient({
   link: link,
 });
 
-const publicPages = ["/Login", "/"];
+const publicPages = ["/login", "/"];
 
-function Auth(props: { children: ReactNode}){
-  const {data, loading, error, refetch} = useQuery(queryMe, {fetchPolicy: "no-cache"});
+function Auth(props: { children: ReactNode }) {
+  const { data, loading, error, refetch } = useQuery(queryMe, {
+    fetchPolicy: "no-cache",
+  });
   const router = useRouter();
 
-  const authVerif = async ()=>{
+  const authVerif = async () => {
     try {
       await refetch();
-      if(publicPages.includes(router.pathname) === false){
+      if (publicPages.includes(router.pathname) === false) {
         console.log("page privée");
         //page privée
-        if(!data){
+        if (!data) {
           console.log("pas connecté");
           //pas connecté
-          router.replace("/Login");
+          router.replace("/login");
         }
       }
-    } catch(e) {
-      if(router.pathname !== "/Login" && error){
-        router.replace("/Login");
+    } catch (e) {
+      if (router.pathname !== "/login" && error) {
+        router.replace("/login");
       }
     }
-  }
+  };
 
-  useEffect(()=>{
+  useEffect(() => {
     authVerif();
-  }, [router, error])
+  }, [router, error]);
 
-  if(loading){
-    return <p>chargement</p>
+  if (loading) {
+    return <p>chargement</p>;
   }
   const loggedIn = true;
-  if(!loggedIn){
-    return <p>not connected</p>
+  if (!loggedIn) {
+    return <p>not connected</p>;
   } else {
     return props.children;
   }
