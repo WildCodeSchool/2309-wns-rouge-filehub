@@ -71,14 +71,4 @@ function App({ Component, pageProps }: AppProps): React.ReactNode {
         <Auth>
           <Head>
             <title>FileHub</title>
-            <link rel="icon" href="/favicon.png" />
-          </Head>
-          <Component {...pageProps} />
-        </Auth>
-      </ThemeProvider>
-    </ApolloProvider>
-  );
-}
-
-// Disabling SSR
-export default dynamic(() => Promise.resolve(App), { ssr: false });
+            <link rel="icon" href="/*

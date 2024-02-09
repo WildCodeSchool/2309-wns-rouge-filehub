@@ -3,11 +3,7 @@ import { render, screen } from '@testing-library/react';
 import MyFiles from '../pages/myFiles';
 import FileListItem from '../components/FileList';
 
-
 jest.mock('next/router', () => require('next-router-mock'));
-
-
-
 
 describe('myFiles page', () => {
     it('renders the page correctly', () => {
