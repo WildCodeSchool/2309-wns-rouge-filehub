@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { dataSource } from './datasource';
 import { ApolloServer } from '@apollo/server';
-import { ContextType, customAuthChecker } from './auth';
+import { ContextType } from './auth';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import express, { Request } from 'express';
 import { expressMiddleware } from '@apollo/server/express4';
