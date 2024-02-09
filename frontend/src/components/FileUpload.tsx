@@ -89,7 +89,7 @@ function FileUpload({setFileUploaded}: fileUploadProps): React.ReactNode {
             console.log('Aucun fichier sélectionné.');
             return;
         }
-        if (file.size >= 50000) {
+        if (file.size >= 500000000) {
             console.log('Taille du fichier supérieure à 50mo');
             return;
         }

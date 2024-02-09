@@ -1,9 +1,23 @@
 import { Request, Response } from 'express';
 import { File } from '../entities/File';
+import jwt from 'jsonwebtoken';
+import Cookies from 'cookies';
 
 export class UploadFileController {
   uploadSingleFile = async (req: Request, res: Response) => {
     try {
+      let userId = 0;
+      const cookies = new Cookies(req, res);
+      if(cookies){
+        const token = cookies.get('token');
+        if(token){
+          const payload = jwt.verify(token, process.env.JWT_SECRET || "supersecret");
+          if(typeof payload === "object" && "userId" in payload){
+            userId = payload.userId
+          }
+        }
+      }
+
       const { originalname, filename, mimetype, size, path } =
         req.file as Express.Multer.File;
       const newFile = File.create({
@@ -13,7 +27,8 @@ export class UploadFileController {
         size: size,
         path: path,
         uploadAt: new Date(),
-        url: `http://localhost:3000/downloads/${filename}`,
+        url: 'http://localhost:3000/downloads/${filename}',
+        createdBy: {id: userId}
       });
 
       await newFile.save();
