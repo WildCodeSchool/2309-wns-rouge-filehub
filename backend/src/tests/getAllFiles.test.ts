@@ -4,9 +4,41 @@ import { DataSource } from 'typeorm';
 import { getSchema } from '../schema';
 import { dataSourceOptions } from '../datasource';
 import { queryGetAllFiles } from './graphql/queryGetAllFiles';
+import { serialize, parse } from 'cookie';
+
+function mockContext(token?: string) {
+  const value: { context: any; token?: string } = {
+    token,
+    context: {
+      req: {
+        headers: {
+          cookie: token ? serialize('token', token) : undefined,
+        },
+        connection: { encrypted: false },
+      },
+      res: {
+        getHeader: () => '',
+        setHeader: (key: string, cookieValue: string | string[]) => {
+          if (key === 'Set-Cookie') {
+            const parsedValue = parse(
+              Array.isArray(cookieValue) ? cookieValue[0] : cookieValue
+            );
+            if (parsedValue.token) {
+              value.token = parsedValue.token;
+            }
+          }
+        },
+        headers: {},
+      },
+    },
+  };
+  console.log(token);
+  return value;
+}
 
 let schema: GraphQLSchema;
 let dataSource: DataSource;
+let token: string | undefined;
 
 beforeAll(async () => {
   schema = await getSchema();
@@ -27,17 +59,19 @@ beforeAll(async () => {
 
 describe('get all files resolver', () => {
   it('get all files from db', async () => {
+    const mock = mockContext(token);
     const result = (await graphql({
       schema,
       source: print(queryGetAllFiles),
+      contextValue: mock.context,
     })) as any;
     expect(result?.data?.allFiles).toEqual([
       {
-        id: '1',
+        id: '2',
         originalName: 'test-image.png',
       },
       {
-        id: '2',
+        id: '1',
         originalName: 'test-image.png',
       },
     ]);

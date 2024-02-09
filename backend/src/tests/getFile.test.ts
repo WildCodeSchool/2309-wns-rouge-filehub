@@ -31,11 +31,11 @@ describe('get file resolver', () => {
       schema,
       source: print(queryGetFile),
       variableValues: {
-        uniqueName: '1707408560525test-image.png',
+        uniqueName: '1707472592637test-image.png',
       },
     })) as any;
     expect(result?.data?.getFile?.uniqueName).toBe(
-      '1707408560525test-image.png'
+      '1707472592637test-image.png'
     );
   });
 });

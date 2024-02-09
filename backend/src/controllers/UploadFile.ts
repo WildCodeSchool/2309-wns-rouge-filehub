@@ -8,12 +8,15 @@ export class UploadFileController {
     try {
       let userId = 0;
       const cookies = new Cookies(req, res);
-      if(cookies){
+      if (cookies) {
         const token = cookies.get('token');
-        if(token){
-          const payload = jwt.verify(token, process.env.JWT_SECRET || "supersecret");
-          if(typeof payload === "object" && "userId" in payload){
-            userId = payload.userId
+        if (token) {
+          const payload = jwt.verify(
+            token,
+            process.env.JWT_SECRET || 'supersecret'
+          );
+          if (typeof payload === 'object' && 'userId' in payload) {
+            userId = payload.userId;
           }
         }
       }
@@ -27,8 +30,8 @@ export class UploadFileController {
         size: size,
         path: path,
         uploadAt: new Date(),
-        url: 'http://localhost:3000/downloads/${filename}',
-        createdBy: {id: userId}
+        url: `http://localhost:3000/downloads/${filename}`,
+        createdBy: { id: userId },
       });
 
       await newFile.save();
