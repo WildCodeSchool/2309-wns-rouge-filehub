@@ -3,13 +3,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
   PrimaryGeneratedColumn,
-} from 'typeorm';
+} from "typeorm";
 
-import { Field, ID, ObjectType, InputType } from 'type-graphql';
-import { IsEmail, Matches } from 'class-validator';
-import { File } from './File';
+import { Field, ID, ObjectType, InputType } from "type-graphql";
+import { IsEmail, Matches } from "class-validator";
 
 @Entity()
 @ObjectType()

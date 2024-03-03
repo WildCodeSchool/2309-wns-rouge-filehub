@@ -1,25 +1,28 @@
-import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
+import { afterAll, beforeAll, describe } from "@jest/globals";
 import { DataSource } from "typeorm";
 import { TestArgs } from "./common";
-import runUsers from "./resolvers/users";
+import runUsers from "./users";
 import { getSchema } from "../schema";
 import { dataSourceOptions } from "../datasource";
 
-// prepare common data
 const args: TestArgs = {
   schema: null,
   dataSource: null,
   data: null,
 } as unknown as TestArgs;
 
-// run all needed tests
 describe("Testing resolvers", () => {
   beforeAll(async () => {
     args.schema = await getSchema();
     args.dataSource = new DataSource({
       ...dataSourceOptions,
-      dropSchema: true,
-      logging: false,
+      host: "127.0.0.1", //initialisation d'une nouvelle datasource local (en dehors de docker)
+      port: 5433,
+      username: "test", //utilisation des identifiants du fichier backend/.env
+      password: "test",
+      database: "filehub",
+      dropSchema: true, // Permet de vider la db avant chaque test
+      logging: false, // Permet de désactiver les logs de typeORM
     });
     await args.dataSource.initialize();
     args.data = {};

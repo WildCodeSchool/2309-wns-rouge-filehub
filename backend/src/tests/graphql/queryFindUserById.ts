@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
 export const FindUserById = gql`
-  query FindUserById($userId: ID!) {
+  query ($userId: ID!) {
     user(id: $userId) {
       email
     }

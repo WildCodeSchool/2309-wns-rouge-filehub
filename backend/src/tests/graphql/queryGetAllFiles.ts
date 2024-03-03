@@ -1,7 +1,7 @@
-import gql from 'graphql-tag';
+import gql from "graphql-tag";
 
 export const queryGetAllFiles = gql`
-  query QueryGetAllFiles {
+  query {
     allFiles {
       id
       originalName

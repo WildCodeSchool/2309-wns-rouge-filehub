@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
 export const QueryAllUsers = gql`
-  query AllUsers {
+  query {
     allUsers {
       email
       id
