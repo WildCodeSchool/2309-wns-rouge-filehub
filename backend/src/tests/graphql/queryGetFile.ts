@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
 export const queryGetFile = gql`
-  query GetFile($uniqueName: String!) {
+  query ($uniqueName: String!) {
     getFile(uniqueName: $uniqueName) {
       id
       mimeType
