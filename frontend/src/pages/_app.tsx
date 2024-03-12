@@ -66,17 +66,17 @@ function Auth(props: { children: ReactNode }) {
 
 function App({ Component, pageProps }: AppProps): React.ReactNode {
   return (
-    <ApolloProvider client={client}>
-      <ThemeProvider theme={theme}>
-        <Auth>
-          <Head>
-            <title>FileHub</title>
-            <link rel="icon" href="/favicon.png" />
-          </Head>
-          <Component {...pageProps} />
-        </Auth>
-      </ThemeProvider>
-    </ApolloProvider>
+      <ApolloProvider client={client}>
+        <ThemeProvider theme={theme}>
+          <Auth>
+            <Head>
+              <title>FileHub</title>
+              <link rel="icon" href="/favicon.png" />
+            </Head>
+            <Component {...pageProps} />
+          </Auth>
+        </ThemeProvider>
+      </ApolloProvider>
   );
 }
 
