@@ -7,7 +7,7 @@ export const dataSourceOptions: PostgresConnectionOptions = {
   type: "postgres",
   entities: [File, User],
   synchronize: true,
-  logging: true,
+  logging: false,
 };
 
 export const dataSource = new DataSource({
