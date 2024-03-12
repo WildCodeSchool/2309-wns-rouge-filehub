@@ -33,7 +33,7 @@ const TableContainerWrapper = styled.div`
 `;
 
 const StyledTableCell = styled(TableCell)`
-    
+
 `;
 
 const StyledButtonIcon = styled(IconButton)`
@@ -79,8 +79,16 @@ const ButtonSVGContainer = styled.div`
   color: black !important;
 `;
 
+interface FileData {
+    id: string;
+    originalName: string;
+    uploadAt: string;
+    expirationDate: string;
+    url: string;
 
-const FileListItem = ({files}) => {
+}
+
+const FileListItem = ({files} : { files: FileData[] }) => {
     const [copied, setCopied] = useState(false);
     const router = useRouter();
 
@@ -92,63 +100,73 @@ const FileListItem = ({files}) => {
     const handleDelete = (file : any) => {
     };
 
+    const formatDate = (dateString : string) => {
+        const date = new Date(dateString);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-based
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
+
+
+
     return (
         <StyledCard>
             <TableContainerWrapper>
-            <CardContent>
-                <Typography variant="h4" style={{marginBottom: '16px'}}>Mes fichiers</Typography>
-                <TableContainer>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <StyledTableCell>Date d'ajout</StyledTableCell>
-                                <StyledTableCell>Nom du fichier</StyledTableCell>
-                                <StyledTableCell>Date d'expiration</StyledTableCell>
-                                <StyledTableCell style={{textAlign: 'center'}}>Télécharger</StyledTableCell>
-                                <StyledTableCell style={{textAlign: 'center'}}>Copier le lien</StyledTableCell>
-                                <StyledTableCell style={{textAlign: 'center'}}>Supprimer</StyledTableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {files.map((file) => (
-                                <TableRow key={file.id}>
-                                    <TableCell>{file.addedDate}</TableCell>
-                                    <TableCell>{file.name}</TableCell>
-                                    <TableCell>{file.expirationDate}</TableCell>
-                                    <TableCell style={{textAlign: 'center'}}>
-                                        <StyledButtonIcon href={file.link}>
-                                            <DownloadIcon/>
-                                        </StyledButtonIcon>
-                                    </TableCell>
-                                    <TableCell style={{textAlign: 'center' , marginRight: '5px'}}>
-                                        <Tooltip title={copied ? 'Lien copié !' : 'Copier le lien'}>
-                                            <StyledButtonIcon onClick={() => handleCopy(file.link)} aria-label="copy">
-                                                <InsertLinkIcon/>
-                                            </StyledButtonIcon>
-                                        </Tooltip>
-                                    </TableCell>
-                                    <TableCell style={{textAlign: 'center'}}>
-                                        <Tooltip title="Supprimer">
-                                            <StyledButtonIcon onClick={() => handleDelete(file)} aria-label="delete">
-                                                <DeleteIcon/>
-                                            </StyledButtonIcon>
-                                        </Tooltip>
-                                    </TableCell>
+                <CardContent>
+                    <Typography variant="h4" style={{marginBottom: '16px'}}>Mes fichiers</Typography>
+                    <TableContainer>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <StyledTableCell>Date d&apos;ajout</StyledTableCell>
+                                    <StyledTableCell>Nom du fichier</StyledTableCell>
+                                    <StyledTableCell>Date d&apos;expiration</StyledTableCell>
+                                    <StyledTableCell style={{textAlign: 'center'}}>Télécharger</StyledTableCell>
+                                    <StyledTableCell style={{textAlign: 'center'}}>Copier le lien</StyledTableCell>
+                                    <StyledTableCell style={{textAlign: 'center'}}>Supprimer</StyledTableCell>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            </CardContent>
-            <DivLoadFile>
-                <ButtonConfirm onClick={()=>router.push("/fileUploadPage")}>
-                    Charger un nouveau fichier
-                    <ButtonSVGContainer>
-                        <FileUploadIcon />
-                    </ButtonSVGContainer>
-                </ButtonConfirm>
-            </DivLoadFile>
-                </TableContainerWrapper>
+                            </TableHead>
+                            <TableBody>
+                                {files.map((file) => (
+                                    <TableRow key={file.id}>
+                                        <TableCell>{formatDate(file.uploadAt)}</TableCell>
+                                        <TableCell>{file.originalName}</TableCell>
+                                        <TableCell>{formatDate(new Date(file.uploadAt).getTime() + (90 * 24 * 60 * 60 * 1000))}</TableCell>
+                                        <TableCell style={{ textAlign: 'center' }}>
+                                            <StyledButtonIcon href={file.url}>
+                                                <DownloadIcon />
+                                            </StyledButtonIcon>
+                                        </TableCell>
+                                        <TableCell style={{ textAlign: 'center', marginRight: '5px' }}>
+                                            <Tooltip title="Copier le lien">
+                                                <StyledButtonIcon onClick={() => handleCopy(file.url)} aria-label="copy">
+                                                    <InsertLinkIcon />
+                                                </StyledButtonIcon>
+                                            </Tooltip>
+                                        </TableCell>
+                                        <TableCell style={{ textAlign: 'center' }}>
+                                            <Tooltip title="Supprimer">
+                                                <StyledButtonIcon onClick={() => handleDelete(file)} aria-label="delete">
+                                                    <DeleteIcon />
+                                                </StyledButtonIcon>
+                                            </Tooltip>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </CardContent>
+                <DivLoadFile>
+                    <ButtonConfirm onClick={()=>router.push("/fileUploadPage")}>
+                        Charger un nouveau fichier
+                        <ButtonSVGContainer>
+                            <FileUploadIcon />
+                        </ButtonSVGContainer>
+                    </ButtonConfirm>
+                </DivLoadFile>
+            </TableContainerWrapper>
         </StyledCard>
     );
 };
