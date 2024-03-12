@@ -1,10 +1,10 @@
-import { DataSource } from 'typeorm';
-import { User } from './entities/User';
-import { File } from './entities/File';
-import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
+import { DataSource } from "typeorm";
+import { User } from "./entities/User";
+import { File } from "./entities/File";
+import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
 
 export const dataSourceOptions: PostgresConnectionOptions = {
-  type: 'postgres',
+  type: "postgres",
   entities: [File, User],
   synchronize: true,
   logging: true,
@@ -12,7 +12,7 @@ export const dataSourceOptions: PostgresConnectionOptions = {
 
 export const dataSource = new DataSource({
   ...dataSourceOptions,
-  host: 'db',
+  host: "db",
   port: 5432,
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
