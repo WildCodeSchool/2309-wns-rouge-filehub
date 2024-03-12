@@ -1,6 +1,6 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
-import LoginPage from "../pages/login";
+import LoginPage from "@/pages/alogin";
 import Login from "@/components/Login";
 import { MockedProvider } from "@apollo/client/testing";
 
