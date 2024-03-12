@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { File } from '../entities/File';
 import jwt from 'jsonwebtoken';
 import Cookies from 'cookies';
+import { formatUrl } from '../helpers/FormatURL';
 
 export class UploadFileController {
   uploadSingleFile = async (req: Request, res: Response) => {
@@ -30,7 +31,7 @@ export class UploadFileController {
         size: size,
         path: path,
         uploadAt: new Date(),
-        url: `http://localhost:3000/downloads/${filename}`,
+        url: `http://localhost:3000/downloads/${formatUrl(filename)}`,
         createdBy: { id: userId },
       });
 
