@@ -46,5 +46,11 @@ export class UserCreateInput {
 export class UserUpdateInput {
   @Field()
   @Matches(/^.{8,50}$/)
-  password?: string;
+  password!: string;
+  @Field()
+  @Matches(/^.{8,50}$/)
+  newPassword1!: string;
+  @Field()
+  @Matches(/^.{8,50}$/)
+  newPassword2!: string;
 }

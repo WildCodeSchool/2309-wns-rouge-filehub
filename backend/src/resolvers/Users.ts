@@ -7,7 +7,7 @@ import {
   Query,
   Resolver,
 } from "type-graphql";
-import { User, UserCreateInput } from "../entities/User";
+import { User, UserCreateInput, UserUpdateInput } from "../entities/User";
 import { validate } from "class-validator";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
@@ -102,6 +102,44 @@ export class UsersResolver {
       }
     } else {
       return null;
+    }
+  }
+
+  @Authorized()
+  @Mutation(() => User)
+  async updatePassword(@Ctx() context: ContextType,
+  @Arg("data") data: UserUpdateInput): Promise<User | null>{
+    if(data.newPassword1 !== data.newPassword2){
+      throw new Error(`Got 2 different new passwords...`);
+    };
+    if(data.newPassword1 === data.password){
+      throw new Error(`Unchanged password...`);
+    };
+    const targetUser = await User.findOne({
+      where:{ id: context.user?.id }
+    });
+    
+    if(targetUser){
+      if(await argon2.verify(targetUser.password, data.password)){
+        console.log("changement de password de : "+ data.password+ " à : "+ data.newPassword1);
+        const hashedPassword = await argon2.hash(data.newPassword1);
+        targetUser.password = hashedPassword;
+      } else {
+        throw new Error(`Invalid password...`);
+      }
+    } else {
+      throw new Error(`User not found`);
+    }
+
+    const errors = await validate(targetUser);
+    if (errors.length === 0) {
+      console.log("saving...");
+      await targetUser.save();
+      return await User.findOne({
+          where:{ id: context.user?.id }
+      });
+    } else {
+      throw new Error(`Error occured : ${JSON.stringify(errors)}`)
     }
   }
 }

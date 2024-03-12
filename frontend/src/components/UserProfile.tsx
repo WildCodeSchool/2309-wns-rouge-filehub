@@ -7,7 +7,10 @@ import KeyIcon from '@mui/icons-material/Key';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import PersonIcon from '@mui/icons-material/Person';
 import { queryMe } from "@/graphql/queryMe";
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
+import { mutationUpdatePassword } from "@/graphql/mutationUpdatePassword";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const UserProfileContent = styled.div`
     display: flex;
@@ -143,12 +146,27 @@ function UserProfile(): React.ReactNode {
     const [passWord, setPassWord] = useState("");
     const [newPassWord, setNewPassWord] = useState("");
     const [secNewPassWord, setSecNewPassWord] = useState("");
+    const [updatePassword] = useMutation(mutationUpdatePassword);
 
-    const changePassword = ()=>{
-        setPassWord("");
-        setNewPassWord("");
-        setSecNewPassWord("");
-        setToggleModif(!toggleModif);
+    const changePassword = async ()=>{
+        try {
+            const { data, errors } = await updatePassword({variables: {
+                data: {
+                    password: passWord,
+                    newPassword1: newPassWord,
+                    newPassword2: secNewPassWord
+                }
+            }});
+            if(data && !errors){
+                toast.success("Password changed");
+                setPassWord("");
+                setNewPassWord("");
+                setSecNewPassWord("");
+                setToggleModif(!toggleModif);
+            }
+        } catch {
+            toast.error("Echec du changement de mdp, vérifiez les informations entrées");
+        }
     }
 
     return (
@@ -211,6 +229,7 @@ function UserProfile(): React.ReactNode {
                     </ButtonSVGContainer>
                 </ButtonConfirm>
             </DivLoadFile>
+            <ToastContainer position="bottom-right" autoClose={3000} />
         </UserProfileContent>
     )
 }
