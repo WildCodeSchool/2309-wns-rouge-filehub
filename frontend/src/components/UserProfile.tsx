@@ -17,6 +17,7 @@ export const UserProfileContent = styled.div`
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    height: 100%;
 `;
 
 export const UserInfo = styled.div`
@@ -25,7 +26,7 @@ export const UserInfo = styled.div`
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    padding: 5vmin 15vmin;
+    padding: 2vmin 15vmin;
     border: 1px solid ${theme.palette.secondary.main};
     border-radius: 5vmin;
     width: 50vmin;
@@ -54,11 +55,12 @@ export const FieldTitle = styled.p`
 
 export const Field = styled.p`
     width: 95%;
-    height: 25px;
+    min-height: 25px;
     margin: 2px 0;
     border: 1px solid ${theme.palette.secondary.main};
     border-radius: 50px;
-    padding: 2vmin 0 2vmin 5%;
+    padding: 2vmin 5% 2vmin 5%;
+    overflow-wrap: anywhere;
 `
 
 export const InputField = styled(TextField)`
@@ -66,7 +68,7 @@ export const InputField = styled(TextField)`
         height: 55px;
         margin: 2px 0;
         border-radius: 55px;
-        padding: 2vmin 0 2vmin 5%;
+        padding: 2vmin 5% 2vmin 5%;
     }
 `
 
