@@ -11,13 +11,40 @@ on:
     - 'backend/**'
 
 jobs:
+  run-linters:
+    name: Run linters
+    runs-on: ubuntu-latest
+    steps:
+      # Récupère le code source du repo GitHub
+      - name: Check out code
+        uses: actions/checkout@v4
+      # Mise en cache des dépendances Node.js pour réutilisation
+      - name: Cache Node modules
+        uses: actions/cache@v2
+        with:
+          path: backend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('backend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install dependencies
+        run: cd backend && npm install
+      - name: Run linters
+        run: cd backend && npm run lint
+
   test-back:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+      - name: Cache Node modules
+        uses: actions/cache@v2
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
       - name: Install dependencies and run tests
-        run: cd frontend && npm install && npm test
+        run: cd backend && npm install && npm test
 
   build-and-push-docker:
     needs: test-back
