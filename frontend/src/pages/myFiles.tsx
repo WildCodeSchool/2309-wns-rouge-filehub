@@ -11,7 +11,7 @@ import { MainContent } from ".";
 const MyFiles: React.FC = () => {
     const router = useRouter();
 
-    const { loading: meLoading, error: meError, data: meData } = useQuery(queryMe);
+    const { loading: meLoading, error: meError, data: meData } = useQuery(queryMe, {fetchPolicy: "no-cache"});
     const userId = meData?.me?.id;
 
     const { loading, error, data } = useQuery(getUserFiles, {

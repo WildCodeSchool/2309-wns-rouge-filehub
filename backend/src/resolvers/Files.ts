@@ -10,7 +10,6 @@ import {
 import { File } from "../entities/File";
 import { ContextType } from "../auth";
 import fs from "fs";
-import path from "path";
 
 @Resolver(File)
 export class FilesResolver {
@@ -36,26 +35,20 @@ export class FilesResolver {
 
   @Authorized()
   @Mutation(() => File, { nullable: true })
-  async deleteFile(@Arg("id", () => ID) id: number): Promise<File | null> {
+  async deleteFile(@Arg('id', () => ID) id: number): Promise<File | null> {
     const file = await File.findOne({
       where: { id: id },
     });
     if (file) {
-      // Supprimer le fichier côté serveur
-      const filePath = path.join(__dirname, "../Files", file.uniqueName);
-      try {
-        fs.unlinkSync(filePath);
-        console.log(
-          `Le fichier ${file.uniqueName} a été supprimé avec succès du côté serveur.`
-        );
-      } catch (err) {
-        console.error(
-          `Une erreur s'est produite lors de la suppression du fichier ${file.uniqueName} côté serveur : `,
-          err
-        );
-      }
-      // Supprimer le fichier de la base de données
       await file.remove();
+      file.id = id;
+      try {
+        await fs.promises.unlink(file.path);
+      } catch (err) {
+        throw new Error(`An error occured on the actual file deletion: ${err}`);
+      }
+    } else {
+      throw new Error(`File not found in database`);
     }
     return file;
   }
