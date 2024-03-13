@@ -59,7 +59,7 @@ const Header = (): React.ReactNode => {
 
     const doSignOut = async()=>{
       const { data } = await signOut();
-      router.replace("/Login");
+      router.replace("/login");
     }
 
     return (
