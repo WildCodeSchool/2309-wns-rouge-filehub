@@ -42,3 +42,15 @@ npm run dev
 #### Lauching backend unitary test timestamp with jest :
 
 - Open terminal, position yourself in the 'tests' folder and run the command: npx jest timestamp.spec.ts
+
+#### Contributing
+
+Before pushing a pull request, always ensure that you've checked for linting and test to maintain code quality. 
+
+```
+npm run lint
+```
+
+```
+npm test
+```
