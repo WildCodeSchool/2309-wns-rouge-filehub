@@ -6,13 +6,7 @@ import styled from "styled-components";
 import { useQuery } from "@apollo/client";
 import { queryMe } from "@/graphql/queryMe";
 import { getUserFiles } from "@/graphql/getUserFiles";
-
-const MainContent = styled.div`
-  position: fixed;
-  top: 66px;
-  width: 100%;
-  min-height: calc(100vh - 66px);
-`
+import { MainContent } from ".";
 
 const MyFiles: React.FC = () => {
     const router = useRouter();
@@ -32,12 +26,10 @@ const MyFiles: React.FC = () => {
         <>
             <Header />
             <MainContent>
-                <div style={{ marginTop: '70px' }}>
-                    {loading ? <p>Loading...</p> :
-                        error ? <p>Error: {error.message}</p> :
-                            <FileListItem files={data.filesCurrentUser} />
-                    }
-                </div>
+                {loading ? <p>Loading...</p> :
+                    error ? <p>Error: {error.message}</p> :
+                        <FileListItem files={data.filesCurrentUser} />
+                }
             </MainContent>
         </>
     );
