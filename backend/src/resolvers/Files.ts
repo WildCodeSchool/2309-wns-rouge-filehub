@@ -15,6 +15,7 @@ import {
 } from '../entities/File';
 import { validate } from 'class-validator';
 import { ContextType } from '../auth';
+import fs from 'fs';
 
 @Resolver(File)
 export class FilesResolver {
@@ -102,6 +103,13 @@ export class FilesResolver {
     if (file) {
       await file.remove();
       file.id = id;
+      try {
+        await fs.promises.unlink(file.path);
+      } catch (err) {
+        throw new Error(`An error occured: ${err}`);
+      }
+    } else {
+      throw new Error(`File not found in database`);
     }
     return file;
   }
