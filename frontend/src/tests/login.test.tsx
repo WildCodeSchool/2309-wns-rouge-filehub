@@ -1,9 +1,8 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
-
+import LoginPage from "@/pages/login";
 import Login from "@/components/Login";
 import { MockedProvider } from "@apollo/client/testing";
-import LoginPage from "@/pages/Login";
 
 jest.mock("next/router", () => require("next-router-mock"));
 

@@ -7,14 +7,14 @@ export const dataSourceOptions: PostgresConnectionOptions = {
   type: "postgres",
   entities: [File, User],
   synchronize: true,
-  logging: false,
+  logging: true,
+  host: process.env.DB_HOST ?? "db",
+  port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432,
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 };
 
 export const dataSource = new DataSource({
   ...dataSourceOptions,
-  host: "db",
-  port: 5432,
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
 });
