@@ -1,8 +1,8 @@
-import { Request, Response } from 'express';
-import { File } from '../entities/File';
-import jwt from 'jsonwebtoken';
-import Cookies from 'cookies';
-import { formatUrl } from '../helpers/FormatURL';
+import { Request, Response } from "express";
+import { File } from "../entities/File";
+import jwt from "jsonwebtoken";
+import Cookies from "cookies";
+import { formatUrl } from "../helpers/FormatUrl";
 
 export class UploadFileController {
   uploadSingleFile = async (req: Request, res: Response) => {
@@ -10,13 +10,13 @@ export class UploadFileController {
       let userId = 0;
       const cookies = new Cookies(req, res);
       if (cookies) {
-        const token = cookies.get('token');
+        const token = cookies.get("token");
         if (token) {
           const payload = jwt.verify(
             token,
-            process.env.JWT_SECRET || 'supersecret'
+            process.env.JWT_SECRET || "supersecret"
           );
-          if (typeof payload === 'object' && 'userId' in payload) {
+          if (typeof payload === "object" && "userId" in payload) {
             userId = payload.userId;
           }
         }
@@ -39,8 +39,8 @@ export class UploadFileController {
 
       res.send(newFile);
     } catch (error) {
-      console.error('Error uploading file:', error);
-      res.status(500).send('An error occurred while uploading the file');
+      console.error("Error uploading file:", error);
+      res.status(500).send("An error occurred while uploading the file");
     }
   };
 }
