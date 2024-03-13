@@ -13,7 +13,7 @@ import { UploadFileController } from './controllers/UploadFile';
 import { DownloadFileController } from './controllers/DownloadFile';
 import { getSchema } from './schema';
 
-async function start() {
+asynca function start() {
   await dataSource.initialize();
 
   const schema = await getSchema();
