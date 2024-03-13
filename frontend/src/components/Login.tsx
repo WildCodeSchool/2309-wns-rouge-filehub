@@ -81,7 +81,7 @@ export default function Login(): React.ReactNode {
   const [signin] = useMutation(mutationSignin);
   const [signup] = useMutation(mutationSignup);
 
-  consta handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (activeTab === 0) {
       if (signinEmail && signinPassword) {
