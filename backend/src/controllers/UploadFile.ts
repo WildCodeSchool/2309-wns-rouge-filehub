@@ -14,7 +14,7 @@ export class UploadFileController {
         if (token) {
           const payload = jwt.verify(
             token,
-            process.env.JWT_SECRET || "supersecret"
+            process.env.JWT_SECRET || "supersecret",
           );
           if (typeof payload === "object" && "userId" in payload) {
             userId = payload.userId;

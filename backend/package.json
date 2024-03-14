@@ -6,7 +6,10 @@
   "scripts": {
     "test": "docker stop pgtesting ; docker run --rm --name pgtesting -p 5571:5432 -e POSTGRES_PASSWORD=pgpassword -d postgres && DB_HOST=127.0.0.1 DB_PORT=5571 DB_USERNAME=postgres DB_PASSWORD=pgpassword DB_NAME=postgres jest",
     "start": "tsnd --poll --respawn --transpile-only ./src/index.ts",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "prettier": "prettier --write .",
+    "type": "tsc --noEmit",
+    "check": "npm run lint && npm run prettier && npm run type && npm run test"
   },
   "author": "",
   "license": "ISC",
@@ -42,6 +45,8 @@
     "@typescript-eslint/eslint-plugin": "^6.20.0",
     "@typescript-eslint/parser": "^6.20.0",
     "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "3.2.5",
     "ts-node-dev": "^2.0.0"
   }
 }

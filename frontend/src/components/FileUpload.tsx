@@ -1,7 +1,7 @@
-import { Button } from '@mui/material';
-import { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { theme } from '@/styles/theme';
+import { Button } from "@mui/material";
+import { useEffect, useState } from "react";
+import styled from "styled-components";
+import { theme } from "@/styles/theme";
 import {
   Label,
   InputField,
@@ -10,13 +10,13 @@ import {
   Container,
   Title,
   MenuIcon,
-} from './UserProfile';
-import LinkIcon from '@mui/icons-material/Link';
-import FileOpenIcon from '@mui/icons-material/FileOpen';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import AddIcon from '@mui/icons-material/Add';
-import axios from 'axios';
-import { dataBaseFile } from './FileUploaded';
+} from "./UserProfile";
+import LinkIcon from "@mui/icons-material/Link";
+import FileOpenIcon from "@mui/icons-material/FileOpen";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import AddIcon from "@mui/icons-material/Add";
+import axios from "axios";
+import { dataBaseFile } from "./FileUploaded";
 
 interface fileUploadProps {
   setFileUploaded: (fun: dataBaseFile | undefined) => void;
@@ -74,7 +74,7 @@ export const ThrowFileButton = styled(Button)`
 
 function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
   const [file, setFile] = useState<File>();
-  const [fileName, setFileName] = useState('');
+  const [fileName, setFileName] = useState("");
 
   const setFileInfo = (e: React.ChangeEvent<HTMLInputElement>) => {
     const fileInput = e.target;
@@ -88,23 +88,23 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
     if (file) {
       setFileName(file.name);
     } else {
-      setFileName('');
+      setFileName("");
     }
   }, [file]);
 
   const handleUpload = async () => {
     if (!file) {
-      console.log('Aucun fichier sélectionné.');
+      console.log("Aucun fichier sélectionné.");
       return;
     }
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
     try {
       await axios
-        .post('http://localhost:5001/upload', formData, {
+        .post("http://localhost:5001/upload", formData, {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
           withCredentials: true,
         })
@@ -113,7 +113,7 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
           setFileUploaded(res.data);
         });
     } catch (error) {
-      console.error('Erreur lors du chargement du fichier :', error);
+      console.error("Erreur lors du chargement du fichier :", error);
     }
   };
 
@@ -121,29 +121,29 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
     <FileUploadContent>
       <FileInfo>
         <MenuIcon>
-          <AddIcon color='primary' fontSize='large' />
+          <AddIcon color="primary" fontSize="large" />
         </MenuIcon>
         <Title>Ajouter un fichier</Title>
         <Container>
           <FileButton
-            variant='contained'
+            variant="contained"
             sx={
               file === undefined
                 ? { background: theme.palette.secondary.main }
                 : {
                     background:
-                      'linear-gradient(90deg, rgba(250,209,38,1) 0%, rgba(255,84,79,1) 75%, rgba(255,84,79,1) 100%)',
+                      "linear-gradient(90deg, rgba(250,209,38,1) 0%, rgba(255,84,79,1) 75%, rgba(255,84,79,1) 100%)",
                   }
             }
           >
             <LabelButton>
               Déposer un fichier
               <ButtonSVGContainer>
-                <FileOpenIcon color='primary' />
+                <FileOpenIcon color="primary" />
               </ButtonSVGContainer>
               <input
                 hidden
-                type='file'
+                type="file"
                 onChange={(e) => {
                   setFileInfo(e);
                 }}
@@ -156,16 +156,16 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
                 setFile(undefined);
               }}
             >
-              <HighlightOffIcon color='primary' />
+              <HighlightOffIcon color="primary" />
             </ThrowFileButton>
           )}
         </Container>
         <Container>
           <Label>
             <InputField
-              label='Nom du fichier'
-              variant='outlined'
-              type='text'
+              label="Nom du fichier"
+              variant="outlined"
+              type="text"
               value={fileName}
               onChange={(e) => {
                 setFileName(e.target.value);
@@ -177,7 +177,7 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
           <ButtonConfirm onClick={handleUpload}>
             Obtenir un lien
             <ButtonSVGContainer>
-              <LinkIcon color='primary' />
+              <LinkIcon color="primary" />
             </ButtonSVGContainer>
           </ButtonConfirm>
         </Container>

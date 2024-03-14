@@ -49,7 +49,7 @@ export class UsersResolver {
 
   @Mutation(() => User)
   async signup(
-    @Arg("data", () => UserCreateInput) data: UserCreateInput
+    @Arg("data", () => UserCreateInput) data: UserCreateInput,
   ): Promise<User> {
     const errors = await validate(data);
     if (errors.length !== 0) {
@@ -76,7 +76,7 @@ export class UsersResolver {
   async signin(
     @Ctx() context: { req: any; res: any },
     @Arg("email") email: string,
-    @Arg("password") password: string
+    @Arg("password") password: string,
   ): Promise<User | null> {
     const existingUser = await User.findOneBy({ email });
     if (existingUser) {
@@ -86,7 +86,7 @@ export class UsersResolver {
             exp: Math.floor(Date.now() / 1000) + 60 * 60 * 2,
             userId: existingUser.id,
           },
-          process.env.JWT_SECRET || "supersecret"
+          process.env.JWT_SECRET || "supersecret",
         );
 
         const cookies = new Cookies(context.req, context.res);
@@ -107,21 +107,28 @@ export class UsersResolver {
 
   @Authorized()
   @Mutation(() => User)
-  async updatePassword(@Ctx() context: ContextType,
-  @Arg("data") data: UserUpdateInput): Promise<User | null>{
-    if(data.newPassword1 !== data.newPassword2){
+  async updatePassword(
+    @Ctx() context: ContextType,
+    @Arg("data") data: UserUpdateInput,
+  ): Promise<User | null> {
+    if (data.newPassword1 !== data.newPassword2) {
       throw new Error(`Got 2 different new passwords...`);
-    };
-    if(data.newPassword1 === data.password){
+    }
+    if (data.newPassword1 === data.password) {
       throw new Error(`Unchanged password...`);
-    };
+    }
     const targetUser = await User.findOne({
-      where:{ id: context.user?.id }
+      where: { id: context.user?.id },
     });
-    
-    if(targetUser){
-      if(await argon2.verify(targetUser.password, data.password)){
-        console.log("Changement du mot de passe de : "+ data.password+ " à : "+ data.newPassword1);
+
+    if (targetUser) {
+      if (await argon2.verify(targetUser.password, data.password)) {
+        console.log(
+          "Changement du mot de passe de : " +
+            data.password +
+            " à : " +
+            data.newPassword1,
+        );
         const hashedPassword = await argon2.hash(data.newPassword1);
         targetUser.password = hashedPassword;
       } else {
@@ -136,10 +143,10 @@ export class UsersResolver {
       console.log("saving...");
       await targetUser.save();
       return await User.findOne({
-          where:{ id: context.user?.id }
+        where: { id: context.user?.id },
       });
     } else {
-      throw new Error(`Error occured : ${JSON.stringify(errors)}`)
+      throw new Error(`Error occured : ${JSON.stringify(errors)}`);
     }
   }
 }

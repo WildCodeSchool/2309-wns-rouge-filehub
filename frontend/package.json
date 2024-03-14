@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest"
+    "prettier": "prettier --write .",
+    "type": "tsc --noEmit",
+    "test": "jest",
+    "check": "npm run lint && npm run prettier && npm run type && npm run test"
   },
   "dependencies": {
     "@apollo/client": "^3.8.6",
@@ -38,6 +41,8 @@
     "typescript": "5.2.2"
   },
   "devDependencies": {
-    "next-router-mock": "^0.9.12"
+    "eslint-config-prettier": "^9.1.0",
+    "next-router-mock": "^0.9.12",
+    "prettier": "3.2.5"
   }
 }
