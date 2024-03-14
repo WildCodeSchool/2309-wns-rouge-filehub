@@ -88,6 +88,6 @@ export class FileCreateInput {
 
 @InputType()
 export class FileUpdateInput {
-  @Field()
+  @Field({nullable: true})
   name!: string;
 }

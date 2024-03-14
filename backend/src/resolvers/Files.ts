@@ -7,9 +7,10 @@ import {
   Query,
   Resolver,
 } from "type-graphql";
-import { File } from "../entities/File";
+import { File, FileUpdateInput } from "../entities/File";
 import { ContextType } from "../auth";
 import fs from "fs";
+import { validate } from "class-validator";
 
 @Resolver(File)
 export class FilesResolver {
@@ -30,6 +31,28 @@ export class FilesResolver {
     const file = await File.findOne({
       where: { uniqueName },
     });
+    return file;
+  }
+
+  // ne change que l'originalName dans la bdd, ne change pas le uniqueName du fichier
+  @Authorized()
+  @Mutation(() => File, { nullable: true })
+  async updateFile(
+    @Arg('id', () => ID) id: number,
+    @Arg('data') data: FileUpdateInput
+  ): Promise<File | null> {
+    const file = await File.findOne({
+      where: { id: id },
+    });
+    if (file) {
+      file.originalName = data.name;
+      const errors = await validate(file);
+      if (errors.length === 0) {
+        await file.save();
+      } else {
+        throw new Error(`Error occured : ${JSON.stringify(errors)}`);
+      }
+    }
     return file;
   }
 
@@ -76,26 +99,5 @@ export class FilesResolver {
   //     },
   //   });
   //   return files;
-  // }
-
-  // @Authorized()
-  // @Mutation(() => File, { nullable: true })
-  // async updateFile(
-  //   @Arg('id', () => ID) id: number,
-  //   @Arg('data') data: FileUpdateInput
-  // ): Promise<File | null> {
-  //   const file = await File.findOne({
-  //     where: { id: id },
-  //   });
-  //   if (file) {
-  //     Object.assign(file, data);
-  //     const errors = await validate(file);
-  //     if (errors.length === 0) {
-  //       await file.save();
-  //     } else {
-  //       throw new Error(`Error occured : ${JSON.stringify(errors)}`);
-  //     }
-  //   }
-  //   return file;
   // }
 }

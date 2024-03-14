@@ -54,12 +54,12 @@ export const FieldTitle = styled.p`
 `
 
 export const Field = styled.p`
-    width: 95%;
+    width: 90%;
     min-height: 25px;
     margin: 2px 0;
     border: 1px solid ${theme.palette.secondary.main};
     border-radius: 50px;
-    padding: 2vmin 5% 2vmin 5%;
+    padding: 5% 5% 5% 5%;
     overflow-wrap: anywhere;
 `
 
