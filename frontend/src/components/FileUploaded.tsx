@@ -3,13 +3,11 @@ import { useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
 import {
-  Label,
   ButtonSVGContainer,
   ButtonConfirm,
   Container,
   Title,
   Field,
-  FieldTitle,
   MenuIcon,
 } from "./UserProfile";
 import { FileUploadContent, FileInfo } from "./FileUpload";
@@ -63,17 +61,9 @@ function FileUploaded({
         <MenuIcon>
           <DoneIcon color="primary" fontSize="large" />
         </MenuIcon>
-        <Title>Téléchargement terminé!</Title>
+        <Title>Téléchargement terminé !</Title>
         <Container>
-          <Label>
-            <FieldTitle>Votre lien :</FieldTitle>
-            <Field
-              onClick={() => handleCopy(file.path)}
-              style={{ cursor: "pointer" }}
-            >
-              {file.path}
-            </Field>
-          </Label>
+          <Field style={{ padding: "22px" }}>{file.url}</Field>
         </Container>
         <Container>
           <ButtonCopy

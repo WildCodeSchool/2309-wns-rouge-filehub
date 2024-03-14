@@ -99,19 +99,22 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
     }
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", file, encodeURIComponent(fileName));
+
     try {
-      await axios
-        .post("http://localhost:5001/upload", formData, {
+      const response = await axios.post(
+        "http://localhost:5001/upload",
+        formData,
+        {
           headers: {
             "Content-Type": "multipart/form-data",
           },
           withCredentials: true,
-        })
-        .then((res) => {
-          console.log(res.data);
-          setFileUploaded(res.data);
-        });
+        }
+      );
+
+      console.log(response.data);
+      setFileUploaded(response.data);
     } catch (error) {
       console.error("Erreur lors du chargement du fichier :", error);
     }
