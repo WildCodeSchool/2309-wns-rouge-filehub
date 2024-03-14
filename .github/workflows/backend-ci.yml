@@ -31,9 +31,9 @@ jobs:
       - name: Run linters
         run: cd backend && npm run lint
       - name: Run Prettier
-        run: cd frontend && npm run prettier
+        run: cd backend && npm run prettier
       - name: Run Type checking
-        run: cd frontend && npm run type
+        run: cd backend && npm run type
 
   test-back:
     needs: run-checks
