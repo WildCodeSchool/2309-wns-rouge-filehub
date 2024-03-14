@@ -121,7 +121,7 @@ export class UsersResolver {
     
     if(targetUser){
       if(await argon2.verify(targetUser.password, data.password)){
-        console.log("changement de password de : "+ data.password+ " à : "+ data.newPassword1);
+        console.log("Changement de password de : "+ data.password+ " à : "+ data.newPassword1);
         const hashedPassword = await argon2.hash(data.newPassword1);
         targetUser.password = hashedPassword;
       } else {
