@@ -49,7 +49,8 @@ async function start() {
       file: Express.Multer.File,
       cb: (error: Error | null, filename: string) => void,
     ) => {
-      cb(null, Date.now() + file.originalname);
+      const originalName = decodeURIComponent(file.originalname);
+      cb(null, Date.now() + originalName);
     },
   });
 
@@ -70,7 +71,7 @@ async function start() {
   app.post(
     "/upload",
     upload.single("file"),
-    uploadFileController.uploadSingleFile,
+    uploadFileController.uploadSingleFile
   );
 
   app.get("/download", function (req, res) {
