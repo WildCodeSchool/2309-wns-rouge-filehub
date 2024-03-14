@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, FormEvent, useState } from "react";
 import axios from "axios";
 
 export function UploadFile() {
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const handleFileChange = (event) => {
-    setSelectedFile(event.target.files[0]);
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      setSelectedFile(event.target.files[0]);
+    }
   };
-  const handleUpload = async (event) => {
+  const handleUpload = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!selectedFile) {
       console.log("Aucun fichier sélectionné.");

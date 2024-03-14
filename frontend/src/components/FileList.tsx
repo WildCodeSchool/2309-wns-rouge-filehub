@@ -34,7 +34,7 @@ const TableContainerWrapper = styled.div`
 
 const StyledTableCell = styled(TableCell)``;
 
-const StyledButtonIcon = styled(IconButton)`
+const StyledButtonIcon = styled(IconButton)<{ href?: string }>`
   background-color: transparent !important;
   color: orange !important;
 `;
@@ -139,10 +139,7 @@ const FileListItem = ({ files }: { files: FileData[] }) => {
                     <TableCell>{formatDate(file.uploadAt)}</TableCell>
                     <TableCell>{file.originalName}</TableCell>
                     <TableCell>
-                      {formatDate(
-                        new Date(file.uploadAt).getTime() +
-                          90 * 24 * 60 * 60 * 1000,
-                      )}
+                    {formatDate((new Date(file.uploadAt).getTime() + 90 * 24 * 60 * 60 * 1000).toString())}
                     </TableCell>
                     <TableCell style={{ textAlign: "center" }}>
                       <StyledButtonIcon href={file.url}>
