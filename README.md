@@ -52,5 +52,19 @@ npm run lint
 ```
 
 ```
-npm test
+npm run prettier
+```
+
+```
+npm run type
+```
+
+```
+npm run test
+```
+
+or
+
+```
+npm run check
 ```

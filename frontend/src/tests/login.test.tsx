@@ -11,7 +11,7 @@ describe("login page", () => {
     render(
       <MockedProvider mocks={[]} addTypename={false}>
         <LoginPage />
-      </MockedProvider>
+      </MockedProvider>,
     );
     expect(screen.getByText("Se connecter")).toBeInTheDocument();
     expect(screen.getByText("S'inscrire")).toBeInTheDocument();
@@ -23,7 +23,7 @@ describe("Login component", () => {
     render(
       <MockedProvider mocks={[]} addTypename={false}>
         <Login />
-      </MockedProvider>
+      </MockedProvider>,
     );
     fireEvent.change(screen.getByLabelText("Email"), {
       target: { value: "test@gmail.com" },

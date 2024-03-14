@@ -15,6 +15,5 @@ export const MainContent = styled.div`
 `;
 
 export default function Home(): React.ReactNode {
-
   return <FileUploadPage />;
 }

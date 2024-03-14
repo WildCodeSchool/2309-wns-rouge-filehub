@@ -17,7 +17,7 @@ const mocks = [
       data: {
         me: {
           id: "123",
-          email: "test@test.test"
+          email: "test@test.test",
         },
       },
     },
@@ -55,12 +55,14 @@ const mocks = [
 describe("MyFiles page", () => {
   it("renders the page correctly", async () => {
     render(
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <MyFiles />
-        </MockedProvider>
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <MyFiles />
+      </MockedProvider>,
     );
 
-    await waitFor(() => expect(screen.getByText("Fichier1.txt")).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText("Fichier1.txt")).toBeInTheDocument(),
+    );
     expect(screen.getByText("Fichier2.txt")).toBeInTheDocument();
   });
 });

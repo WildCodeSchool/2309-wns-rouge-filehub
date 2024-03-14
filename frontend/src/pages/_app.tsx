@@ -35,9 +35,9 @@ function Auth(props: { children: ReactNode }) {
   const authVerif = async () => {
     try {
       await refetch();
-      if(publicPages.includes(router.pathname) === false){
+      if (publicPages.includes(router.pathname) === false) {
         //page privée
-        if(!data && !loading){
+        if (!data && !loading) {
           //pas connecté
           router.replace("/login");
         }
@@ -66,17 +66,17 @@ function Auth(props: { children: ReactNode }) {
 
 function App({ Component, pageProps }: AppProps): React.ReactNode {
   return (
-      <ApolloProvider client={client}>
-        <ThemeProvider theme={theme}>
-          <Auth>
-            <Head>
-              <title>FileHub</title>
-              <link rel="icon" href="/favicon.png" />
-            </Head>
-            <Component {...pageProps} />
-          </Auth>
-        </ThemeProvider>
-      </ApolloProvider>
+    <ApolloProvider client={client}>
+      <ThemeProvider theme={theme}>
+        <Auth>
+          <Head>
+            <title>FileHub</title>
+            <link rel="icon" href="/favicon.png" />
+          </Head>
+          <Component {...pageProps} />
+        </Auth>
+      </ThemeProvider>
+    </ApolloProvider>
   );
 }
 

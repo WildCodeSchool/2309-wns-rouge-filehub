@@ -11,8 +11,8 @@ on:
     - 'frontend/**'
 
 jobs:
-  run-linters:
-    name: Run linters
+  run-checks:
+    name: Run checks
     runs-on: ubuntu-latest
     steps:
       # Récupère le code source du repo GitHub
@@ -30,9 +30,13 @@ jobs:
         run: cd frontend && npm install
       - name: Run linters
         run: cd frontend && npm run lint
+      - name: Run Prettier
+        run: cd frontend && npm run prettier
+      - name: Run Type checking
+        run: cd frontend && npm run type
 
   test-front:
-    needs: run-linters
+    needs: run-checks
     runs-on: ubuntu-latest
     steps:
       - name: Check out code

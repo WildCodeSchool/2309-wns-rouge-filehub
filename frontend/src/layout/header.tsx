@@ -1,13 +1,13 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 import { LogoStyled } from "@/components/LogoComponent";
 import { useRouter } from "next/router";
-import PersonIcon from '@mui/icons-material/Person';
-import Inventory2Icon from '@mui/icons-material/Inventory2';
-import LogoutIcon from '@mui/icons-material/Logout';
-import { mutationSignout } from '@/graphql/mutationSignout';
-import { useMutation, useQuery } from '@apollo/client';
-import { queryMe } from '@/graphql/queryMe';
+import PersonIcon from "@mui/icons-material/Person";
+import Inventory2Icon from "@mui/icons-material/Inventory2";
+import LogoutIcon from "@mui/icons-material/Logout";
+import { mutationSignout } from "@/graphql/mutationSignout";
+import { useMutation, useQuery } from "@apollo/client";
+import { queryMe } from "@/graphql/queryMe";
 
 const HeaderContainer = styled.header`
   border-bottom: 1px solid #ccc;
@@ -42,46 +42,46 @@ const StyledLink = styled.div`
   cursor: pointer;
 
   &:hover {
-    color: #000; 
+    color: #000;
   }
 
   svg {
-    font-size: 15px; 
-    margin-right: 5px; 
+    font-size: 15px;
+    margin-right: 5px;
   }
 `;
 
 const Header = (): React.ReactNode => {
-    const {data: me} = useQuery(queryMe, {fetchPolicy: "no-cache"});
-    const router = useRouter();
+  const { data: me } = useQuery(queryMe, { fetchPolicy: "no-cache" });
+  const router = useRouter();
 
-    const [signOut] = useMutation(mutationSignout);
+  const [signOut] = useMutation(mutationSignout);
 
-    const doSignOut = async()=>{
-      const { data } = await signOut();
-      router.replace("/login");
-    }
+  const doSignOut = async () => {
+    const { data } = await signOut();
+    router.replace("/login");
+  };
 
-    return (
-        <HeaderContainer>
-            <HeaderContent>
-                <LogoStyled />
-                <LinksContainer>
-                    <StyledLink onClick={() => router.push("/myFiles")}>
-                        <Inventory2Icon />
-                        Mes Fichiers
-                    </StyledLink>
-                    <StyledLink onClick={() => router.push("/userProfilePage")}>
-                        <PersonIcon />
-                        {me && me.me.email}
-                    </StyledLink>
-                    <StyledLink onClick={doSignOut}>
-                        <LogoutIcon />
-                    </StyledLink>
-                </LinksContainer>
-            </HeaderContent>
-        </HeaderContainer>
-    );
-}
+  return (
+    <HeaderContainer>
+      <HeaderContent>
+        <LogoStyled />
+        <LinksContainer>
+          <StyledLink onClick={() => router.push("/myFiles")}>
+            <Inventory2Icon />
+            Mes Fichiers
+          </StyledLink>
+          <StyledLink onClick={() => router.push("/userProfilePage")}>
+            <PersonIcon />
+            {me && me.me.email}
+          </StyledLink>
+          <StyledLink onClick={doSignOut}>
+            <LogoutIcon />
+          </StyledLink>
+        </LinksContainer>
+      </HeaderContent>
+    </HeaderContainer>
+  );
+};
 
 export default Header;

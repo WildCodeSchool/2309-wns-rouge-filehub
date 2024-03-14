@@ -17,7 +17,7 @@ export function mockContext(token?: string) {
         setHeader: (key: string, cookieValue: string | string[]) => {
           if (key === "Set-Cookie") {
             const parsedValue = parse(
-              Array.isArray(cookieValue) ? cookieValue[0] : cookieValue
+              Array.isArray(cookieValue) ? cookieValue[0] : cookieValue,
             );
             if (parsedValue.token) {
               value.token = parsedValue.token;

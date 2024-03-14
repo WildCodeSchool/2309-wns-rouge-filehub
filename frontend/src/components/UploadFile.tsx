@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
 
 export function UploadFile() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -10,21 +10,21 @@ export function UploadFile() {
   const handleUpload = async (event) => {
     event.preventDefault();
     if (!selectedFile) {
-      console.log('Aucun fichier sélectionné.');
+      console.log("Aucun fichier sélectionné.");
       return;
     }
     const formData = new FormData();
-    formData.append('file', selectedFile);
+    formData.append("file", selectedFile);
     try {
-      await axios.post('http://localhost:5001/upload', formData, {
+      await axios.post("http://localhost:5001/upload", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
         withCredentials: true,
       });
-      console.log('Fichier chargé avec succès.');
+      console.log("Fichier chargé avec succès.");
     } catch (error) {
-      console.error('Erreur lors du chargement du fichier :', error);
+      console.error("Erreur lors du chargement du fichier :", error);
     }
   };
 
@@ -32,8 +32,8 @@ export function UploadFile() {
     <>
       <h1>Upload files</h1>
       <form onSubmit={handleUpload}>
-        <input type='file' name='image' onChange={handleFileChange} />
-        <button type='submit'>Upload</button>
+        <input type="file" name="image" onChange={handleFileChange} />
+        <button type="submit">Upload</button>
       </form>
     </>
   );

@@ -1,4 +1,4 @@
-import SvgIcon, {SvgIconProps} from "@mui/material/SvgIcon";
+import SvgIcon, { SvgIconProps } from "@mui/material/SvgIcon";
 
 export const FilehubIcon = (props: SvgIconProps) => (
   <SvgIcon {...props}>
