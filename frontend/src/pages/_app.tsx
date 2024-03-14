@@ -37,14 +37,14 @@ function Auth(props: { children: ReactNode }) {
       await refetch();
       if(publicPages.includes(router.pathname) === false){
         //page privée
-        if(!data){
+        if(!data && !loading){
           //pas connecté
-          router.replace("/Login");
+          router.replace("/login");
         }
       }
     } catch (e) {
-      if (router.pathname !== "/Login" && error) {
-        router.replace("/Login");
+      if (router.pathname !== "/login" && error) {
+        router.replace("/login");
       }
     }
   };
