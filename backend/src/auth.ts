@@ -27,7 +27,7 @@ export async function getUserFromReq(req: any, res: any): Promise<User | null> {
       if (user !== null) {
         return Object.assign(user, { hashedPassword: undefined });
       } else {
-        console.error("user not found");
+        console.error("User not found");
         return null;
       }
     } else {

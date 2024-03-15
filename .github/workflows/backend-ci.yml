@@ -65,6 +65,17 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name : Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
@@ -72,4 +83,4 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_REPO_BACKEND }}:latest
-            ${{ secrets.DOCKERHUB_REPO_BACKEND }}:${{ github.ref_name }}-${{ github.sha }} 
+            ${{ secrets.DOCKERHUB_REPO_BACKEND }}:${{ steps.tag_version.outputs.new_tag }} 
