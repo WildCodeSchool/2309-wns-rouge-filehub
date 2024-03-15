@@ -32,7 +32,7 @@ export class UploadFileController {
         path: decodeURIComponent(path),
         uploadAt: new Date(),
         url: `http://localhost:3000/downloads/${formatUrl(
-          decodeURIComponent(filename)
+          decodeURIComponent(filename),
         )}`,
         createdBy: { id: userId },
       });

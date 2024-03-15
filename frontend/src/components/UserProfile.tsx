@@ -4,13 +4,13 @@ import styled from "styled-components";
 import { theme } from "@/styles/theme";
 import { useRouter } from "next/router";
 import KeyIcon from "@mui/icons-material/Key";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
 import PersonIcon from "@mui/icons-material/Person";
 import { queryMe } from "@/graphql/queryMe";
 import { useMutation, useQuery } from "@apollo/client";
 import { mutationUpdatePassword } from "@/graphql/mutationUpdatePassword";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import UploadNewFile from "./UploadNewFile";
 
 export const UserProfileContent = styled.div`
   display: flex;
@@ -249,18 +249,7 @@ function UserProfile(): React.ReactNode {
           )}
         </Container>
       </UserInfo>
-      <DivLoadFile>
-        <ButtonConfirm
-          onClick={() => {
-            router.push("/fileUploadPage");
-          }}
-        >
-          Charger un nouveau fichier
-          <ButtonSVGContainer>
-            <FileUploadIcon color="primary" />
-          </ButtonSVGContainer>
-        </ButtonConfirm>
-      </DivLoadFile>
+      <UploadNewFile />
       <ToastContainer position="bottom-right" autoClose={3000} />
     </UserProfileContent>
   );
