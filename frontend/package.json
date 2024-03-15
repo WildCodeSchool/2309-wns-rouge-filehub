@@ -36,6 +36,7 @@
     "react-dom": "18.2.0",
     "react-flip-toolkit": "^7.1.0",
     "react-toastify": "^10.0.4",
+    "react-virtuoso": "^4.7.2",
     "styled-components": "^6.1.8",
     "ts-node": "^10.9.2",
     "typescript": "5.2.2"

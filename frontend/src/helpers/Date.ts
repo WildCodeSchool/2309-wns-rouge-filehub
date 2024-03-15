@@ -1,4 +1,4 @@
-export const FormatTimestampDate = (timestamp: number): string => {
+export const formatTimestampDate = (timestamp: string): string => {
   // Créer un objet Date à partir du timestamp
   const date = new Date(timestamp);
 
