@@ -9,7 +9,7 @@ import { mutationSignout } from "@/graphql/mutationSignout";
 import { useMutation, useQuery } from "@apollo/client";
 import { queryMe } from "@/graphql/queryMe";
 
-const HeaderContainer = styled.header`
+conste HeaderContainer = styled.header`
   border-bottom: 1px solid #ccc;
   padding-bottom: 10px;
   width: 100%;
