@@ -1,0 +1,86 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [ dev, main ]
+    paths:
+    - 'frontend/**'
+  pull_request:
+    branches: [ dev, main ]
+    paths:
+    - 'frontend/**'
+
+jobs:
+  run-checks:
+    name: Run checks
+    runs-on: ubuntu-latest
+    steps:
+      # Récupère le code source du repo GitHub
+      - name: Check out code
+        uses: actions/checkout@v4
+      # Mise en cache des dépendances Node.js pour réutilisation
+      - name: Cache Node modules
+        uses: actions/cache@v2
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install dependencies
+        run: cd frontend && npm install
+      - name: Run linters
+        run: cd frontend && npm run lint
+      - name: Run Prettier
+        run: cd frontend && npm run prettier
+      - name: Run Type checking
+        run: cd frontend && npm run type
+
+  test-front:
+    needs: run-checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Cache Node modules
+        uses: actions/cache@v2
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install dependencies and run tests
+        run: cd frontend && npm install && npm test
+
+  build-and-push-docker:
+    needs: test-front
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name : Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: "{{defaultContext}}:frontend"
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_REPO_FRONTEND }}:latest
+            ${{ secrets.DOCKERHUB_REPO_FRONTEND }}:${{ steps.tag_version.outputs.new_tag }}

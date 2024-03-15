@@ -2,7 +2,6 @@
 
 Transfer with confidence, share with ease.
 
-
 ## Getting Started
 
 This project contains the backend and the frontend.
@@ -34,3 +33,38 @@ npm run dev
 - [PierreQuignon](https://github.com/PierreQuignon)
 - [remi59800](https://github.com/remi59800)
 - [nguyen-tt](https://github.com/nguyen-tt)
+
+### Launching backend integration tests with jest :
+
+- Open a terminal, position yourself at the parent folder of the project and run the command: docker compose up db
+- Open a second terminal, position yourself in the 'tests' folder and run the command: npx jest resolverUser.spec.ts --watch
+
+#### Lauching backend unitary test timestamp with jest :
+
+- Open terminal, position yourself in the 'tests' folder and run the command: npx jest timestamp.spec.ts
+
+#### Contributing
+
+Before pushing a pull request, always ensure that you've checked for linting and test to maintain code quality. 
+
+```
+npm run lint
+```
+
+```
+npm run prettier
+```
+
+```
+npm run type
+```
+
+```
+npm run test
+```
+
+or
+
+```
+npm run check
+```
