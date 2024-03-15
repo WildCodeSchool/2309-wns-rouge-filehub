@@ -68,7 +68,7 @@ function FileUploaded({
         <Container>
           <ButtonCopy
             variant="contained"
-            onClick={() => handleCopy(file.path)}
+            onClick={() => handleCopy(file.url)}
             sx={
               !copied
                 ? { background: theme.palette.secondary.main }
