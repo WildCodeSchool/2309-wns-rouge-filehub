@@ -83,4 +83,4 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_REPO_FRONTEND }}:latest
-            ${{ secrets.DOCKERHUB_REPO_FRONTEND }}:${{ github.ref_name }}
+            ${{ secrets.DOCKERHUB_REPO_FRONTEND }}:${{ steps.tag_version.outputs.new_tag }}
