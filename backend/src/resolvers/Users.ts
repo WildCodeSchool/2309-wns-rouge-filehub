@@ -13,7 +13,7 @@ import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import Cookies from "cookies";
 import { ContextType, getUserFromReq } from "../auth";
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
 @Resolver(User)
 export class UsersResolver {
@@ -152,38 +152,36 @@ export class UsersResolver {
   }
 
   @Mutation(() => User)
-  async forgotPassword(
-    @Arg("email") email: string,
-  ): Promise<User | null> {
+  async forgotPassword(@Arg("email") email: string): Promise<User | null> {
     const targetUser = await User.findOne({
       where: { email: email },
     });
 
     if (targetUser) {
       const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        service: "gmail",
         auth: {
-          user: 'filehubwcs@gmail.com',
-          pass: 'ptom oitf kvmz oucz'
-        }
+          user: "filehubwcs@gmail.com",
+          pass: "ptom oitf kvmz oucz",
+        },
       });
 
       const mailOptions = {
-        from: 'filehubwcs@gmail.com',
+        from: "filehubwcs@gmail.com",
         to: email,
-        subject: 'Gros tocar va',
-        text: 'mdr le débile, il a oublié son mot de passe'
+        subject: "Gros tocar va",
+        text: "mdr le débile, il a oublié son mot de passe",
       };
-      
-      try{
-        transporter.sendMail(mailOptions, function(error, info){
+
+      try {
+        transporter.sendMail(mailOptions, function (error, info) {
           if (error) {
-            console.log("error occured... :"+error);
+            console.log("error occured... :" + error);
           } else {
-            console.log('Email sent: ' + info.response);
+            console.log("Email sent: " + info.response);
           }
         });
-      } catch(e) {
+      } catch (e) {
         throw new Error(String(e));
       }
       return targetUser;

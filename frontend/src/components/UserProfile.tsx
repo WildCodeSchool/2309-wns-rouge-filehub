@@ -1,16 +1,16 @@
-import { Button, TextField } from '@mui/material';
-import { useState } from 'react';
-import styled from 'styled-components';
-import { theme } from '@/styles/theme';
-import { useRouter } from 'next/router';
-import KeyIcon from '@mui/icons-material/Key';
-import PersonIcon from '@mui/icons-material/Person';
-import { queryMe } from '@/graphql/queryMe';
-import { useMutation, useQuery } from '@apollo/client';
-import { mutationUpdatePassword } from '@/graphql/mutationUpdatePassword';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import UploadNewFile from './UploadNewFile';
+import { Button, TextField } from "@mui/material";
+import { useState } from "react";
+import styled from "styled-components";
+import { theme } from "@/styles/theme";
+import { useRouter } from "next/router";
+import KeyIcon from "@mui/icons-material/Key";
+import PersonIcon from "@mui/icons-material/Person";
+import { queryMe } from "@/graphql/queryMe";
+import { useMutation, useQuery } from "@apollo/client";
+import { mutationUpdatePassword } from "@/graphql/mutationUpdatePassword";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import UploadNewFile from "./UploadNewFile";
 
 export const UserProfileContent = styled.div`
   display: flex;
@@ -147,12 +147,12 @@ export const MenuIcon = styled.div`
 `;
 
 function UserProfile(): React.ReactNode {
-  const { data: me } = useQuery(queryMe, { fetchPolicy: 'no-cache' });
+  const { data: me } = useQuery(queryMe, { fetchPolicy: "no-cache" });
   const router = useRouter();
   const [toggleModif, setToggleModif] = useState(false);
-  const [passWord, setPassWord] = useState('');
-  const [newPassWord, setNewPassWord] = useState('');
-  const [secNewPassWord, setSecNewPassWord] = useState('');
+  const [passWord, setPassWord] = useState("");
+  const [newPassWord, setNewPassWord] = useState("");
+  const [secNewPassWord, setSecNewPassWord] = useState("");
   const [updatePassword] = useMutation(mutationUpdatePassword);
 
   const changePassword = async () => {
@@ -167,15 +167,15 @@ function UserProfile(): React.ReactNode {
         },
       });
       if (data && !errors) {
-        toast.success('Password changed');
-        setPassWord('');
-        setNewPassWord('');
-        setSecNewPassWord('');
+        toast.success("Password changed");
+        setPassWord("");
+        setNewPassWord("");
+        setSecNewPassWord("");
         setToggleModif(!toggleModif);
       }
     } catch {
       toast.error(
-        'Echec du changement de mdp, vérifiez les informations entrées'
+        "Echec du changement de mdp, vérifiez les informations entrées",
       );
     }
   };
@@ -184,7 +184,7 @@ function UserProfile(): React.ReactNode {
     <UserProfileContent>
       <UserInfo>
         <MenuIcon>
-          <PersonIcon color='primary' fontSize='large' />
+          <PersonIcon color="primary" fontSize="large" />
         </MenuIcon>
         <Title>Information de mon compte</Title>
         <Container>
@@ -198,28 +198,28 @@ function UserProfile(): React.ReactNode {
             <>
               <Label>
                 <InputField
-                  label='Password'
-                  variant='outlined'
-                  helperText='Entrez votre mot de passe actuel'
-                  type='password'
+                  label="Password"
+                  variant="outlined"
+                  helperText="Entrez votre mot de passe actuel"
+                  type="password"
                   value={passWord}
                   onChange={(e) => setPassWord(e.target.value)}
                 />
 
                 <InputField
-                  label='New Password'
-                  variant='outlined'
-                  helperText='Entrez votre nouveau mot de passe'
-                  type='password'
+                  label="New Password"
+                  variant="outlined"
+                  helperText="Entrez votre nouveau mot de passe"
+                  type="password"
                   value={newPassWord}
                   onChange={(e) => setNewPassWord(e.target.value)}
                 />
 
                 <InputField
-                  label='New Password'
-                  variant='outlined'
-                  helperText='Confirmez votre nouveau mot de passe'
-                  type='password'
+                  label="New Password"
+                  variant="outlined"
+                  helperText="Confirmez votre nouveau mot de passe"
+                  type="password"
                   value={secNewPassWord}
                   onChange={(e) => setSecNewPassWord(e.target.value)}
                 />
@@ -230,7 +230,7 @@ function UserProfile(): React.ReactNode {
               <Label>
                 <FieldTitle>Mot de passe :</FieldTitle>
                 <Field>
-                  <KeyIcon color='primary' />
+                  <KeyIcon color="primary" />
                 </Field>
               </Label>
             </>
@@ -250,7 +250,7 @@ function UserProfile(): React.ReactNode {
         </Container>
       </UserInfo>
       <UploadNewFile />
-      <ToastContainer position='bottom-right' autoClose={3000} />
+      <ToastContainer position="bottom-right" autoClose={3000} />
     </UserProfileContent>
   );
 }

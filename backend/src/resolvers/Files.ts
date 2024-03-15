@@ -26,7 +26,7 @@ export class FilesResolver {
   }
 
   @Query(() => File)
-  async getFile(@Arg('uniqueName') uniqueName: string): Promise<File | null> {
+  async getFile(@Arg("uniqueName") uniqueName: string): Promise<File | null> {
     const file = await File.findOne({
       where: { uniqueName },
     });
@@ -35,7 +35,7 @@ export class FilesResolver {
 
   @Authorized()
   @Mutation(() => File, { nullable: true })
-  async deleteFile(@Arg('id', () => ID) id: number) {
+  async deleteFile(@Arg("id", () => ID) id: number) {
     const file = await File.findOne({
       where: { id: id },
     });

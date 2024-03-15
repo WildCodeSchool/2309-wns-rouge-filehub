@@ -71,7 +71,7 @@ async function start() {
   app.post(
     "/upload",
     upload.single("file"),
-    uploadFileController.uploadSingleFile
+    uploadFileController.uploadSingleFile,
   );
 
   app.get("/download", function (req, res) {

@@ -1,9 +1,9 @@
-import React from 'react';
-import Header from '@/layout/header';
-import FileList from '@/components/FileList';
-import { MainContent } from '.';
-import UploadNewFile from '@/components/UploadNewFile';
-import { Stack, Typography, useTheme } from '@mui/material';
+import React from "react";
+import Header from "@/layout/header";
+import FileList from "@/components/FileList";
+import { MainContent } from ".";
+import UploadNewFile from "@/components/UploadNewFile";
+import { Stack, Typography, useTheme } from "@mui/material";
 
 const MyFiles: React.FC = () => {
   const theme = useTheme();
@@ -14,19 +14,19 @@ const MyFiles: React.FC = () => {
       <MainContent>
         <Stack
           sx={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-            padding: '20px 10px',
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
+            padding: "20px 10px",
             border: `1px solid ${theme.palette.secondary.main}`,
-            borderRadius: '5vmin',
-            width: '70%',
-            maxWidth: '1000px',
-            height: 'max(50vmin, fit-content)',
+            borderRadius: "5vmin",
+            width: "70%",
+            maxWidth: "1000px",
+            height: "max(50vmin, fit-content)",
             color: theme.palette.primary.main,
           }}
         >
-          <Typography variant='h6' sx={{ marginY: '10px' }}>
+          <Typography variant="h6" sx={{ marginY: "10px" }}>
             Mes fichiers
           </Typography>
           <FileList />
