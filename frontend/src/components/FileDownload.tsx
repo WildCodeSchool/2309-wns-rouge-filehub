@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
-import { Button, Card } from '@mui/material';
+import React, { useEffect } from "react";
+import { Button, Card } from "@mui/material";
 import axios from "axios";
 import styled from "styled-components";
-import DownloadIcon from '@mui/icons-material/Download';
+import DownloadIcon from "@mui/icons-material/Download";
 import { useQuery } from "@apollo/client";
 import { getFileByUniqueName } from "@/graphql/getFileByUniqueName";
 
@@ -32,9 +32,14 @@ const DivLoadFile = styled.div`
 `;
 
 const ButtonConfirm = styled(Button)`
-  &.MuiButtonBase-root{
+  &.MuiButtonBase-root {
     position: relative;
-    background: linear-gradient(90deg, rgba(250,209,38,1) 0%, rgba(255,84,79,1) 75%, rgba(255,84,79,1) 100%);
+    background: linear-gradient(
+      90deg,
+      rgba(250, 209, 38, 1) 0%,
+      rgba(255, 84, 79, 1) 75%,
+      rgba(255, 84, 79, 1) 100%
+    );
     color: white;
     border-radius: 50px;
     padding: 0;
@@ -62,65 +67,72 @@ const ButtonSVGContainer = styled.div`
 `;
 
 interface FileDownloadProps {
-    fileName: string | string[] | undefined;
+  fileName: string | string[] | undefined;
 }
 
 const FileDownload: React.FC<FileDownloadProps> = ({ fileName }) => {
-    const { loading, error, data } = useQuery(getFileByUniqueName, {
-        variables: { uniqueName: fileName },
-        skip: !fileName,
-    });
+  const { loading, error, data } = useQuery(getFileByUniqueName, {
+    variables: { uniqueName: fileName },
+    skip: !fileName,
+  });
 
-    useEffect(() => {
-        if (!loading && !error && data) {
-            console.log("Data:", data);
-        }
-    }, [loading, error, data]);
+  useEffect(() => {
+    if (!loading && !error && data) {
+      console.log("Data:", data);
+    }
+  }, [loading, error, data]);
 
-    const handleDownload = async () => {
-        try {
-            const response = await axios.get('http://localhost:5001/download', {
-                params: {
-                    name: fileName,
-                },
-                responseType: 'blob',
-            });
+  const handleDownload = async () => {
+    try {
+      const response = await axios.get("http://localhost:5001/download", {
+        params: {
+          name: fileName,
+        },
+        responseType: "blob",
+      });
 
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
 
-            if (typeof fileName === "string") {
-                link.setAttribute('download', fileName);
-            }
+      if (typeof fileName === "string") {
+        link.setAttribute("download", fileName);
+      }
 
-            document.body.appendChild(link);
-            link.click();
-        } catch (error) {
-            console.error('Error downloading file:', error);
-        }
-    };
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error("Error downloading file:", error);
+    }
+  };
 
-    return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-            <StyledCard>
-                <TableContainerWrapper>
-                    <h1>Votre fichier est à portée de clic !</h1>
-                    {data && data.getFile && (
-                        <p>Nom du fichier: {data.getFile.originalName}</p>
-                    )}
-                    <DivLoadFile>
-                        <ButtonConfirm variant="contained" onClick={handleDownload}>
-                            Télécharger
-                            <ButtonSVGContainer>
-                                <DownloadIcon />
-                            </ButtonSVGContainer>
-                        </ButtonConfirm>
-                    </DivLoadFile>
-                </TableContainerWrapper>
-            </StyledCard>
-        </div>
-    );
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
+      <StyledCard>
+        <TableContainerWrapper>
+          <h1>Votre fichier est à portée de clic !</h1>
+          {data && data.getFile && (
+            <p>Nom du fichier: {data.getFile.originalName}</p>
+          )}
+          <DivLoadFile>
+            <ButtonConfirm variant="contained" onClick={handleDownload}>
+              Télécharger
+              <ButtonSVGContainer>
+                <DownloadIcon />
+              </ButtonSVGContainer>
+            </ButtonConfirm>
+          </DivLoadFile>
+        </TableContainerWrapper>
+      </StyledCard>
+    </div>
+  );
 };
 
 export default FileDownload;

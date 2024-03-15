@@ -110,7 +110,7 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
             "Content-Type": "multipart/form-data",
           },
           withCredentials: true,
-        }
+        },
       );
 
       console.log(response.data);
