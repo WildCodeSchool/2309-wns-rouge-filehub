@@ -1,4 +1,4 @@
-import { Button, TextField } from "@mui/material";
+import { Box, Button, IconButton, TextField } from "@mui/material";
 import { useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
@@ -11,6 +11,7 @@ import { mutationUpdatePassword } from "@/graphql/mutationUpdatePassword";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UploadNewFile from "./UploadNewFile";
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 export const UserProfileContent = styled.div`
   display: flex;
@@ -57,7 +58,7 @@ export const Field = styled.p`
   width: 95%;
   min-height: 25px;
   margin: 2px 0;
-  border: 1px solid ${theme.palette.secondary.main};
+  background-color: whitesmoke;
   border-radius: 50px;
   padding: 2vmin 5% 2vmin 5%;
   overflow-wrap: anywhere;
@@ -153,6 +154,9 @@ function UserProfile(): React.ReactNode {
   const [passWord, setPassWord] = useState("");
   const [newPassWord, setNewPassWord] = useState("");
   const [secNewPassWord, setSecNewPassWord] = useState("");
+  const [seePassWord, setSeePassWord] = useState<boolean>(false);
+  const [seeNewPassWord, setSeeNewPassWord] = useState<boolean>(false);
+  const [seeSecNewPassWord, setSeeSecNewPassWord] = useState<boolean>(false);
   const [updatePassword] = useMutation(mutationUpdatePassword);
 
   const changePassword = async () => {
@@ -197,32 +201,75 @@ function UserProfile(): React.ReactNode {
           {toggleModif ? (
             <>
               <Label>
-                <InputField
-                  label="Password"
-                  variant="outlined"
-                  helperText="Entrez votre mot de passe actuel"
-                  type="password"
-                  value={passWord}
-                  onChange={(e) => setPassWord(e.target.value)}
-                />
-
-                <InputField
-                  label="New Password"
-                  variant="outlined"
-                  helperText="Entrez votre nouveau mot de passe"
-                  type="password"
-                  value={newPassWord}
-                  onChange={(e) => setNewPassWord(e.target.value)}
-                />
-
-                <InputField
-                  label="New Password"
-                  variant="outlined"
-                  helperText="Confirmez votre nouveau mot de passe"
-                  type="password"
-                  value={secNewPassWord}
-                  onChange={(e) => setSecNewPassWord(e.target.value)}
-                />
+                <Box sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  marginBottom: 2
+                }}>
+                  <InputField
+                    label="Enter your current password"
+                    variant="outlined"
+                    type={seePassWord ? "text" : "password"}
+                    value={passWord}
+                    onChange={(e) => setPassWord(e.target.value)}
+                    sx={{
+                      width: '90%'
+                    }}
+                  />
+                  <IconButton onClick={()=>{setSeePassWord(!seePassWord)}}>
+                    <VisibilityIcon sx={{
+                      width: 20,
+                      height: 20,
+                      color: seePassWord ? 'rgba(250, 209, 38, 1)' : ''
+                    }}/>
+                  </IconButton>
+                </Box>
+                <Box sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  marginBottom: 2
+                }}>
+                  <InputField
+                    label="Enter your new password"
+                    variant="outlined"
+                    type={seeNewPassWord ? "text" : "password"}
+                    value={newPassWord}
+                    onChange={(e) => setNewPassWord(e.target.value)}
+                    sx={{
+                      width: '90%'
+                    }}
+                  />
+                  <IconButton onClick={()=>{setSeeNewPassWord(!seeNewPassWord)}}>
+                    <VisibilityIcon sx={{
+                      width: 20,
+                      height: 20,
+                      color: seeNewPassWord ? 'rgba(250, 209, 38, 1)' : ''
+                    }}/>
+                  </IconButton>
+                </Box>
+                <Box sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  marginBottom: 2
+                }}>
+                  <InputField
+                    label="Enter your new password again"
+                    variant="outlined"
+                    type={seeSecNewPassWord ? "text" : "password"}
+                    value={secNewPassWord}
+                    onChange={(e) => setSecNewPassWord(e.target.value)}
+                    sx={{
+                      width: '90%'
+                    }}
+                  />
+                  <IconButton onClick={()=>{setSeeSecNewPassWord(!seeSecNewPassWord)}}>
+                    <VisibilityIcon sx={{
+                      width: 20,
+                      height: 20,
+                      color: seeSecNewPassWord ? 'rgba(250, 209, 38, 1)' : ''
+                    }}/>
+                  </IconButton>
+                </Box>
               </Label>
             </>
           ) : (
