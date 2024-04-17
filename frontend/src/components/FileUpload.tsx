@@ -14,9 +14,10 @@ import {
 import LinkIcon from "@mui/icons-material/Link";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import AddIcon from "@mui/icons-material/Add";
+import AddLinkIcon from '@mui/icons-material/AddLink';
 import axios from "axios";
 import { dataBaseFile } from "./FileUploaded";
+import { ToastContainer, toast } from "react-toastify";
 
 interface fileUploadProps {
   setFileUploaded: (fun: dataBaseFile | undefined) => void;
@@ -94,7 +95,7 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
 
   const handleUpload = async () => {
     if (!file) {
-      console.log("Aucun fichier sélectionné.");
+      toast.error("Aucun fichier sélectionné...");
       return;
     }
 
@@ -112,11 +113,11 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
           withCredentials: true,
         },
       );
-
       console.log(response.data);
       setFileUploaded(response.data);
     } catch (error) {
-      console.error("Erreur lors du chargement du fichier :", error);
+      console.error("Erreur lors du dépot du fichier : ", error);
+      toast.error("Erreur lors du dépot du fichier...");
     }
   };
 
@@ -124,7 +125,7 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
     <FileUploadContent>
       <FileInfo>
         <MenuIcon>
-          <AddIcon color="primary" fontSize="large" />
+          <AddLinkIcon color="primary" fontSize="large" />
         </MenuIcon>
         <Title>Ajouter un fichier</Title>
         <Container>
@@ -185,6 +186,7 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
           </ButtonConfirm>
         </Container>
       </FileInfo>
+      <ToastContainer position="bottom-right" autoClose={2000} />
     </FileUploadContent>
   );
 }

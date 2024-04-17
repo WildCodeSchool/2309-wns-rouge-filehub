@@ -18,6 +18,7 @@ import axios from "axios";
 import { queryMe } from "@/graphql/queryMe";
 import { getUserFiles } from "@/graphql/getUserFiles";
 import { useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
 
 interface FileData {
   id: string;
@@ -132,13 +133,16 @@ function rowContent(
       link.setAttribute("download", row.originalName);
       document.body.appendChild(link);
       link.click();
+      toast.success("Fichier téléchargé avec succès!");
     } catch (error) {
       console.error("Error downloading file:", error);
+      toast.error("Problème lors du téléchargement...");
     }
   };
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(row.url);
+    toast.success("lien copié avec succès!");
   };
 
   return (
@@ -181,16 +185,21 @@ function rowContent(
 }
 
 export default function FileList() {
-  const [doDeleteFile] = useMutation(mutationDeleteFile, {
+  const [doDeleteFile, {error: deleteFileError}] = useMutation(mutationDeleteFile, {
     refetchQueries: [getUserFiles],
   });
 
   const deleteFile = async (fileId: FileData["id"]) => {
-    await doDeleteFile({
+    const { data } = await doDeleteFile({
       variables: {
         id: fileId,
       },
     });
+    if(!deleteFileError){
+      toast.success("Fichier supprimé avec succès!");
+    } else {
+      toast.error("Fichier supprimé avec succès!");
+    }
   };
 
   const {
@@ -222,7 +231,7 @@ export default function FileList() {
         <p>Loading...</p>
       ) : error ? (
         <p>Error: {error.message}</p>
-      ) : (
+      ) : (<>
         <Paper
           sx={{
             height: 280,
@@ -239,6 +248,7 @@ export default function FileList() {
             itemContent={(index, row) => rowContent(index, row, deleteFile)}
           />
         </Paper>
+        <ToastContainer position="bottom-right" autoClose={2000} /></>
       )}
     </>
   );
