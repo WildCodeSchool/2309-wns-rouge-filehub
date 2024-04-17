@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, Slide } from "@mui/material";
 import { useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
@@ -56,48 +56,54 @@ function FileUploaded({
   };
 
   return (
-    <FileUploadContent>
-      <FileInfo>
-        <MenuIcon>
-          <DoneIcon color="primary" fontSize="large" />
-        </MenuIcon>
-        <Title>Téléchargement terminé !</Title>
-        <Container>
-          <Field style={{ padding: "22px" }}>{file.url}</Field>
-        </Container>
-        <Container>
-          <ButtonCopy
-            variant="contained"
-            onClick={() => handleCopy(file.url)}
-            sx={
-              !copied
-                ? { background: theme.palette.secondary.main }
-                : {
-                    background:
-                      "linear-gradient(90deg, rgba(250,209,38,1) 0%, rgba(255,84,79,1) 75%, rgba(255,84,79,1) 100%)",
-                  }
-            }
-          >
-            Copier le lien
-            <ButtonSVGContainer>
-              {copied ? (
-                <DoneIcon color="primary" />
-              ) : (
-                <ContentCopyIcon color="primary" />
-              )}
-            </ButtonSVGContainer>
-          </ButtonCopy>
-        </Container>
-        <Container>
-          <ButtonConfirm onClick={() => setFileUploaded(undefined)}>
-            Nouveau fichier
-            <ButtonSVGContainer>
-              <KeyboardBackspaceIcon color="primary" />
-            </ButtonSVGContainer>
-          </ButtonConfirm>
-        </Container>
-      </FileInfo>
-    </FileUploadContent>
+    <Slide direction="right" in={true} mountOnEnter unmountOnExit 
+    timeout={{
+      enter: 250,
+      exit: 250
+    }}>
+      <FileUploadContent>
+        <FileInfo>
+          <MenuIcon>
+            <DoneIcon color="primary" fontSize="large" />
+          </MenuIcon>
+          <Title>Téléchargement terminé !</Title>
+          <Container>
+            <Field style={{ padding: "22px" }}>{file.url}</Field>
+          </Container>
+          <Container>
+            <ButtonCopy
+              variant="contained"
+              onClick={() => handleCopy(file.url)}
+              sx={
+                !copied
+                  ? { background: theme.palette.secondary.main }
+                  : {
+                      background:
+                        "linear-gradient(90deg, rgba(250,209,38,1) 0%, rgba(255,84,79,1) 75%, rgba(255,84,79,1) 100%)",
+                    }
+              }
+            >
+              Copier le lien
+              <ButtonSVGContainer>
+                {copied ? (
+                  <DoneIcon color="primary" />
+                ) : (
+                  <ContentCopyIcon color="primary" />
+                )}
+              </ButtonSVGContainer>
+            </ButtonCopy>
+          </Container>
+          <Container>
+            <ButtonConfirm onClick={() => setFileUploaded(undefined)}>
+              Nouveau fichier
+              <ButtonSVGContainer>
+                <KeyboardBackspaceIcon color="primary" />
+              </ButtonSVGContainer>
+            </ButtonConfirm>
+          </Container>
+        </FileInfo>
+      </FileUploadContent>
+    </Slide>
   );
 }
 

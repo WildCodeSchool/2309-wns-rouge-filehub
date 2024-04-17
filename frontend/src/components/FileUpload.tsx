@@ -15,6 +15,7 @@ import LinkIcon from "@mui/icons-material/Link";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import AddLinkIcon from '@mui/icons-material/AddLink';
+import Slide from '@mui/material/Slide';
 import axios from "axios";
 import { dataBaseFile } from "./FileUploaded";
 import { ToastContainer, toast } from "react-toastify";
@@ -76,6 +77,7 @@ export const ThrowFileButton = styled(Button)`
 function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
   const [file, setFile] = useState<File>();
   const [fileName, setFileName] = useState("");
+  const [checkAnim, setCheckAnim] = useState<boolean>(true);
 
   const setFileInfo = (e: React.ChangeEvent<HTMLInputElement>) => {
     const fileInput = e.target;
@@ -114,7 +116,10 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
         },
       );
       console.log(response.data);
-      setFileUploaded(response.data);
+      setCheckAnim(false);
+      setTimeout(()=>{
+        setFileUploaded(response.data);
+      }, 250)
     } catch (error) {
       console.error("Erreur lors du dépot du fichier : ", error);
       toast.error("Erreur lors du dépot du fichier...");
@@ -122,72 +127,78 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
   };
 
   return (
-    <FileUploadContent>
-      <FileInfo>
-        <MenuIcon>
-          <AddLinkIcon color="primary" fontSize="large" />
-        </MenuIcon>
-        <Title>Ajouter un fichier</Title>
-        <Container>
-          <FileButton
-            variant="contained"
-            sx={
-              file === undefined
-                ? { background: theme.palette.secondary.main }
-                : {
-                    background:
-                      "linear-gradient(90deg, rgba(250,209,38,1) 0%, rgba(255,84,79,1) 75%, rgba(255,84,79,1) 100%)",
-                  }
-            }
-          >
-            <LabelButton>
-              Déposer un fichier
-              <ButtonSVGContainer>
-                <FileOpenIcon color="primary" />
-              </ButtonSVGContainer>
-              <input
-                hidden
-                type="file"
+    <Slide direction="left" in={checkAnim} exit={!checkAnim} mountOnEnter unmountOnExit 
+    timeout={{
+      enter: 250,
+      exit: 250
+    }}>
+      <FileUploadContent>
+        <FileInfo>
+          <MenuIcon>
+            <AddLinkIcon color="primary" fontSize="large" />
+          </MenuIcon>
+          <Title>Ajouter un fichier</Title>
+          <Container>
+            <FileButton
+              variant="contained"
+              sx={
+                file === undefined
+                  ? { background: theme.palette.secondary.main }
+                  : {
+                      background:
+                        "linear-gradient(90deg, rgba(250,209,38,1) 0%, rgba(255,84,79,1) 75%, rgba(255,84,79,1) 100%)",
+                    }
+              }
+            >
+              <LabelButton>
+                Déposer un fichier
+                <ButtonSVGContainer>
+                  <FileOpenIcon color="primary" />
+                </ButtonSVGContainer>
+                <input
+                  hidden
+                  type="file"
+                  onChange={(e) => {
+                    setFileInfo(e);
+                  }}
+                />
+              </LabelButton>
+            </FileButton>
+            {file && (
+              <ThrowFileButton
+                onClick={() => {
+                  setFile(undefined);
+                }}
+              >
+                <HighlightOffIcon color="primary" />
+              </ThrowFileButton>
+            )}
+          </Container>
+          <Container>
+            <Label>
+              <InputField
+                label="Nom du fichier"
+                variant="outlined"
+                type="text"
+                value={fileName}
                 onChange={(e) => {
-                  setFileInfo(e);
+                  setFileName(e.target.value);
                 }}
               />
-            </LabelButton>
-          </FileButton>
-          {file && (
-            <ThrowFileButton
-              onClick={() => {
-                setFile(undefined);
-              }}
-            >
-              <HighlightOffIcon color="primary" />
-            </ThrowFileButton>
-          )}
-        </Container>
-        <Container>
-          <Label>
-            <InputField
-              label="Nom du fichier"
-              variant="outlined"
-              type="text"
-              value={fileName}
-              onChange={(e) => {
-                setFileName(e.target.value);
-              }}
-            />
-          </Label>
-        </Container>
-        <Container>
-          <ButtonConfirm onClick={handleUpload}>
-            Obtenir un lien
-            <ButtonSVGContainer>
-              <LinkIcon color="primary" />
-            </ButtonSVGContainer>
-          </ButtonConfirm>
-        </Container>
-      </FileInfo>
-      <ToastContainer position="bottom-right" autoClose={2000} />
-    </FileUploadContent>
+            </Label>
+          </Container>
+          <Container>
+            <ButtonConfirm onClick={handleUpload}>
+              Obtenir un lien
+              <ButtonSVGContainer>
+                <LinkIcon color="primary" />
+              </ButtonSVGContainer>
+            </ButtonConfirm>
+          </Container>
+        </FileInfo>
+        <ToastContainer position="bottom-right" autoClose={2000} />
+      </FileUploadContent>
+    </Slide>
   );
 }
 
