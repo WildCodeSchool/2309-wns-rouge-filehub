@@ -19,6 +19,7 @@ import { queryMe } from "@/graphql/queryMe";
 import { getUserFiles } from "@/graphql/getUserFiles";
 import { useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import { API_URL } from "@/config";
 
 interface FileData {
   id: string;
@@ -121,7 +122,7 @@ function rowContent(
 
   const downloadFile = async () => {
     try {
-      const response = await axios.get("http://localhost:5001/download", {
+      const response = await axios.get(`${API_URL}/download`, {
         params: {
           name: row.uniqueName,
         },

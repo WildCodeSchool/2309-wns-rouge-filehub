@@ -5,6 +5,7 @@ import styled from "styled-components";
 import DownloadIcon from "@mui/icons-material/Download";
 import { useQuery } from "@apollo/client";
 import { getFileByUniqueName } from "@/graphql/getFileByUniqueName";
+import { API_URL } from "@/config";
 
 const StyledCard = styled(Card)`
   margin: auto;
@@ -84,7 +85,7 @@ const FileDownload: React.FC<FileDownloadProps> = ({ fileName }) => {
 
   const handleDownload = async () => {
     try {
-      const response = await axios.get("http://localhost:5001/download", {
+      const response = await axios.get(`${API_URL}/download`, {
         params: {
           name: fileName,
         },
