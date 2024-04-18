@@ -19,6 +19,7 @@ import Slide from '@mui/material/Slide';
 import axios from "axios";
 import { dataBaseFile } from "./FileUploaded";
 import { ToastContainer, toast } from "react-toastify";
+import { API_URL } from "@/config";
 
 interface fileUploadProps {
   setFileUploaded: (fun: dataBaseFile | undefined) => void;
@@ -106,7 +107,7 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
 
     try {
       const response = await axios.post(
-        "http://localhost:5001/upload",
+        `${API_URL}/upload`,
         formData,
         {
           headers: {

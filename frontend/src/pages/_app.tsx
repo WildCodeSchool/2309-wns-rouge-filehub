@@ -13,9 +13,10 @@ import { useRouter } from "next/router";
 import { ReactNode, useEffect } from "react";
 import { queryMe } from "@/graphql/queryMe";
 import Head from "next/head";
+import { API_URL } from "@/config";
 
 const link = createHttpLink({
-  uri: "http://localhost:5001",
+  uri: `${API_URL}`,
   credentials: "include",
 });
 
