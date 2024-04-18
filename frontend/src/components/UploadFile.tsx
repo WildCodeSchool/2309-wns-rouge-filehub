@@ -1,5 +1,6 @@
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import axios from "axios";
+import { API_URL } from "@/config";
 
 export function UploadFile() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -18,7 +19,7 @@ export function UploadFile() {
     const formData = new FormData();
     formData.append("file", selectedFile);
     try {
-      await axios.post("http://localhost:5001/upload", formData, {
+      await axios.post(`${API_URL}/upload`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
