@@ -24,7 +24,7 @@ const client = new ApolloClient({
   link: link,
 });
 
-const publicPages = ["/login", "/"];
+const publicPages = [/^\/login$/, /^\/$/, /^\/downloads(\/.*)?$/];
 
 function Auth(props: { children: ReactNode }) {
   const { data, loading, error, refetch } = useQuery(queryMe, {
@@ -32,26 +32,29 @@ function Auth(props: { children: ReactNode }) {
   });
   const router = useRouter();
 
-  const authVerif = async () => {
-    try {
-      await refetch();
-      if (publicPages.includes(router.pathname) === false) {
-        //page privée
-        if (!data && !loading) {
-          //pas connecté
+  useEffect(() => {
+    const authVerif = async () => {
+      const isPublicPage = publicPages.some((regex) =>
+        regex.test(router.pathname),
+      );
+      try {
+        await refetch();
+        if (!isPublicPage && !data?.user && !loading) {
+          //page privée
+          if (!data && !loading) {
+            //pas connecté
+            router.replace("/login");
+          }
+        }
+      } catch (e) {
+        if (!isPublicPage) {
           router.replace("/login");
         }
       }
-    } catch (e) {
-      if (router.pathname !== "/login" && error) {
-        router.replace("/login");
-      }
-    }
-  };
+    };
 
-  useEffect(() => {
     authVerif();
-  }, [router, error]);
+  }, [router, error, refetch, data, loading]);
 
   if (loading) {
     return <p>chargement</p>;
