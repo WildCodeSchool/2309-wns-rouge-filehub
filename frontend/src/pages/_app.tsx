@@ -13,9 +13,10 @@ import { useRouter } from "next/router";
 import { ReactNode, useEffect } from "react";
 import { queryMe } from "@/graphql/queryMe";
 import Head from "next/head";
+import { API_URL } from "@/config";
 
 const link = createHttpLink({
-  uri: "http://localhost:5001",
+  uri: `${API_URL}`,
   credentials: "include",
 });
 
@@ -24,7 +25,7 @@ const client = new ApolloClient({
   link: link,
 });
 
-const publicPages = ["/login", "/"];
+const publicPages = [/^\/login$/, /^\/$/, /^\/downloads(\/.*)?$/];
 
 function Auth(props: { children: ReactNode }) {
   const { data, loading, error, refetch } = useQuery(queryMe, {
@@ -32,26 +33,29 @@ function Auth(props: { children: ReactNode }) {
   });
   const router = useRouter();
 
-  const authVerif = async () => {
-    try {
-      await refetch();
-      if (publicPages.includes(router.pathname) === false) {
-        //page privée
-        if (!data && !loading) {
-          //pas connecté
+  useEffect(() => {
+    const authVerif = async () => {
+      const isPublicPage = publicPages.some((regex) =>
+        regex.test(router.pathname),
+      );
+      try {
+        await refetch();
+        if (!isPublicPage && !data?.user && !loading) {
+          //page privée
+          if (!data && !loading) {
+            //pas connecté
+            router.replace("/login");
+          }
+        }
+      } catch (e) {
+        if (!isPublicPage) {
           router.replace("/login");
         }
       }
-    } catch (e) {
-      if (router.pathname !== "/login" && error) {
-        router.replace("/login");
-      }
-    }
-  };
+    };
 
-  useEffect(() => {
     authVerif();
-  }, [router, error]);
+  }, [router, error, refetch, data, loading]);
 
   if (loading) {
     return <p>chargement</p>;
