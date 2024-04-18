@@ -185,9 +185,12 @@ function rowContent(
 }
 
 export default function FileList() {
-  const [doDeleteFile, {error: deleteFileError}] = useMutation(mutationDeleteFile, {
-    refetchQueries: [getUserFiles],
-  });
+  const [doDeleteFile, { error: deleteFileError }] = useMutation(
+    mutationDeleteFile,
+    {
+      refetchQueries: [getUserFiles],
+    },
+  );
 
   const deleteFile = async (fileId: FileData["id"]) => {
     const { data } = await doDeleteFile({
@@ -195,7 +198,7 @@ export default function FileList() {
         id: fileId,
       },
     });
-    if(!deleteFileError){
+    if (!deleteFileError) {
       toast.success("Fichier supprimé avec succès!");
     } else {
       toast.error("Fichier supprimé avec succès!");
@@ -231,24 +234,26 @@ export default function FileList() {
         <p>Loading...</p>
       ) : error ? (
         <p>Error: {error.message}</p>
-      ) : (<>
-        <Paper
-          sx={{
-            height: 280,
-            width: "90%",
-            maxWidth: "1000px",
-            boxShadow: "none",
-            marginBottom: "15px",
-          }}
-        >
-          <TableVirtuoso
-            data={data.filesCurrentUser}
-            components={VirtuosoTableComponents}
-            fixedHeaderContent={fixedHeaderContent}
-            itemContent={(index, row) => rowContent(index, row, deleteFile)}
-          />
-        </Paper>
-        <ToastContainer position="bottom-right" autoClose={2000} /></>
+      ) : (
+        <>
+          <Paper
+            sx={{
+              height: 280,
+              width: "90%",
+              maxWidth: "1000px",
+              boxShadow: "none",
+              marginBottom: "15px",
+            }}
+          >
+            <TableVirtuoso
+              data={data.filesCurrentUser}
+              components={VirtuosoTableComponents}
+              fixedHeaderContent={fixedHeaderContent}
+              itemContent={(index, row) => rowContent(index, row, deleteFile)}
+            />
+          </Paper>
+          <ToastContainer position="bottom-right" autoClose={2000} />
+        </>
       )}
     </>
   );

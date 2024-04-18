@@ -76,12 +76,6 @@ const FileDownload: React.FC<FileDownloadProps> = ({ fileName }) => {
     skip: !fileName,
   });
 
-  useEffect(() => {
-    if (!loading && !error && data) {
-      console.log("Data:", data);
-    }
-  }, [loading, error, data]);
-
   const handleDownload = async () => {
     try {
       const response = await axios.get("http://localhost:5001/download", {

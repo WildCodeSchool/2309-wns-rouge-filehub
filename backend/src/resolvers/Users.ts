@@ -124,12 +124,6 @@ export class UsersResolver {
 
     if (targetUser) {
       if (await argon2.verify(targetUser.password, data.password)) {
-        console.log(
-          "Changement du mot de passe de : " +
-            data.password +
-            " à : " +
-            data.newPassword1,
-        );
         const hashedPassword = await argon2.hash(data.newPassword1);
         targetUser.password = hashedPassword;
       } else {
@@ -141,7 +135,6 @@ export class UsersResolver {
 
     const errors = await validate(targetUser);
     if (errors.length === 0) {
-      console.log("saving...");
       await targetUser.save();
       return await User.findOne({
         where: { id: context.user?.id },
@@ -176,7 +169,7 @@ export class UsersResolver {
       try {
         transporter.sendMail(mailOptions, function (error, info) {
           if (error) {
-            console.log("error occured... :" + error);
+            console.error("error occured... :" + error);
           } else {
             console.log("Email sent: " + info.response);
           }

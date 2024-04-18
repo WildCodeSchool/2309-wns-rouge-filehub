@@ -14,8 +14,8 @@ import {
 import LinkIcon from "@mui/icons-material/Link";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import AddLinkIcon from '@mui/icons-material/AddLink';
-import Slide from '@mui/material/Slide';
+import AddLinkIcon from "@mui/icons-material/AddLink";
+import Slide from "@mui/material/Slide";
 import axios from "axios";
 import { dataBaseFile } from "./FileUploaded";
 import { ToastContainer, toast } from "react-toastify";
@@ -115,11 +115,10 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
           withCredentials: true,
         },
       );
-      console.log(response.data);
       setCheckAnim(false);
-      setTimeout(()=>{
+      setTimeout(() => {
         setFileUploaded(response.data);
-      }, 250)
+      }, 250);
     } catch (error) {
       console.error("Erreur lors du dépot du fichier : ", error);
       toast.error("Erreur lors du dépot du fichier...");
@@ -127,11 +126,17 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
   };
 
   return (
-    <Slide direction="left" in={checkAnim} exit={!checkAnim} mountOnEnter unmountOnExit 
-    timeout={{
-      enter: 250,
-      exit: 250
-    }}>
+    <Slide
+      direction="left"
+      in={checkAnim}
+      exit={!checkAnim}
+      mountOnEnter
+      unmountOnExit
+      timeout={{
+        enter: 250,
+        exit: 250,
+      }}
+    >
       <FileUploadContent>
         <FileInfo>
           <MenuIcon>
