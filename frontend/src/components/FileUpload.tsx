@@ -181,6 +181,7 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
                 variant="outlined"
                 type="text"
                 value={fileName}
+                disabled={!file}
                 onChange={(e) => {
                   setFileName(e.target.value);
                 }}
