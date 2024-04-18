@@ -11,7 +11,7 @@ import { mutationUpdatePassword } from "@/graphql/mutationUpdatePassword";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UploadNewFile from "./UploadNewFile";
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 export const UserProfileContent = styled.div`
   display: flex;
@@ -201,11 +201,13 @@ function UserProfile(): React.ReactNode {
           {toggleModif ? (
             <>
               <Label>
-                <Box sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  marginBottom: 2
-                }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: 2,
+                  }}
+                >
                   <InputField
                     label="Enter your current password"
                     variant="outlined"
@@ -213,22 +215,30 @@ function UserProfile(): React.ReactNode {
                     value={passWord}
                     onChange={(e) => setPassWord(e.target.value)}
                     sx={{
-                      width: '90%'
+                      width: "90%",
                     }}
                   />
-                  <IconButton onClick={()=>{setSeePassWord(!seePassWord)}}>
-                    <VisibilityIcon sx={{
-                      width: 20,
-                      height: 20,
-                      color: seePassWord ? 'rgba(250, 209, 38, 1)' : ''
-                    }}/>
+                  <IconButton
+                    onClick={() => {
+                      setSeePassWord(!seePassWord);
+                    }}
+                  >
+                    <VisibilityIcon
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        color: seePassWord ? "rgba(250, 209, 38, 1)" : "",
+                      }}
+                    />
                   </IconButton>
                 </Box>
-                <Box sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  marginBottom: 2
-                }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: 2,
+                  }}
+                >
                   <InputField
                     label="Enter your new password"
                     variant="outlined"
@@ -236,22 +246,30 @@ function UserProfile(): React.ReactNode {
                     value={newPassWord}
                     onChange={(e) => setNewPassWord(e.target.value)}
                     sx={{
-                      width: '90%'
+                      width: "90%",
                     }}
                   />
-                  <IconButton onClick={()=>{setSeeNewPassWord(!seeNewPassWord)}}>
-                    <VisibilityIcon sx={{
-                      width: 20,
-                      height: 20,
-                      color: seeNewPassWord ? 'rgba(250, 209, 38, 1)' : ''
-                    }}/>
+                  <IconButton
+                    onClick={() => {
+                      setSeeNewPassWord(!seeNewPassWord);
+                    }}
+                  >
+                    <VisibilityIcon
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        color: seeNewPassWord ? "rgba(250, 209, 38, 1)" : "",
+                      }}
+                    />
                   </IconButton>
                 </Box>
-                <Box sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  marginBottom: 2
-                }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: 2,
+                  }}
+                >
                   <InputField
                     label="Enter your new password again"
                     variant="outlined"
@@ -259,15 +277,21 @@ function UserProfile(): React.ReactNode {
                     value={secNewPassWord}
                     onChange={(e) => setSecNewPassWord(e.target.value)}
                     sx={{
-                      width: '90%'
+                      width: "90%",
                     }}
                   />
-                  <IconButton onClick={()=>{setSeeSecNewPassWord(!seeSecNewPassWord)}}>
-                    <VisibilityIcon sx={{
-                      width: 20,
-                      height: 20,
-                      color: seeSecNewPassWord ? 'rgba(250, 209, 38, 1)' : ''
-                    }}/>
+                  <IconButton
+                    onClick={() => {
+                      setSeeSecNewPassWord(!seeSecNewPassWord);
+                    }}
+                  >
+                    <VisibilityIcon
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        color: seeSecNewPassWord ? "rgba(250, 209, 38, 1)" : "",
+                      }}
+                    />
                   </IconButton>
                 </Box>
               </Label>
