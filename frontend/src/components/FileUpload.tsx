@@ -140,7 +140,6 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
           withCredentials: true,
         },
       );
-      console.log(response.data);
       setCheckAnim(false);
       setTimeout(() => {
         setFileUploaded(response.data);

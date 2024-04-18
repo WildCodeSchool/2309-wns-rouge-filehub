@@ -13,7 +13,7 @@ export function UploadFile() {
   const handleUpload = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!selectedFile) {
-      console.log("Aucun fichier sélectionné.");
+      console.error("Aucun fichier sélectionné.");
       return;
     }
     const formData = new FormData();
@@ -25,7 +25,6 @@ export function UploadFile() {
         },
         withCredentials: true,
       });
-      console.log("Fichier chargé avec succès.");
     } catch (error) {
       console.error("Erreur lors du chargement du fichier :", error);
     }
