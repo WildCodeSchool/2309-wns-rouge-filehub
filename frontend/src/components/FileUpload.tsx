@@ -14,15 +14,30 @@ import {
 import LinkIcon from "@mui/icons-material/Link";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import AddLinkIcon from '@mui/icons-material/AddLink';
-import Slide from '@mui/material/Slide';
+import AddLinkIcon from "@mui/icons-material/AddLink";
+import Slide from "@mui/material/Slide";
 import axios from "axios";
 import { dataBaseFile } from "./FileUploaded";
 import { ToastContainer, toast } from "react-toastify";
+import { useDropzone } from "react-dropzone";
 
 interface fileUploadProps {
   setFileUploaded: (fun: dataBaseFile | undefined) => void;
 }
+interface FileInfoProps {
+  isDragAccept?: boolean;
+  isDragReject?: boolean;
+}
+
+const getColor = (props: FileInfoProps) => {
+  if (props.isDragAccept) {
+    return "#00e676";
+  }
+  if (props.isDragReject) {
+    return "#ff1744";
+  }
+  return `${theme.palette.secondary.main}`;
+};
 
 export const FileUploadContent = styled.div`
   display: flex;
@@ -31,14 +46,15 @@ export const FileUploadContent = styled.div`
   flex-direction: column;
 `;
 
-export const FileInfo = styled.div`
+export const FileInfo = styled.div<FileInfoProps>`
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   padding: 5vmin 12vmin;
-  border: 1px solid ${theme.palette.secondary.main};
+  border: 1px solid ${(props) => getColor(props)};
+  transition: border 0.24s ease-in-out;
   border-radius: 5vmin;
   width: 40vmin;
   height: max(50vmin, fit-content);
@@ -79,6 +95,14 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
   const [fileName, setFileName] = useState("");
   const [checkAnim, setCheckAnim] = useState<boolean>(true);
 
+  const { getRootProps, getInputProps, isDragAccept, isDragReject } =
+    useDropzone({
+      onDrop: (acceptedFiles) => {
+        setFile(acceptedFiles[0]);
+        setFileName(acceptedFiles[0].name);
+      },
+    });
+
   const setFileInfo = (e: React.ChangeEvent<HTMLInputElement>) => {
     const fileInput = e.target;
 
@@ -117,9 +141,9 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
       );
       console.log(response.data);
       setCheckAnim(false);
-      setTimeout(()=>{
+      setTimeout(() => {
         setFileUploaded(response.data);
-      }, 250)
+      }, 250);
     } catch (error) {
       console.error("Erreur lors du dépot du fichier : ", error);
       toast.error("Erreur lors du dépot du fichier...");
@@ -127,13 +151,23 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
   };
 
   return (
-    <Slide direction="left" in={checkAnim} exit={!checkAnim} mountOnEnter unmountOnExit 
-    timeout={{
-      enter: 250,
-      exit: 250
-    }}>
-      <FileUploadContent>
-        <FileInfo>
+    <Slide
+      direction="left"
+      in={checkAnim}
+      exit={!checkAnim}
+      mountOnEnter
+      unmountOnExit
+      timeout={{
+        enter: 250,
+        exit: 250,
+      }}
+    >
+      <FileUploadContent {...getRootProps()}>
+        <FileInfo
+          isDragAccept={isDragAccept}
+          isDragReject={isDragReject}
+          onClick={(e) => e.stopPropagation()}
+        >
           <MenuIcon>
             <AddLinkIcon color="primary" fontSize="large" />
           </MenuIcon>
@@ -156,6 +190,7 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
                   <FileOpenIcon color="primary" />
                 </ButtonSVGContainer>
                 <input
+                  {...getInputProps()}
                   hidden
                   type="file"
                   onChange={(e) => {

@@ -56,11 +56,16 @@ function FileUploaded({
   };
 
   return (
-    <Slide direction="right" in={true} mountOnEnter unmountOnExit 
-    timeout={{
-      enter: 250,
-      exit: 250
-    }}>
+    <Slide
+      direction="right"
+      in={true}
+      mountOnEnter
+      unmountOnExit
+      timeout={{
+        enter: 250,
+        exit: 250,
+      }}
+    >
       <FileUploadContent>
         <FileInfo>
           <MenuIcon>
