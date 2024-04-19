@@ -1,7 +1,7 @@
 import { FilehubIcon } from "@/styles/icon/FileHubIcon";
 import { theme } from "@/styles/theme";
 import { pxToRem } from "@/styles/cssTheme";
-import { Box, Button, Link, Tab, Tabs, TextField } from "@mui/material";
+import { Box, Button, IconButton, Link, Tab, Tabs, TextField } from "@mui/material";
 import { ChangeEvent, useState } from "react";
 import styled from "styled-components";
 import { useMutation } from "@apollo/client";
@@ -10,6 +10,7 @@ import { mutationSignin } from "@/graphql/mutationSignin";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/router";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 export const TextFieldStyled = styled(TextField)`
   & .MuiOutlinedInput-root {
@@ -69,6 +70,9 @@ const CustomTab = styled(Tab)`
 
 export default function Login(): React.ReactNode {
   const [activeTab, setActiveTab] = useState(0);
+  const [seePassWordLogin, setSeePassWordLogin] = useState<boolean>(false);
+  const [seePassWordSignUp, setSeePassWordSignUp] = useState<boolean>(false);
+  const [seePassWordSignUp2, setSeePassWordSignUp2] = useState<boolean>(false);
   const router = useRouter();
 
   const [signinEmail, setSigninEmail] = useState("");
@@ -182,15 +186,43 @@ export default function Login(): React.ReactNode {
                   autoComplete="email"
                   autoFocus
                 />
-                <TextFieldStyled
-                  margin="normal"
-                  name="password"
-                  label="Mot de passe"
-                  type="password"
-                  value={signinPassword}
-                  onChange={(e) => setSigninPassword(e.target.value)}
-                  autoComplete="current-password"
-                />
+                <Box
+                  sx={{
+                    position: 'relative',
+                    display: "flex",
+                    alignItems: "center",
+                    width: '100%'
+                  }}
+                >
+                  <TextFieldStyled
+                    fullWidth
+                    margin="normal"
+                    name="password"
+                    label="Mot de passe"
+                    type={seePassWordLogin ? "text" : "password"}
+                    value={signinPassword}
+                    onChange={(e) => setSigninPassword(e.target.value)}
+                    autoComplete="current-password"
+                  />
+                  <IconButton
+                    onClick={() => {
+                      setSeePassWordLogin(!seePassWordLogin);
+                    }}
+                    sx={{
+                      position: 'absolute',
+                      top: 27,
+                      right: -36
+                    }}
+                  >
+                    <VisibilityIcon
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        color: seePassWordLogin ? "rgba(250, 209, 38, 1)" : "",
+                      }}
+                    />
+                  </IconButton>
+                </Box>
                 <Link
                   href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
                   target="_blank"
@@ -213,23 +245,79 @@ export default function Login(): React.ReactNode {
                   autoComplete="email"
                   autoFocus
                 />
-                <TextFieldStyled
-                  margin="normal"
-                  name="password"
-                  label="Mot de passe"
-                  type="password"
-                  value={signupPassword}
-                  onChange={(e) => setSignupPassword(e.target.value)}
-                  autoComplete="current-password"
-                />
-                <TextFieldStyled
-                  margin="normal"
-                  name="confirmPassword"
-                  label="Confirmer votre mot de passe"
-                  type="password"
-                  value={signupConfirmPassword}
-                  onChange={(e) => setSignupConfirmPassword(e.target.value)}
-                />
+                <Box
+                  sx={{
+                    position: 'relative',
+                    display: "flex",
+                    alignItems: "center",
+                    width: '100%'
+                  }}
+                >
+                  <TextFieldStyled
+                    fullWidth
+                    margin="normal"
+                    name="password"
+                    label="Mot de passe"
+                    type={seePassWordSignUp ? "text" : "password"}
+                    value={signupPassword}
+                    onChange={(e) => setSignupPassword(e.target.value)}
+                    autoComplete="current-password"
+                  />
+                  <IconButton
+                    onClick={() => {
+                      setSeePassWordSignUp(!seePassWordSignUp);
+                    }}
+                    sx={{
+                      position: 'absolute',
+                      top: 27,
+                      right: -36
+                    }}
+                  >
+                    <VisibilityIcon
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        color: seePassWordSignUp ? "rgba(250, 209, 38, 1)" : "",
+                      }}
+                    />
+                  </IconButton>
+                </Box>
+                <Box
+                  sx={{
+                    position: 'relative',
+                    display: "flex",
+                    alignItems: "center",
+                    width: '100%'
+                  }}
+                >
+                  <TextFieldStyled
+                    fullWidth
+                    margin="normal"
+                    name="confirmPassword"
+                    label="Confirmer votre mot de passe"
+                    type={seePassWordSignUp2 ? "text" : "password"}
+                    value={signupConfirmPassword}
+                    onChange={(e) => setSignupConfirmPassword(e.target.value)}
+                  />
+                  <IconButton
+                    onClick={() => {
+                      setSeePassWordSignUp2(!seePassWordSignUp2);
+                    }}
+                    sx={{
+                      position: 'absolute',
+                      top: 27,
+                      right: -36
+                    }}
+                  >
+                    <VisibilityIcon
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        color: seePassWordSignUp2 ? "rgba(250, 209, 38, 1)" : "",
+                      }}
+                    />
+                  </IconButton>
+                </Box>
               </>
             )}
             <StyledButton type="submit" variant="contained">
