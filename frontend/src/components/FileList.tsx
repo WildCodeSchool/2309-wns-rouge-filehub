@@ -10,7 +10,7 @@ import { TableVirtuoso, TableComponents } from "react-virtuoso";
 import { formatTimestampDate } from "@/helpers/Date";
 import InsertLinkIcon from "@mui/icons-material/InsertLink";
 import DownloadIcon from "@mui/icons-material/Download";
-import { Tooltip, IconButton, Stack, Button } from "@mui/material";
+import { Tooltip, IconButton, Stack, Button, Typography } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useApolloClient, useMutation, useQuery } from "@apollo/client";
 import { mutationDeleteFile } from "@/graphql/mutationDeleteFile";
@@ -237,22 +237,28 @@ export default function FileList() {
         <p>Error: {error.message}</p>
       ) : (
         <>
-          <Paper
-            sx={{
-              height: 280,
-              width: "90%",
-              maxWidth: "1000px",
-              boxShadow: "none",
-              marginBottom: "15px",
-            }}
-          >
-            <TableVirtuoso
-              data={data.filesCurrentUser}
-              components={VirtuosoTableComponents}
-              fixedHeaderContent={fixedHeaderContent}
-              itemContent={(index, row) => rowContent(index, row, deleteFile)}
-            />
-          </Paper>
+          {data.filesCurrentUser.length === 0 ? (
+            <Typography>
+              Tous les fichiers que vous avez envoyés apparaîtront ici
+            </Typography>
+          ) : (
+            <Paper
+              sx={{
+                height: 280,
+                width: "90%",
+                maxWidth: "1000px",
+                boxShadow: "none",
+                marginBottom: "15px",
+              }}
+            >
+              <TableVirtuoso
+                data={data.filesCurrentUser}
+                components={VirtuosoTableComponents}
+                fixedHeaderContent={fixedHeaderContent}
+                itemContent={(index, row) => rowContent(index, row, deleteFile)}
+              />
+            </Paper>
+          )}
           <ToastContainer position="bottom-right" autoClose={2000} />
         </>
       )}
