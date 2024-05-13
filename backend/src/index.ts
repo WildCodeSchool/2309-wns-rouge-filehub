@@ -70,12 +70,12 @@ async function start() {
   const downloadFileController = new DownloadFileController();
 
   app.post(
-    "/upload",
+    `${process.env.ROOT_PATH}/upload`,
     upload.single("file"),
     uploadFileController.uploadSingleFile,
   );
 
-  app.get("/download", function (req, res) {
+  app.get(`${process.env.ROOT_PATH}/download`, function (req, res) {
     downloadFileController.downloadingFile(req, res);
   });
 
