@@ -149,11 +149,7 @@ function rowContent(
   return (
     <>
       <TableCell align="right">{formatTimestampDate(row.uploadAt)}</TableCell>
-      <TableCell align="right">
-        {row.originalName.length > 10
-          ? row.originalName.substring(0, 20) + "..."
-          : row.originalName}
-      </TableCell>
+      <TableCell align="right">{row.originalName}</TableCell>
       <TableCell align="right">
         {calculateExpirationDate(row.uploadAt)}
       </TableCell>
