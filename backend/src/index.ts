@@ -12,6 +12,7 @@ import path from "path";
 import { UploadFileController } from "./controllers/UploadFile";
 import { DownloadFileController } from "./controllers/DownloadFile";
 import { getSchema } from "./schema";
+import { deleteOrphanFiles } from "./cron/deleteOrphanFiles";
 
 async function start() {
   await dataSource.initialize();
@@ -103,6 +104,7 @@ async function start() {
     httpServer.listen({ port: 5001 }, resolve),
   );
   console.log(`🚀 Server ready at http://localhost:5001/`);
+  deleteOrphanFiles();
 }
 
 start();
