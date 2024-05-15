@@ -14,6 +14,8 @@ import jwt from "jsonwebtoken";
 import Cookies from "cookies";
 import { ContextType, getUserFromReq } from "../auth";
 import nodemailer from "nodemailer";
+import { UserToken } from "../entities/UserToken";
+import { uuid } from "uuidv4";
 
 @Resolver(User)
 export class UsersResolver {
@@ -154,70 +156,75 @@ export class UsersResolver {
   @Mutation(() => User)
   async forgotPassword(
     @Arg("email") email: string,
-  ): Promise<User | null> {
-    const targetUser = await User.findOne({
+  ): Promise<boolean | null> {
+    const user = await User.findOne({
       where: { email: email },
     });
 
-    if (targetUser) {
-      let randomCode = "";
-      for (let i = 0; i < 4; i++) {
-        randomCode += String(Math.floor(Math.random() * 9));
-      }
-      console.log(randomCode);
-      const hashedCode = await argon2.hash(email+randomCode);
-      targetUser.resetCode = hashedCode;
-      await targetUser.save();
+    if(!user){
+      return true
+    }
 
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: 'filehubwcs@gmail.com',
-          pass: 'ptom oitf kvmz oucz'
+    const token = new UserToken();
+    token.user = user;
+    token.createdAt = new Date();
+    token.expiresAt = new Date(Number(token.createdAt) + 1000 * 60 * 60);
+    token.token = uuid();
+    await token.save();
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'filehubwcs@gmail.com',
+        pass: 'ptom oitf kvmz oucz'
+      }
+    });
+
+    const mailOptions = {
+      from: 'filehubwcs@gmail.com',
+      to: email,
+      subject: 'Réinitialisation de mot de passe',
+      html: `Voici votre code de reset : ${token.token}, 
+      entrez le via <a href="http//localhost:3000/token=${token.token}">cette URL</a>`
+    };
+    
+    try{
+      transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          console.log("error occured... :"+error);
+        } else {
+          console.log('Email sent: ' + info.response);
         }
       });
-
-      const mailOptions = {
-        from: 'filehubwcs@gmail.com',
-        to: email,
-        subject: 'Gros tocar va',
-        text: `mdr le débile, il a oublié son mot de passe. Bref, voici ton code de reset : ${randomCode}`
-      };
-      
-      try{
-        transporter.sendMail(mailOptions, function(error, info){
-          if (error) {
-            console.log("error occured... :"+error);
-          } else {
-            console.log('Email sent: ' + info.response);
-          }
-        });
-      } catch(e) {
-        throw new Error(String(e));
-      }
-      return targetUser;
-    } else {
-      throw new Error(`User not found`);
+    } catch(e) {
+      throw new Error(String(e));
     }
+    return true;
   }
 
   @Mutation(() => User)
-  async checkResetCode(
-    @Arg("email") email: string,
-    @Arg("code") code: string
-  ): Promise<User | undefined> {
-    const targetUser = await User.findOne({
-      where: { email: email },
-    });
-    
-    if(targetUser){
-      if (await argon2.verify(targetUser.resetCode, `${email}${code}`)) {
-        return targetUser;
-      } else {
-        throw new Error(`Invalid informations`);
-      }
-    } else {
-      throw new Error(`User not found`);
+  async updatePasswordFromCode(
+    @Arg("token") token: string,
+    @Arg("password") password: string,
+  ): Promise<User | null> {
+    if(password.length < 8 || password.length > 50){
+      throw new Error(`Password length must be 8 to 50 caracters`);
     }
+    const userToken = await UserToken.findOne({
+      where: { token: token },
+      relations: { user: true }
+    });
+
+    if(!userToken){
+      throw new Error(`Invalid token`);
+    }
+
+    const hashedPassword = await argon2.hash(password);
+    userToken.user.password = hashedPassword;
+
+    userToken.expiresAt = new Date();
+    await userToken.save();
+    await userToken.user.save();
+    return userToken.user;
   }
 }

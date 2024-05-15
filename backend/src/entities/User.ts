@@ -26,10 +26,6 @@ export class User extends BaseEntity {
   @CreateDateColumn()
   createdAt!: Date;
 
-  @Column({ length: 255, nullable: true })
-  @Field()
-  resetCode!: string;
-
   // @OneToMany(() => File, (file) => file.createdBy)
   // @Field(() => [File])
   // files!: File[];
