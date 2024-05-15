@@ -124,6 +124,12 @@ export class UsersResolver {
 
     if (targetUser) {
       if (await argon2.verify(targetUser.password, data.password)) {
+        console.log(
+          "Changement du mot de passe de : " +
+            data.password +
+            " à : " +
+            data.newPassword1,
+        );
         const hashedPassword = await argon2.hash(data.newPassword1);
         targetUser.password = hashedPassword;
       } else {
@@ -135,6 +141,7 @@ export class UsersResolver {
 
     const errors = await validate(targetUser);
     if (errors.length === 0) {
+      console.log("saving...");
       await targetUser.save();
       return await User.findOne({
         where: { id: context.user?.id },
@@ -145,39 +152,70 @@ export class UsersResolver {
   }
 
   @Mutation(() => User)
-  async forgotPassword(@Arg("email") email: string): Promise<User | null> {
+  async forgotPassword(
+    @Arg("email") email: string,
+  ): Promise<User | null> {
     const targetUser = await User.findOne({
       where: { email: email },
     });
 
     if (targetUser) {
+      let randomCode = "";
+      for (let i = 0; i < 4; i++) {
+        randomCode += String(Math.floor(Math.random() * 9));
+      }
+      console.log(randomCode);
+      const hashedCode = await argon2.hash(email+randomCode);
+      targetUser.resetCode = hashedCode;
+      await targetUser.save();
+
       const transporter = nodemailer.createTransport({
-        service: "gmail",
+        service: 'gmail',
         auth: {
-          user: "filehubwcs@gmail.com",
-          pass: "ptom oitf kvmz oucz",
-        },
+          user: 'filehubwcs@gmail.com',
+          pass: 'ptom oitf kvmz oucz'
+        }
       });
 
       const mailOptions = {
-        from: "filehubwcs@gmail.com",
+        from: 'filehubwcs@gmail.com',
         to: email,
-        subject: "Gros tocar va",
-        text: "mdr le débile, il a oublié son mot de passe",
+        subject: 'Gros tocar va',
+        text: `mdr le débile, il a oublié son mot de passe. Bref, voici ton code de reset : ${randomCode}`
       };
-
-      try {
-        transporter.sendMail(mailOptions, function (error, info) {
+      
+      try{
+        transporter.sendMail(mailOptions, function(error, info){
           if (error) {
-            console.error("error occured... :" + error);
+            console.log("error occured... :"+error);
           } else {
-            console.log("Email sent: " + info.response);
+            console.log('Email sent: ' + info.response);
           }
         });
-      } catch (e) {
+      } catch(e) {
         throw new Error(String(e));
       }
       return targetUser;
+    } else {
+      throw new Error(`User not found`);
+    }
+  }
+
+  @Mutation(() => User)
+  async checkResetCode(
+    @Arg("email") email: string,
+    @Arg("code") code: string
+  ): Promise<User | undefined> {
+    const targetUser = await User.findOne({
+      where: { email: email },
+    });
+    
+    if(targetUser){
+      if (await argon2.verify(targetUser.resetCode, `${email}${code}`)) {
+        return targetUser;
+      } else {
+        throw new Error(`Invalid informations`);
+      }
     } else {
       throw new Error(`User not found`);
     }
