@@ -27,13 +27,14 @@ services:
     restart: always
     container_name: minio-local
     volumes:
-      - "minio_storage:/data"
-    env_file: ./backend/.env
+      - minio_storage:/data
+
+    env_file:
+      - .env
     ports:
-      - ${MINIO_PORT}:9000
-      - ${MINIO_ADMIN_PORT}:9001
-    networks:
-      - reverseproxy-nw
+      - "9000:9000"
+      - "9001:9001"
+    command: "minio server /data --console-address :9001"
 
 networks:
   reverseproxy-nw:

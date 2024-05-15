@@ -3,7 +3,7 @@ import { dataSource } from "./datasource";
 import { ApolloServer } from "@apollo/server";
 import { ContextType } from "./auth";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
-import express, { Request } from "express";
+import express, { Request, Response, NextFunction } from "express";
 import { expressMiddleware } from "@apollo/server/express4";
 import http from "http";
 import cors from "cors";
@@ -13,6 +13,7 @@ import { UploadFileController } from "./controllers/UploadFile";
 import { DownloadFileController } from "./controllers/DownloadFile";
 import { getSchema } from "./schema";
 import { deleteOrphanFiles } from "./cron/deleteOrphanFiles";
+import AWS from "aws-sdk";
 
 async function start() {
   await dataSource.initialize();
@@ -32,29 +33,23 @@ async function start() {
   const server = new ApolloServer<ContextType>({
     schema,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-    csrfPrevention: { requestHeaders: ['multipart/form-data'] }
+    csrfPrevention: { requestHeaders: ["multipart/form-data"] },
   });
   await server.start();
 
+  // Configuration de Minio
+  const localSetup = {
+    endpoint: "http://minio-local:9000",
+    accessKeyId: "mW2GGADINBj7n60MZZ3H",
+    secretAccessKey: "YmaJNb4U9ltQAqssfsWMbhnNXA5vWMSEAp3N79Di",
+    sslEnabled: false,
+    s3ForcePathStyle: true,
+  };
+  const awsBucket = new AWS.S3(localSetup);
+
   // MIDDLEWARE MULTER QUI TRAITE LES FICHIERS ENTRE LE FRONT ET LE SERVEUR
 
-  const storage = multer.diskStorage({
-    destination: (
-      req: Request,
-      file: Express.Multer.File,
-      cb: (error: Error | null, destination: string) => void,
-    ) => {
-      cb(null, path.join(__dirname, "Files"));
-    },
-    filename: (
-      req: Request,
-      file: Express.Multer.File,
-      cb: (error: Error | null, filename: string) => void,
-    ) => {
-      const originalName = decodeURIComponent(file.originalname);
-      cb(null, Date.now() + originalName);
-    },
-  });
+  const storage = multer.memoryStorage(); // Utilisation de la mémoire pour stocker les fichiers temporairement
 
   const upload = multer({
     storage: storage,
@@ -67,8 +62,8 @@ async function start() {
 
   // CONTROLLERS
 
-  const uploadFileController = new UploadFileController();
-  const downloadFileController = new DownloadFileController();
+  const uploadFileController = new UploadFileController(awsBucket);
+  const downloadFileController = new DownloadFileController(awsBucket);
 
   app.post(
     `${process.env.ROOT_PATH}/upload`,
@@ -86,10 +81,7 @@ async function start() {
       origin: "http://localhost:3000",
       credentials: true,
     }),
-    // 50mb is the limit that `startStandaloneServer` uses, but you may configure this to suit your needs
     express.json({ limit: "50mb" }),
-    // expressMiddleware accepts the same arguments:
-    // an Apollo Server instance and optional configuration options
     expressMiddleware(server, {
       context: async (args) => {
         return {
@@ -99,6 +91,12 @@ async function start() {
       },
     }),
   );
+
+  // Error handling middleware
+  app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error("An error occurred:", err);
+    res.status(500).send("An internal server error occurred");
+  });
 
   await new Promise<void>((resolve) =>
     httpServer.listen({ port: 5001 }, resolve),
