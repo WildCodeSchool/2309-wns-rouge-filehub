@@ -1,4 +1,4 @@
-import { Button, Slide } from "@mui/material";
+import { Button, Slide, Typography } from "@mui/material";
 import { useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
@@ -71,9 +71,26 @@ function FileUploaded({
           <MenuIcon>
             <DoneIcon color="primary" fontSize="large" />
           </MenuIcon>
-          <Title>Téléchargement terminé !</Title>
+          <Typography
+            variant="h6"
+            sx={{
+              marginY: "10px",
+              fontWeight: 700,
+              color: theme.palette.common.black,
+            }}
+          >
+            Téléchargement terminé !
+          </Typography>
           <Container>
-            <Field style={{ padding: "22px" }}>{file.url}</Field>
+            <Field
+              style={{
+                padding: "22px",
+                fontFamily: "Poppins, sans-serif",
+                fontSize: "14.5px",
+              }}
+            >
+              {file.url}
+            </Field>
           </Container>
           <Container>
             <ButtonCopy
@@ -81,7 +98,7 @@ function FileUploaded({
               onClick={() => handleCopy(file.url)}
               sx={
                 !copied
-                  ? { background: theme.palette.secondary.main }
+                  ? { background: theme.palette.primary.main }
                   : {
                       background:
                         "linear-gradient(90deg, rgba(250,209,38,1) 0%, rgba(255,84,79,1) 75%, rgba(255,84,79,1) 100%)",
@@ -90,11 +107,7 @@ function FileUploaded({
             >
               Copier le lien
               <ButtonSVGContainer>
-                {copied ? (
-                  <DoneIcon color="primary" />
-                ) : (
-                  <ContentCopyIcon color="primary" />
-                )}
+                {copied ? <DoneIcon /> : <ContentCopyIcon />}
               </ButtonSVGContainer>
             </ButtonCopy>
           </Container>
@@ -102,7 +115,7 @@ function FileUploaded({
             <ButtonConfirm onClick={() => setFileUploaded(undefined)}>
               Nouveau fichier
               <ButtonSVGContainer>
-                <KeyboardBackspaceIcon color="primary" />
+                <KeyboardBackspaceIcon />
               </ButtonSVGContainer>
             </ButtonConfirm>
           </Container>

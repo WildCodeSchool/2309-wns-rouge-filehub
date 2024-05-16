@@ -1,10 +1,11 @@
-import { Button, Stack } from "@mui/material";
+import { Button, Stack, useTheme } from "@mui/material";
 import { useRouter } from "next/router";
 import React from "react";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 
 function UploadNewFile() {
   const router = useRouter();
+  const theme = useTheme();
   return (
     <Button
       onClick={() => {
@@ -34,10 +35,11 @@ function UploadNewFile() {
           backgroundColor: "white",
           borderRadius: "100%",
           height: "40px",
+          minHeight: "40px",
           width: "40px",
         }}
       >
-        <FileUploadIcon color="primary" />
+        <FileUploadIcon sx={{ color: theme.palette.common.black }} />
       </Stack>
     </Button>
   );

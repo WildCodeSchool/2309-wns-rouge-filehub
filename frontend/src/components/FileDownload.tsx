@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Button, Card } from "@mui/material";
+import React from "react";
+import { Button, Card, Typography } from "@mui/material";
 import axios from "axios";
 import styled from "styled-components";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -47,7 +47,7 @@ const ButtonConfirm = styled(Button)`
     display: flex;
     justify-content: center;
     text-transform: none;
-    width: 40%;
+    width: 65%;
     height: 50px;
     margin-top: 1vmin;
     font-size: 14px;
@@ -112,9 +112,20 @@ const FileDownload: React.FC<FileDownloadProps> = ({ fileName }) => {
     >
       <StyledCard>
         <TableContainerWrapper>
-          <h1>Votre fichier est à portée de clic !</h1>
+          <Typography
+            variant="h6"
+            sx={{
+              marginY: "10px",
+              fontWeight: 700,
+              color: "black",
+            }}
+          >
+            Votre fichier est à portée de clic !
+          </Typography>
           {data && data.getFile && (
-            <p>Nom du fichier: {data.getFile.originalName}</p>
+            <Typography marginBottom={"15px"}>
+              Nom du fichier: {data.getFile.originalName}
+            </Typography>
           )}
           <DivLoadFile>
             <ButtonConfirm variant="contained" onClick={handleDownload}>
