@@ -153,7 +153,7 @@ export class UsersResolver {
     }
   }
 
-  @Mutation(() => User)
+  @Mutation(() => Boolean)
   async forgotPassword(
     @Arg("email") email: string,
   ): Promise<boolean | null> {
@@ -217,6 +217,9 @@ export class UsersResolver {
 
     if(!userToken){
       throw new Error(`Invalid token`);
+    }
+    if(userToken.expiresAt < new Date()){
+      throw new Error(`Expired token`);
     }
 
     const hashedPassword = await argon2.hash(password);
