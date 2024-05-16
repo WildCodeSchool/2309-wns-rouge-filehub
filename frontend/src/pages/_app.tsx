@@ -7,7 +7,7 @@ import {
   createHttpLink,
   useQuery,
 } from "@apollo/client";
-import { ThemeProvider } from "@mui/material/styles";
+import { ThemeProvider, responsiveFontSizes } from "@mui/material/styles";
 import { theme } from "@/styles/theme";
 import { useRouter } from "next/router";
 import { ReactNode, useEffect } from "react";
@@ -68,10 +68,12 @@ function Auth(props: { children: ReactNode }) {
   }
 }
 
+const themeResponsive = responsiveFontSizes(theme);
+
 function App({ Component, pageProps }: AppProps): React.ReactNode {
   return (
     <ApolloProvider client={client}>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={themeResponsive}>
         <Auth>
           <Head>
             <title>FileHub</title>
