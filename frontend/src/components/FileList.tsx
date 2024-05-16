@@ -85,7 +85,7 @@ const VirtuosoTableComponents: TableComponents<FileData> = {
   )),
 };
 
-function fixedHeaderContent() {
+export function fixedHeaderContent() {
   return (
     <TableRow>
       {columns.map((column, index) => (
