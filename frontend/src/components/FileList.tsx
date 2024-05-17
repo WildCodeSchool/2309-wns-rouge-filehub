@@ -10,7 +10,7 @@ import { TableVirtuoso, TableComponents } from "react-virtuoso";
 import { formatTimestampDate } from "@/helpers/Date";
 import InsertLinkIcon from "@mui/icons-material/InsertLink";
 import DownloadIcon from "@mui/icons-material/Download";
-import { Tooltip, IconButton, Stack, Button, Typography } from "@mui/material";
+import { Tooltip, IconButton, Typography } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useApolloClient, useMutation, useQuery } from "@apollo/client";
 import { mutationDeleteFile } from "@/graphql/mutationDeleteFile";
@@ -85,7 +85,7 @@ const VirtuosoTableComponents: TableComponents<FileData> = {
   )),
 };
 
-function fixedHeaderContent() {
+export function fixedHeaderContent() {
   return (
     <TableRow>
       {columns.map((column, index) => (
@@ -100,6 +100,7 @@ function fixedHeaderContent() {
           style={{ width: column.width }}
           sx={{
             backgroundColor: "background.paper",
+            fontWeight: 700,
           }}
         >
           {column.label}
@@ -143,7 +144,7 @@ function rowContent(
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(row.url);
-    toast.success("lien copié avec succès!");
+    toast.success("Lien copié avec succès!");
   };
 
   return (
@@ -155,14 +156,14 @@ function rowContent(
       </TableCell>
       <TableCell align="center">
         <Tooltip title="Télécharger">
-          <IconButton sx={{ color: "orange" }} onClick={downloadFile}>
+          <IconButton sx={{ color: "#FF544F" }} onClick={downloadFile}>
             <DownloadIcon />
           </IconButton>
         </Tooltip>
       </TableCell>
       <TableCell align="center">
         <Tooltip title="Copier le lien">
-          <IconButton sx={{ color: "orange" }} onClick={handleCopyLink}>
+          <IconButton sx={{ color: "#FF544F" }} onClick={handleCopyLink}>
             <InsertLinkIcon />
           </IconButton>
         </Tooltip>
@@ -170,7 +171,7 @@ function rowContent(
       <TableCell align="center">
         <Tooltip title="Supprimer">
           <IconButton
-            sx={{ color: "orange" }}
+            sx={{ color: "#FF544F" }}
             onClick={() => deleteFile(row.id)}
           >
             <DeleteIcon />
@@ -189,25 +190,26 @@ export default function FileList() {
     },
   );
 
-  const deleteFile = async (fileId: FileData["id"]) => {
-    const { data } = await doDeleteFile({
-      variables: {
-        id: fileId,
-      },
-    });
-    if (!deleteFileError) {
-      toast.success("Fichier supprimé avec succès!");
-    } else {
-      toast.error("Fichier supprimé avec succès!");
-    }
-  };
-
   const {
     loading: meLoading,
     error: meError,
     data: meData,
   } = useQuery(queryMe);
   const userId = meData?.me?.id;
+
+  const deleteFile = async (fileId: FileData["id"]) => {
+    await doDeleteFile({
+      variables: {
+        id: fileId,
+      },
+    });
+
+    if (!deleteFileError) {
+      toast.success("Fichier supprimé avec succès!");
+    } else {
+      toast.error("Problème lors de la suppression...");
+    }
+  };
 
   const { loading, error, data } = useQuery(getUserFiles, {
     variables: { userId },

@@ -1,7 +1,15 @@
 import { FilehubIcon } from "@/styles/icon/FileHubIcon";
 import { theme } from "@/styles/theme";
 import { pxToRem } from "@/styles/cssTheme";
-import { Box, Button, IconButton, Link, Tab, Tabs, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  Link,
+  Tab,
+  Tabs,
+  TextField,
+} from "@mui/material";
 import { ChangeEvent, useState } from "react";
 import styled from "styled-components";
 import { useMutation } from "@apollo/client";
@@ -39,7 +47,7 @@ const CustomTabs = styled(Tabs)`
     display: flex;
     justify-content: space-between;
     border-radius: 30px;
-    border: 1px solid ${theme.palette.secondary.main};
+    border: 1px solid ${theme.palette.primary.light};
     min-height: ${pxToRem(56)};
     margin-bottom: ${pxToRem(30)};
   }
@@ -158,7 +166,7 @@ export default function Login(): React.ReactNode {
         alignItems="center"
         justifyContent="center"
         border={1}
-        borderColor={theme.palette.secondary.main}
+        borderColor={theme.palette.primary.light}
         borderRadius="30px"
         width={pxToRem(547)}
         height={pxToRem(550)}
@@ -188,10 +196,10 @@ export default function Login(): React.ReactNode {
                 />
                 <Box
                   sx={{
-                    position: 'relative',
+                    position: "relative",
                     display: "flex",
                     alignItems: "center",
-                    width: '100%'
+                    width: "100%",
                   }}
                 >
                   <TextFieldStyled
@@ -209,9 +217,9 @@ export default function Login(): React.ReactNode {
                       setSeePassWordLogin(!seePassWordLogin);
                     }}
                     sx={{
-                      position: 'absolute',
+                      position: "absolute",
                       top: 27,
-                      right: -36
+                      right: -36,
                     }}
                   >
                     <VisibilityIcon
@@ -245,10 +253,10 @@ export default function Login(): React.ReactNode {
                 />
                 <Box
                   sx={{
-                    position: 'relative',
+                    position: "relative",
                     display: "flex",
                     alignItems: "center",
-                    width: '100%'
+                    width: "100%",
                   }}
                 >
                   <TextFieldStyled
@@ -266,9 +274,9 @@ export default function Login(): React.ReactNode {
                       setSeePassWordSignUp(!seePassWordSignUp);
                     }}
                     sx={{
-                      position: 'absolute',
+                      position: "absolute",
                       top: 27,
-                      right: -36
+                      right: -36,
                     }}
                   >
                     <VisibilityIcon
@@ -282,10 +290,10 @@ export default function Login(): React.ReactNode {
                 </Box>
                 <Box
                   sx={{
-                    position: 'relative',
+                    position: "relative",
                     display: "flex",
                     alignItems: "center",
-                    width: '100%'
+                    width: "100%",
                   }}
                 >
                   <TextFieldStyled
@@ -302,16 +310,18 @@ export default function Login(): React.ReactNode {
                       setSeePassWordSignUp2(!seePassWordSignUp2);
                     }}
                     sx={{
-                      position: 'absolute',
+                      position: "absolute",
                       top: 27,
-                      right: -36
+                      right: -36,
                     }}
                   >
                     <VisibilityIcon
                       sx={{
                         width: 20,
                         height: 20,
-                        color: seePassWordSignUp2 ? "rgba(250, 209, 38, 1)" : "",
+                        color: seePassWordSignUp2
+                          ? "rgba(250, 209, 38, 1)"
+                          : "",
                       }}
                     />
                   </IconButton>

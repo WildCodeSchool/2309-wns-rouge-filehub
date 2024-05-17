@@ -215,6 +215,9 @@ export class UsersResolver {
     if(!userToken){
       throw new Error(`Invalid token`);
     }
+    if(userToken.expiresAt < new Date()){
+      throw new Error(`Expired token`);
+    }
 
     userToken.user.password = await argon2.hash(password);
 

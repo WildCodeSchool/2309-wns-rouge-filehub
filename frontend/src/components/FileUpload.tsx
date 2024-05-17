@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
@@ -54,7 +54,7 @@ export const FileInfo = styled.div<FileInfoProps>`
   align-items: center;
   flex-direction: column;
   padding: 5vmin 12vmin;
-  border: 1px solid ${(props) => getColor(props)};
+  border: 1px solid ${theme.palette.primary.light};
   transition: border 0.24s ease-in-out;
   border-radius: 5vmin;
   width: 40vmin;
@@ -70,6 +70,7 @@ export const FileButton = styled(Button)`
     box-shadow: none;
     border-radius: 50px;
     text-transform: none;
+    background-color: #c2bebe;
   }
 `;
 
@@ -80,6 +81,7 @@ export const LabelButton = styled.label`
   width: 100%;
   height: 100%;
   cursor: pointer;
+  color: white;
 `;
 
 export const ThrowFileButton = styled(Button)`
@@ -130,16 +132,12 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
     formData.append("file", file, encodeURIComponent(fileName));
 
     try {
-      const response = await axios.post(
-        `${API_URL}/upload`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          withCredentials: true,
+      const response = await axios.post(`${API_URL}/upload`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-      );
+        withCredentials: true,
+      });
       setCheckAnim(false);
       setTimeout(() => {
         setFileUploaded(response.data);
@@ -171,7 +169,16 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
           <MenuIcon>
             <AddLinkIcon color="primary" fontSize="large" />
           </MenuIcon>
-          <Title>Ajouter un fichier</Title>
+          <Typography
+            variant="h6"
+            sx={{
+              marginY: "10px",
+              fontWeight: 700,
+              color: theme.palette.common.black,
+            }}
+          >
+            Ajouter un fichier
+          </Typography>
           <Container>
             <FileButton
               variant="contained"
@@ -187,10 +194,9 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
               <LabelButton>
                 Déposer un fichier
                 <ButtonSVGContainer>
-                  <FileOpenIcon color="primary" />
+                  <FileOpenIcon />
                 </ButtonSVGContainer>
                 <input
-                  {...getInputProps()}
                   hidden
                   type="file"
                   onChange={(e) => {
@@ -227,7 +233,7 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
             <ButtonConfirm onClick={handleUpload}>
               Obtenir un lien
               <ButtonSVGContainer>
-                <LinkIcon color="primary" />
+                <LinkIcon />
               </ButtonSVGContainer>
             </ButtonConfirm>
           </Container>

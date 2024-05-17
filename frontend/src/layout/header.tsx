@@ -8,10 +8,10 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { mutationSignout } from "@/graphql/mutationSignout";
 import { useMutation, useQuery } from "@apollo/client";
 import { queryMe } from "@/graphql/queryMe";
+import { Typography } from "@mui/material";
 
 const HeaderContainer = styled.header`
   border-bottom: 1px solid #ccc;
-  padding-bottom: 10px;
   width: 100%;
   box-sizing: border-box;
   position: fixed;
@@ -69,11 +69,23 @@ const Header = (): React.ReactNode => {
         <LinksContainer>
           <StyledLink onClick={() => router.push("/myFiles")}>
             <Inventory2Icon />
-            Mes Fichiers
+            <Typography
+              marginLeft={"5px"}
+              fontSize={"14.5px"}
+              marginRight={"14px"}
+            >
+              Mes Fichiers
+            </Typography>
           </StyledLink>
           <StyledLink onClick={() => router.push("/userProfilePage")}>
             <PersonIcon />
-            {me && me.me.email}
+            <Typography
+              marginLeft={"5px"}
+              fontSize={"14.5px"}
+              marginRight={"14px"}
+            >
+              {me && me.me.email}
+            </Typography>
           </StyledLink>
           <StyledLink onClick={doSignOut}>
             <LogoutIcon />
