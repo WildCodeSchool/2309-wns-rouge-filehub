@@ -21,3 +21,19 @@ services:
       timeout: 30s
       retries: 3
       start_period: 60s
+
+  minio-local:
+    image: minio/minio:latest
+    restart: always
+    container_name: minio-local
+    volumes:
+      - minio_storage:/data
+    env_file:
+      - .env
+    ports:
+      - ${MINIO_PORT}:9000
+      - ${MINIO_ADMIN_PORT}:9001
+    command: "minio server /data --console-address :9001"
+
+volumes:
+  minio_storage: {}
