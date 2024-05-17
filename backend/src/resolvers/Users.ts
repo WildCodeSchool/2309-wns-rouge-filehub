@@ -1,21 +1,13 @@
-import {
-  Arg,
-  Authorized,
-  Ctx,
-  ID,
-  Mutation,
-  Query,
-  Resolver,
-} from "type-graphql";
-import { User, UserCreateInput, UserUpdateInput } from "../entities/User";
-import { validate } from "class-validator";
+import {Arg, Authorized, Ctx, ID, Mutation, Query, Resolver,} from "type-graphql";
+import {User, UserCreateInput, UserUpdateInput} from "../entities/User";
+import {validate} from "class-validator";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import Cookies from "cookies";
-import { ContextType, getUserFromReq } from "../auth";
+import {ContextType, getUserFromReq} from "../auth";
 import nodemailer from "nodemailer";
-import { UserToken } from "../entities/UserToken";
-import { uuid } from "uuidv4";
+import {UserToken} from "../entities/UserToken";
+import {uuid} from "uuidv4";
 
 @Resolver(User)
 export class UsersResolver {
@@ -153,7 +145,7 @@ export class UsersResolver {
     }
   }
 
-  @Mutation(() => User)
+  @Mutation(() => Boolean)
   async forgotPassword(
     @Arg("email") email: string,
   ): Promise<boolean | null> {
@@ -162,6 +154,7 @@ export class UsersResolver {
     });
 
     if(!user){
+      console.log('nada')
       return true
     }
 
@@ -177,6 +170,9 @@ export class UsersResolver {
       auth: {
         user: 'filehubwcs@gmail.com',
         pass: 'ptom oitf kvmz oucz'
+      },
+      tls: {
+        rejectUnauthorized: false
       }
     });
 
@@ -185,10 +181,11 @@ export class UsersResolver {
       to: email,
       subject: 'Réinitialisation de mot de passe',
       html: `Voici votre code de reset : ${token.token}, 
-      entrez le via <a href="http//localhost:3000/token=${token.token}">cette URL</a>`
+      entrez le via <a href="${process.env.FRONT_ADRESS}/reset-password/${token.token}">cette URL</a>`
     };
     
     try{
+      console.log('send nude')
       transporter.sendMail(mailOptions, function(error, info){
         if (error) {
           console.log("error occured... :"+error);
@@ -219,8 +216,7 @@ export class UsersResolver {
       throw new Error(`Invalid token`);
     }
 
-    const hashedPassword = await argon2.hash(password);
-    userToken.user.password = hashedPassword;
+    userToken.user.password = await argon2.hash(password);
 
     userToken.expiresAt = new Date();
     await userToken.save();

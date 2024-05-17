@@ -223,14 +223,12 @@ export default function Login(): React.ReactNode {
                     />
                   </IconButton>
                 </Box>
-                <Link
-                  href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{ mt: 1, ml: 1, color: theme.palette.secondary.main }}
+                <Button
+                    onClick={() => router.push("/forgot-password")}
+                    sx={{ mt: 1, ml: 1, color: theme.palette.secondary.main }}
                 >
                   Mot de passe oublié ?
-                </Link>
+                </Button>
               </>
             )}
             {activeTab === 1 && (
