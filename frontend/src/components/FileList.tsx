@@ -143,7 +143,7 @@ function rowContent(
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(row.url);
-    toast.success("lien copié avec succès!");
+    toast.success("Lien copié avec succès!");
   };
 
   return (
@@ -189,25 +189,26 @@ export default function FileList() {
     },
   );
 
-  const deleteFile = async (fileId: FileData["id"]) => {
-    const { data } = await doDeleteFile({
-      variables: {
-        id: fileId,
-      },
-    });
-    if (!deleteFileError) {
-      toast.success("Fichier supprimé avec succès!");
-    } else {
-      toast.error("Fichier supprimé avec succès!");
-    }
-  };
-
   const {
     loading: meLoading,
     error: meError,
     data: meData,
   } = useQuery(queryMe);
   const userId = meData?.me?.id;
+
+  const deleteFile = async (fileId: FileData["id"]) => {
+    await doDeleteFile({
+      variables: {
+        id: fileId,
+      },
+    });
+
+    if (!deleteFileError) {
+      toast.success("Fichier supprimé avec succès!");
+    } else {
+      toast.error("Problème lors de la suppression...");
+    }
+  };
 
   const { loading, error, data } = useQuery(getUserFiles, {
     variables: { userId },

@@ -9,7 +9,15 @@ import {
 } from "type-graphql";
 import { File } from "../entities/File";
 import { ContextType } from "../auth";
-import fs from "fs";
+import AWS from "aws-sdk";
+
+const localSetupMinio = {
+  endpoint: process.env.AWS_ENDPOINT,
+  accessKeyId: process.env.AWS_ACCESS,
+  secretAccessKey: process.env.AWS_SECRET,
+  sslEnabled: false,
+  s3ForcePathStyle: true,
+};
 
 @Resolver(File)
 export class FilesResolver {
@@ -39,62 +47,24 @@ export class FilesResolver {
     const file = await File.findOne({
       where: { id: id },
     });
+
     if (file) {
-      await file.remove();
-      file.id = id;
+      const awsBucket = new AWS.S3(localSetupMinio);
       try {
-        await fs.promises.unlink(file.path);
+        const params = {
+          Bucket: "bucket-filehub",
+          Key: file.uniqueName,
+        };
+
+        await awsBucket.deleteObject(params).promise();
+        await file.remove();
       } catch (err) {
-        throw new Error(`An error occured on the actual file deletion: ${err}`);
+        throw new Error(
+          `Une erreur s'est produite lors de la suppression du fichier : ${err}`,
+        );
       }
     } else {
-      throw new Error(`File not found in database`);
+      throw new Error(`Fichier non trouvé dans la base de données`);
     }
   }
-
-  // @Authorized()
-  // @Query(() => [File])
-  // async filesByFilter(
-  //   @Arg('data', () => FilesWhere) data: FilesWhere
-  // ): Promise<File[]> {
-  //   const queryWhere: any = {};
-
-  //   queryWhere.id = data?.id;
-  //   queryWhere.originalName = data?.originalName;
-  //   queryWhere.uniqueName = data?.uniqueName;
-  //   queryWhere.path = data?.path;
-  //   queryWhere.mimeType = data?.mimeType;
-  //   queryWhere.size = data?.size;
-  //   queryWhere.url = data?.url;
-  //   queryWhere.createdBy = { id: data?.createdBy };
-
-  //   const files = await File.find({
-  //     where: queryWhere,
-  //     relations: {
-  //       createdBy: true,
-  //     },
-  //   });
-  //   return files;
-  // }
-
-  // @Authorized()
-  // @Mutation(() => File, { nullable: true })
-  // async updateFile(
-  //   @Arg('id', () => ID) id: number,
-  //   @Arg('data') data: FileUpdateInput
-  // ): Promise<File | null> {
-  //   const file = await File.findOne({
-  //     where: { id: id },
-  //   });
-  //   if (file) {
-  //     Object.assign(file, data);
-  //     const errors = await validate(file);
-  //     if (errors.length === 0) {
-  //       await file.save();
-  //     } else {
-  //       throw new Error(`Error occured : ${JSON.stringify(errors)}`);
-  //     }
-  //   }
-  //   return file;
-  // }
 }

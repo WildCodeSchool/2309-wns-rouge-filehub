@@ -19,9 +19,7 @@ export class DownloadFileController {
 
       this.s3.getObject(params, (err: any, data: any) => {
         if (err) {
-          res.status(500).send({
-            message: "There was an issue in downloading the file. " + err,
-          });
+          console.error("There was an issue in downloading the file: ", err);
         } else {
           res.attachment(fileName);
           res.send(data.Body);

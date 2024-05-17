@@ -3,7 +3,7 @@ import { dataSource } from "./datasource";
 import { ApolloServer } from "@apollo/server";
 import { ContextType } from "./auth";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
-import express, { Request, Response, NextFunction } from "express";
+import express from "express";
 import { expressMiddleware } from "@apollo/server/express4";
 import http from "http";
 import cors from "cors";
@@ -38,18 +38,20 @@ async function start() {
   await server.start();
 
   // Configuration de Minio
-  const localSetup = {
-    endpoint: "http://minio-local:9000",
-    accessKeyId: "mW2GGADINBj7n60MZZ3H",
-    secretAccessKey: "YmaJNb4U9ltQAqssfsWMbhnNXA5vWMSEAp3N79Di",
+
+  const localSetupMinio = {
+    endpoint: process.env.AWS_ENDPOINT,
+    accessKeyId: process.env.AWS_ACCESS,
+    secretAccessKey: process.env.AWS_SECRET,
     sslEnabled: false,
     s3ForcePathStyle: true,
   };
-  const awsBucket = new AWS.S3(localSetup);
+
+  const awsBucket = new AWS.S3(localSetupMinio);
 
   // MIDDLEWARE MULTER QUI TRAITE LES FICHIERS ENTRE LE FRONT ET LE SERVEUR
 
-  const storage = multer.memoryStorage(); // Utilisation de la mémoire pour stocker les fichiers temporairement
+  const storage = multer.memoryStorage();
 
   const upload = multer({
     storage: storage,
@@ -91,12 +93,6 @@ async function start() {
       },
     }),
   );
-
-  // Error handling middleware
-  app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    console.error("An error occurred:", err);
-    res.status(500).send("An internal server error occurred");
-  });
 
   await new Promise<void>((resolve) =>
     httpServer.listen({ port: 5001 }, resolve),

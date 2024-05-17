@@ -37,9 +37,7 @@ export class UploadFileController {
         Body: buffer,
         ContentType: mimetype,
       };
-
       const uploadResult = await this.s3.upload(params).promise();
-
       const newFile = File.create({
         originalName: decodeURIComponent(originalname),
         uniqueName: params.Key,
