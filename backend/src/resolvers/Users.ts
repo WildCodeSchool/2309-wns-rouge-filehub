@@ -185,7 +185,6 @@ export class UsersResolver {
     };
     
     try{
-      console.log('send nude')
       transporter.sendMail(mailOptions, function(error, info){
         if (error) {
           console.log("error occured... :"+error);
