@@ -89,7 +89,7 @@ export default function EmailInput({ onSubmit }: any) {
                 <CardContent>
                     {isSubmitted ? (
                         <Typography variant="h5" align="center" gutterBottom>
-                            L'email a bien été envoyé. Suivez les instructions à l'intérieur pour modifier votre mot de passe.
+                            L&apos;email a bien été envoyé. Suivez les instructions à l&apos;intérieur pour modifier votre mot de passe.
                         </Typography>
                     ) : (
                         <>
