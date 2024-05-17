@@ -1,4 +1,4 @@
-import { Box, Button, IconButton, TextField } from "@mui/material";
+import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
@@ -18,7 +18,6 @@ export const UserProfileContent = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  height: 100%;
 `;
 
 export const UserInfo = styled.div`
@@ -27,10 +26,9 @@ export const UserInfo = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  padding: 2vmin 15vmin;
-  border: 1px solid ${theme.palette.secondary.main};
+  padding: 30px 70px;
+  border: 1px solid ${theme.palette.primary.main};
   border-radius: 5vmin;
-  width: 50vmin;
   color: ${theme.palette.primary.main};
 `;
 
@@ -45,7 +43,7 @@ export const Label = styled.label`
   display: flex;
   justify-content: center;
   flex-direction: column;
-  width: 100%;
+  width: 95%;
   font-size: 2.5vmin;
 `;
 
@@ -60,6 +58,7 @@ export const Field = styled.p`
   margin: 2px 0;
   background-color: whitesmoke;
   border-radius: 50px;
+  align-content: center;
   padding: 2vmin 5% 2vmin 5%;
   overflow-wrap: anywhere;
 `;
@@ -82,6 +81,7 @@ export const ButtonText = styled(Button)`
     justify-content: left;
     text-transform: none;
     width: 100%;
+    min-width: 350px;
   }
 `;
 
@@ -123,6 +123,7 @@ export const ButtonSVGContainer = styled.div`
   border-radius: 100%;
   height: 40px;
   width: 40px;
+  color: black;
 `;
 
 export const Container = styled.div`
@@ -190,13 +191,30 @@ function UserProfile(): React.ReactNode {
         <MenuIcon>
           <PersonIcon color="primary" fontSize="large" />
         </MenuIcon>
-        <Title>Information de mon compte</Title>
-        <Container>
-          <Label>
-            <FieldTitle>Email :</FieldTitle>
-            <Field>{me && me.me.email}</Field>
-          </Label>
-        </Container>
+        <Typography
+          variant="h6"
+          sx={{
+            marginY: "10px",
+            fontWeight: 700,
+            color: theme.palette.common.black,
+          }}
+        >
+          Information de mon compte
+        </Typography>
+        <Label>
+          <Typography color={theme.palette.common.black} fontSize={"14.5px"}>
+            Email :
+          </Typography>
+          <Field
+            style={{
+              fontFamily: "Poppins, sans-serif",
+              fontSize: "14.5px",
+            }}
+          >
+            {me && me.me.email}
+          </Field>
+        </Label>
+
         <Container>
           {toggleModif ? (
             <>
@@ -209,7 +227,7 @@ function UserProfile(): React.ReactNode {
                   }}
                 >
                   <InputField
-                    label="Enter your current password"
+                    label="Entrez votre mot de passe actuel"
                     variant="outlined"
                     type={seePassWord ? "text" : "password"}
                     value={passWord}
@@ -240,7 +258,7 @@ function UserProfile(): React.ReactNode {
                   }}
                 >
                   <InputField
-                    label="Enter your new password"
+                    label="Entrez votre nouveau mot de passe"
                     variant="outlined"
                     type={seeNewPassWord ? "text" : "password"}
                     value={newPassWord}
@@ -271,7 +289,7 @@ function UserProfile(): React.ReactNode {
                   }}
                 >
                   <InputField
-                    label="Enter your new password again"
+                    label="Confirmez votre nouveau mot de passe"
                     variant="outlined"
                     type={seeSecNewPassWord ? "text" : "password"}
                     value={secNewPassWord}
@@ -299,7 +317,12 @@ function UserProfile(): React.ReactNode {
           ) : (
             <>
               <Label>
-                <FieldTitle>Mot de passe :</FieldTitle>
+                <Typography
+                  color={theme.palette.common.black}
+                  fontSize={"14.5px"}
+                >
+                  Mot de passe :
+                </Typography>
                 <Field>
                   <KeyIcon color="primary" />
                 </Field>

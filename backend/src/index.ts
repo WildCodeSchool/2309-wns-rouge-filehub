@@ -32,7 +32,7 @@ async function start() {
   const server = new ApolloServer<ContextType>({
     schema,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-    csrfPrevention: { requestHeaders: ['multipart/form-data'] }
+    csrfPrevention: { requestHeaders: ["multipart/form-data"] },
   });
   await server.start();
 
