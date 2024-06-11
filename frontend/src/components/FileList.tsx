@@ -18,7 +18,7 @@ import axios from "axios";
 import { queryMe } from "@/graphql/queryMe";
 import { getUserFiles } from "@/graphql/getUserFiles";
 import { useEffect } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { API_URL } from "@/config";
 
 interface FileData {
@@ -257,7 +257,6 @@ export default function FileList() {
               />
             </Paper>
           )}
-          <ToastContainer position="bottom-right" autoClose={2000} />
         </>
       )}
     </>

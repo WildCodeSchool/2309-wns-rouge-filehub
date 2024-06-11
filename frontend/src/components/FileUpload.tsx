@@ -18,7 +18,7 @@ import AddLinkIcon from "@mui/icons-material/AddLink";
 import Slide from "@mui/material/Slide";
 import axios from "axios";
 import { dataBaseFile } from "./FileUploaded";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { API_URL } from "@/config";
 import { useDropzone } from "react-dropzone";
 
@@ -238,7 +238,6 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
             </ButtonConfirm>
           </Container>
         </FileInfo>
-        <ToastContainer position="bottom-right" autoClose={2000} />
       </FileUploadContent>
     </Slide>
   );

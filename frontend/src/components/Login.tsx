@@ -15,7 +15,7 @@ import styled from "styled-components";
 import { useMutation } from "@apollo/client";
 import { mutationSignup } from "@/graphql/mutationSignup";
 import { mutationSignin } from "@/graphql/mutationSignin";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/router";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -333,7 +333,6 @@ export default function Login(): React.ReactNode {
             </StyledButton>
           </Box>
         </form>
-        <ToastContainer position="bottom-right" autoClose={3000} />
       </Box>
     </Box>
   );

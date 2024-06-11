@@ -8,7 +8,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import { queryMe } from "@/graphql/queryMe";
 import { useMutation, useQuery } from "@apollo/client";
 import { mutationUpdatePassword } from "@/graphql/mutationUpdatePassword";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UploadNewFile from "./UploadNewFile";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -344,7 +344,6 @@ function UserProfile(): React.ReactNode {
         </Container>
       </UserInfo>
       <UploadNewFile />
-      <ToastContainer position="bottom-right" autoClose={3000} />
     </UserProfileContent>
   );
 }
