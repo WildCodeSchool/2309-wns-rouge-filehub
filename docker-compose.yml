@@ -30,10 +30,25 @@ services:
       - minio_storage:/data
     env_file:
       - .env
+    environment:
+      - "MINIO_ACCESS_KEY:${MINIO_ACCESS_KEY}"
+      - "MINIO_SECRET_KEY:${MINIO_SECRET_KEY}"
     ports:
       - ${MINIO_PORT}:9000
       - ${MINIO_ADMIN_PORT}:9001
     command: "minio server /data --console-address :9001"
+
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      - minio-local
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio ${MINIO_ENDPOINT} ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY};
+      /usr/bin/mc mb myminio/bucket-filehub;
+      /usr/bin/mc policy set public myminio/bucket-filehub;
+      exit 0;
+      "
 
 volumes:
   minio_storage: {}
