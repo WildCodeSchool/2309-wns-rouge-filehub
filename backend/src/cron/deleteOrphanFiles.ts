@@ -1,7 +1,14 @@
 import cron from "node-cron";
 import { File } from "../entities/File";
 import AWS from "aws-sdk";
-import { localSetupMinio } from "../resolvers/Files";
+
+const localSetupMinio = {
+    endpoint: process.env.AWS_ENDPOINT,
+    accessKeyId: process.env.AWS_ACCESS,
+    secretAccessKey: process.env.AWS_SECRET,
+    sslEnabled: false,
+    s3ForcePathStyle: true,
+};
 
 export const deleteOrphanFiles = async()=> {
 
