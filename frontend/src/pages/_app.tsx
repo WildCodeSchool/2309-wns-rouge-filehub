@@ -14,6 +14,7 @@ import { ReactNode, useEffect } from "react";
 import { queryMe } from "@/graphql/queryMe";
 import Head from "next/head";
 import { API_URL } from "@/config";
+import { ToastContainer } from "react-toastify";
 
 const link = createHttpLink({
   uri: `${API_URL}`,
@@ -81,6 +82,7 @@ function App({ Component, pageProps }: AppProps): React.ReactNode {
             <link rel="icon" href="/favicon.png" />
           </Head>
           <Component {...pageProps} />
+          <ToastContainer position="bottom-right" autoClose={3000} />
         </Auth>
       </ThemeProvider>
     </ApolloProvider>

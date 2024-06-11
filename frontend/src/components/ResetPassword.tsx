@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { useMutation } from "@apollo/client";
 import { mutationResetPassword } from "@/graphql/mutationResetPassword";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { FilehubIcon } from "@/styles/icon/FileHubIcon";
 
@@ -86,8 +86,6 @@ export default function VerificationInput({ onSubmit }: any) {
 
   return (
       <>
-        <ToastContainer />
-
         <Box
             display="flex"
             flexDirection="column"
