@@ -11,7 +11,7 @@ import { File } from "../entities/File";
 import { ContextType } from "../auth";
 import AWS from "aws-sdk";
 
-const localSetupMinio = {
+export const localSetupMinio = {
   endpoint: process.env.AWS_ENDPOINT,
   accessKeyId: process.env.AWS_ACCESS,
   secretAccessKey: process.env.AWS_SECRET,
