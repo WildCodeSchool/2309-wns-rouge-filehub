@@ -11,10 +11,10 @@ import { File } from "../entities/File";
 import { ContextType } from "../auth";
 import AWS from "aws-sdk";
 
-export const localSetupMinio = {
-  endpoint: process.env.AWS_ENDPOINT,
-  accessKeyId: process.env.AWS_ACCESS,
-  secretAccessKey: process.env.AWS_SECRET,
+const localSetupMinio = {
+  endpoint: process.env.MINIO_ENDPOINT,
+  accessKeyId: process.env.MINIO_ACCESS_KEY,
+  secretAccessKey: process.env.MINIO_SECRET_KEY,
   sslEnabled: false,
   s3ForcePathStyle: true,
 };
@@ -49,13 +49,12 @@ export class FilesResolver {
     });
 
     if (file) {
-      const awsBucket = new AWS.S3(localSetupMinio);
       try {
+        const awsBucket = new AWS.S3(localSetupMinio);
         const params = {
           Bucket: "bucket-filehub",
           Key: file.uniqueName,
         };
-
         await awsBucket.deleteObject(params).promise();
         await file.remove();
       } catch (err) {
