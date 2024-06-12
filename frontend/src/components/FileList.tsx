@@ -9,6 +9,7 @@ import Paper from "@mui/material/Paper";
 import { TableVirtuoso, TableComponents } from "react-virtuoso";
 import { formatTimestampDate } from "@/helpers/Date";
 import InsertLinkIcon from "@mui/icons-material/InsertLink";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import DownloadIcon from "@mui/icons-material/Download";
 import { Tooltip, IconButton, Typography } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -58,6 +59,10 @@ const columns: ColumnData[] = [
   },
   {
     width: 65,
+    label: "Ouvrir",
+  },
+  {
+    width: 65,
     label: "Supprimer",
   },
 ];
@@ -93,7 +98,9 @@ export function fixedHeaderContent() {
           key={index}
           variant="head"
           align={
-            ["Télécharger", "Copier", "Supprimer"].includes(column.label)
+            ["Télécharger", "Copier", "Ouvrir", "Supprimer"].includes(
+              column.label,
+            )
               ? "center"
               : "right"
           }
@@ -147,6 +154,48 @@ function rowContent(
     toast.success("Lien copié avec succès!");
   };
 
+  const openFile = () => {
+    const fileUrl = `http://minio-local:9000/bucket-filehub/${row.uniqueName}`;
+
+    let fileExtension = "";
+
+    if (row.uniqueName.includes(".")) {
+      fileExtension = row.uniqueName.split(".").pop()!.toLowerCase();
+    } else {
+      console.error("Nom de fichier invalide, pas d'extension détectée");
+      return;
+    }
+
+    const supportedExtensionsForGoogleViewer = [
+      "doc",
+      "docx",
+      "ppt",
+      "pptx",
+      "xls",
+      "xlsx",
+      "pdf",
+      "tiff",
+      "tif",
+      "rtf",
+      "txt",
+      "html",
+      "htm",
+      "odt",
+      "ods",
+      "odp",
+      "sxw",
+      "sxc",
+      "sxi",
+    ];
+
+    if (supportedExtensionsForGoogleViewer.includes(fileExtension)) {
+      const googleDocsViewer = `https://docs.google.com/viewer?url=${fileUrl}&embedded=true`;
+      window.open(googleDocsViewer, "_blank");
+    } else {
+      window.open(fileUrl, "_blank");
+    }
+  };
+
   return (
     <>
       <TableCell align="right">{formatTimestampDate(row.uploadAt)}</TableCell>
@@ -165,6 +214,13 @@ function rowContent(
         <Tooltip title="Copier le lien">
           <IconButton sx={{ color: "#FF544F" }} onClick={handleCopyLink}>
             <InsertLinkIcon />
+          </IconButton>
+        </Tooltip>
+      </TableCell>
+      <TableCell align="center">
+        <Tooltip title="Ouvrir">
+          <IconButton sx={{ color: "#FF544F" }} onClick={openFile}>
+            <OpenInNewIcon />
           </IconButton>
         </Tooltip>
       </TableCell>
