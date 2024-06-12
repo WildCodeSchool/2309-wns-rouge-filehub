@@ -46,7 +46,7 @@ services:
       /bin/sh -c "
       /usr/bin/mc alias set myminio ${MINIO_ENDPOINT} ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD};
       /usr/bin/mc mb myminio/bucket-filehub;
-      /usr/bin/mc policy set public myminio/bucket-filehub;
+      /usr/bin/mc anonymous set public myminio/bucket-filehub;
       exit 0;
       "
 
