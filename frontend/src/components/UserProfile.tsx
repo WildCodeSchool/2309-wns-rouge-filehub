@@ -143,8 +143,8 @@ export const MenuIcon = styled.div`
   align-items: center;
   right: 0;
   top: 0;
-  height: 50px;
-  width: 50px;
+  height: 65px;
+  width: 75px;
   border-radius: 100%;
 `;
 
