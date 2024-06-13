@@ -53,7 +53,7 @@ export default function (args: TestArgs) {
         },
       })) as any;
       console.log(result);
-      expect(!!result.data.verifyAccount).toBe(true);
+      expect(result.data.verifyAccount.id).toBe('1');
       // Vérifie que la réponse renvoi bien un objet avec un id (user)
     });
     it("cannot creates the same user", async () => {
