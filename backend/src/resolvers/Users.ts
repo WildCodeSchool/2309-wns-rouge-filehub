@@ -85,8 +85,10 @@ export class UsersResolver {
           finalisez la création de votre compte en suivant  
           <a href="${process.env.FRONT_ADRESS}/verify-account/${token.token}">cette URL</a>`
         )
+        return token.token;
+      } else {
+        throw new Error('User not found');
       }
-      return "Verification mail sent";
     }catch(e){
       console.log(e);
       throw new Error('An error occured when sending the verification code');
