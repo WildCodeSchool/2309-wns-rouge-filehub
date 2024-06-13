@@ -26,8 +26,8 @@ const client = new ApolloClient({
   link: link,
 });
 
-const publicPages = [/^\/login$/, /^\/$/, /^\/downloads(\/.*)?$/, /^\/forgot-password$/,/^\/reset-password$/, /^\/reset-password(\/.*)?$/];
-
+const publicPages = [/^\/login$/, /^\/downloads(\/.*)?$/, /^\/forgot-password$/,
+  /^\/reset-password$/, /^\/reset-password(\/.*)?$/, /^\/verify-account$/, /^\/verify-account(\/.*)?$/];
 
 function Auth(props: { children: ReactNode }) {
   const { data, loading, error, refetch } = useQuery(queryMe, {
