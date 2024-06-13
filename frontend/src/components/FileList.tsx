@@ -154,44 +154,25 @@ function rowContent(
     toast.success("Lien copié avec succès!");
   };
 
-  const openFile = () => {
-    const fileUrl = `http://minio-local:9000/myminio/bucket-filehub/${row.uniqueName}`;
+  const openFile = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/download`, {
+        params: {
+          name: row.uniqueName,
+        },
+        responseType: "blob",
+      });
 
-    let fileExtension = "";
+      const file = new Blob([response.data], {
+        type: response.headers["content-type"],
+      });
+      const fileUrl = URL.createObjectURL(file);
 
-    if (row.uniqueName.includes(".")) {
-      fileExtension = row.uniqueName.split(".").pop()!.toLowerCase();
-    } else {
-      console.error("Nom de fichier invalide, pas d'extension détectée");
-      return;
-    }
-
-    const supportedExtensionsForGoogleViewer = [
-      "doc",
-      "docx",
-      "ppt",
-      "pptx",
-      "xls",
-      "xlsx",
-      "tiff",
-      "tif",
-      "rtf",
-      "txt",
-      "html",
-      "htm",
-      "odt",
-      "ods",
-      "odp",
-      "sxw",
-      "sxc",
-      "sxi",
-    ];
-
-    if (supportedExtensionsForGoogleViewer.includes(fileExtension)) {
-      const googleDocsViewer = `https://docs.google.com/viewer?url=${fileUrl}&embedded=true`;
-      window.open(googleDocsViewer, "_blank");
-    } else {
       window.open(fileUrl, "_blank");
+      //Rajouter le fait de pouvoir ouvrir le fichier dans un google doc viewer quand on aura le temps
+    } catch (error) {
+      console.error("Error opening file:", error);
+      toast.error("Problème lors de l'ouverture du fichier...");
     }
   };
 
