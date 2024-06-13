@@ -78,7 +78,7 @@ export class UsersResolver {
         token.token = uuid();
         await token.save();
     
-        this.sendEmail(
+        await this.sendEmail(
           user.email,
           'Confirmation compte FileHub',
           `Voici votre code de confirmation du compte : ${token.token}, 
