@@ -3,9 +3,9 @@ import { File } from "../entities/File";
 import AWS from "aws-sdk";
 
 const localSetupMinio = {
-    endpoint: process.env.AWS_ENDPOINT,
-    accessKeyId: process.env.AWS_ACCESS,
-    secretAccessKey: process.env.AWS_SECRET,
+    endpoint: process.env.MINIO_ENDPOINT,
+    accessKeyId: process.env.MINIO_ROOT_USER,
+    secretAccessKey: process.env.MINIO_ROOT_PASSWORD,
     sslEnabled: false,
     s3ForcePathStyle: true,
 };
