@@ -41,7 +41,6 @@ export default function (args: TestArgs) {
       })) as any;
       expect(typeof(result.data.sendVerifCode)).toBe("string");
       // Vérifie que le token a bien été généré
-      console.log(result);
       token = result.data.sendVerifCode;
     });
     it("verify the account with the token", async () => {
@@ -52,9 +51,8 @@ export default function (args: TestArgs) {
           token: token,
         },
       })) as any;
-      console.log(result);
       expect(result.data.verifyAccount.id).toBe('1');
-      // Vérifie que la réponse renvoi bien un objet avec un id (user)
+      // Vérifie que la réponse renvoi bien un user avec l'id 1
     });
     it("cannot creates the same user", async () => {
       const result = (await graphql({

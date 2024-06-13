@@ -130,7 +130,7 @@ export class UsersResolver {
 
     try{
       await newUser.save();
-      this.sendVerifCode(newUser.email);
+      await this.sendVerifCode(newUser.email);
     }catch(e){
       console.log(e);
       throw new Error(`Une erreur est survenue lors de la creation de l'utilisation / l'envoi du mail de confirmation`);
