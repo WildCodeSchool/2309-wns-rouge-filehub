@@ -36,9 +36,7 @@ export default function (args: TestArgs) {
         schema: args.schema,
         source: print(mutationSendVerifCode),
         variableValues: {
-          data: {
-            email: "test1@gmail.com"
-          },
+          email: "test1@gmail.com",
         },
       })) as any;
       expect(typeof(result.data.sendVerifCode)).toBe("String");
@@ -50,17 +48,12 @@ export default function (args: TestArgs) {
         schema: args.schema,
         source: print(mutationVerifAccount),
         variableValues: {
-          data: {
-            token: token
-          },
+          token: token,
         },
       })) as any;
       expect(!!result.data.verifyAccount.id).toBe(true);
       // Vérifie que la réponse renvoi bien un objet avec un id (user)
     });
-    /*
-      check le token envoyé par mail
-    */
     it("cannot creates the same user", async () => {
       const result = (await graphql({
         schema: args.schema,
