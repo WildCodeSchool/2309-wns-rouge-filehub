@@ -1,7 +1,16 @@
-import { Box, Card, CardContent, TextField, Button, Typography } from "@mui/material";
+import * as React from "react";
+import {
+  Box,
+  Card,
+  CardContent,
+  TextField,
+  Button,
+  Typography,
+  CircularProgress, // Importez CircularProgress
+} from "@mui/material";
 import styled from "styled-components";
 import { pxToRem } from "@/styles/cssTheme";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import { useMutation } from "@apollo/client";
 import { mutationResetPassword } from "@/graphql/mutationResetPassword";
@@ -51,6 +60,7 @@ export default function VerificationInput({ onSubmit }: any) {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const [loading, setLoading] = useState(false); // État de chargement
   const router = useRouter();
   const token = router.query.token;
 
@@ -60,9 +70,11 @@ export default function VerificationInput({ onSubmit }: any) {
     e.preventDefault();
     if (newPassword && confirmPassword && newPassword === confirmPassword) {
       try {
+        setLoading(true); // Activer l'état de chargement
         const response = await updatePasswordFromCode({
           variables: { password: newPassword, token }
         });
+        setLoading(false); // Désactiver l'état de chargement
         if (response.data) {
           toast.success("Mot de passe modifié avec succès!");
           setTimeout(() => {
@@ -72,6 +84,7 @@ export default function VerificationInput({ onSubmit }: any) {
           toast.error("Une erreur s'est produite lors de la modification du mot de passe.");
         }
       } catch (error) {
+        setLoading(false); // Désactiver l'état de chargement en cas d'erreur
         toast.error("Erreur lors de la modification");
       }
     } else {
@@ -119,13 +132,17 @@ export default function VerificationInput({ onSubmit }: any) {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       autoComplete="new-password"
                   />
-                    {!passwordsMatch && (
-                        <Typography variant="body2" color="error">
-                          Les mots de passe ne correspondent pas.
-                        </Typography>
+                  {!passwordsMatch && (
+                      <Typography variant="body2" color="error">
+                        Les mots de passe ne correspondent pas.
+                      </Typography>
+                  )}
+                  <StyledButton type="submit" variant="contained" disabled={loading}>
+                    {loading ? ( // Affichage conditionnel de CircularProgress
+                        <CircularProgress size={24} color="inherit" />
+                    ) : (
+                        "Valider"
                     )}
-                  <StyledButton type="submit" variant="contained">
-                    Valider
                   </StyledButton>
                   <CancelButton onClick={handleCancel}>Annuler</CancelButton>
                 </Box>

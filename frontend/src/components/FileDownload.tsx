@@ -1,5 +1,5 @@
-import React from "react";
-import { Button, Card, Typography } from "@mui/material";
+import React, { useState } from "react";
+import { Button, Card, Typography, CircularProgress } from "@mui/material";
 import axios from "axios";
 import styled from "styled-components";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -36,10 +36,10 @@ const ButtonConfirm = styled(Button)`
   &.MuiButtonBase-root {
     position: relative;
     background: linear-gradient(
-      90deg,
-      rgba(250, 209, 38, 1) 0%,
-      rgba(255, 84, 79, 1) 75%,
-      rgba(255, 84, 79, 1) 100%
+        90deg,
+        rgba(250, 209, 38, 1) 0%,
+        rgba(255, 84, 79, 1) 75%,
+        rgba(255, 84, 79, 1) 100%
     );
     color: white;
     border-radius: 50px;
@@ -77,7 +77,10 @@ const FileDownload: React.FC<FileDownloadProps> = ({ fileName }) => {
     skip: !fileName,
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleDownload = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.get(`${API_URL}/download`, {
         params: {
@@ -98,46 +101,58 @@ const FileDownload: React.FC<FileDownloadProps> = ({ fileName }) => {
       link.click();
     } catch (error) {
       console.error("Error downloading file:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-      }}
-    >
-      <StyledCard>
-        <TableContainerWrapper>
-          <Typography
-            variant="h6"
-            sx={{
-              marginY: "10px",
-              fontWeight: 700,
-              color: "black",
-            }}
-          >
-            Votre fichier est à portée de clic !
-          </Typography>
-          {data && data.getFile && (
-            <Typography marginBottom={"15px"}>
-              Nom du fichier: {data.getFile.originalName}
+      <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+          }}
+      >
+        <StyledCard>
+          <TableContainerWrapper>
+            <Typography
+                variant="h6"
+                sx={{
+                  marginY: "10px",
+                  fontWeight: 700,
+                  color: "black",
+                }}
+            >
+              Votre fichier est à portée de clic !
             </Typography>
-          )}
-          <DivLoadFile>
-            <ButtonConfirm variant="contained" onClick={handleDownload}>
-              Télécharger
-              <ButtonSVGContainer>
-                <DownloadIcon />
-              </ButtonSVGContainer>
-            </ButtonConfirm>
-          </DivLoadFile>
-        </TableContainerWrapper>
-      </StyledCard>
-    </div>
+            {loading ? (
+                <CircularProgress />
+            ) : (
+                data && data.getFile && (
+                    <Typography marginBottom={"15px"}>
+                      Nom du fichier: {data.getFile.originalName}
+                    </Typography>
+                )
+            )}
+            <DivLoadFile>
+              <ButtonConfirm
+                  variant="contained"
+                  onClick={handleDownload}
+                  disabled={isLoading}
+              >
+                {isLoading ? <CircularProgress size={24} /> : "Télécharger"}
+                {!isLoading && (
+                    <ButtonSVGContainer>
+                      <DownloadIcon />
+                    </ButtonSVGContainer>
+                )}
+              </ButtonConfirm>
+            </DivLoadFile>
+          </TableContainerWrapper>
+        </StyledCard>
+      </div>
   );
 };
 

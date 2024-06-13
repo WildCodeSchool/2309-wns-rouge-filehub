@@ -9,6 +9,7 @@ import {
   Tab,
   Tabs,
   TextField,
+  CircularProgress
 } from "@mui/material";
 import { ChangeEvent, useState } from "react";
 import styled from "styled-components";
@@ -33,10 +34,10 @@ export const StyledButton = styled(Button)`
     min-height: ${pxToRem(56)};
     border-radius: 30px;
     background: linear-gradient(
-      90deg,
-      rgba(250, 209, 38, 1) 0%,
-      rgba(255, 84, 79, 1) 75%,
-      rgba(255, 84, 79, 1) 100%
+        90deg,
+        rgba(250, 209, 38, 1) 0%,
+        rgba(255, 84, 79, 1) 75%,
+        rgba(255, 84, 79, 1) 100%
     );
     color: white;
   }
@@ -64,10 +65,10 @@ const CustomTab = styled(Tab)`
   }
   &.Mui-selected {
     background: linear-gradient(
-      90deg,
-      rgba(250, 209, 38, 1) 0%,
-      rgba(255, 84, 79, 1) 75%,
-      rgba(255, 84, 79, 1) 100%
+        90deg,
+        rgba(250, 209, 38, 1) 0%,
+        rgba(255, 84, 79, 1) 75%,
+        rgba(255, 84, 79, 1) 100%
     );
     color: white !important;
   }
@@ -93,8 +94,11 @@ export default function Login(): React.ReactNode {
   const [signin] = useMutation(mutationSignin);
   const [signup] = useMutation(mutationSignup);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     if (activeTab === 0) {
       if (signinEmail && signinPassword) {
         try {
@@ -109,9 +113,12 @@ export default function Login(): React.ReactNode {
         } catch (error) {
           console.error(error);
           toast.error("Erreur lors de la connexion.");
+        } finally {
+          setIsLoading(false);
         }
       } else {
         toast.error("Veuillez remplir tous les champs.");
+        setIsLoading(false);
       }
     } else {
       if (signupEmail && signupPassword && signupConfirmPassword) {
@@ -137,12 +144,16 @@ export default function Login(): React.ReactNode {
           } catch (error) {
             console.error(error);
             toast.error("Erreur lors de l'inscription.");
+          } finally {
+            setIsLoading(false);
           }
         } else {
           toast.error("Les mots de passe ne correspondent pas.");
+          setIsLoading(false);
         }
       } else {
         toast.error("Veuillez remplir tous les champs.");
+        setIsLoading(false);
       }
     }
   };
@@ -152,188 +163,188 @@ export default function Login(): React.ReactNode {
   };
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      height="100vh"
-    >
-      <FilehubIcon style={{ width: `${pxToRem(217)}`, height: "auto" }} />
       <Box
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        border={1}
-        borderColor={theme.palette.primary.light}
-        borderRadius="30px"
-        width={pxToRem(547)}
-        height={pxToRem(550)}
-        marginTop={pxToRem(30)}
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          height="100vh"
       >
-        <CustomTabs
-          value={activeTab}
-          onChange={handleChangeTab}
-          aria-label="tabs"
+        <FilehubIcon style={{ width: `${pxToRem(217)}`, height: "auto" }} />
+        <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            border={1}
+            borderColor={theme.palette.primary.light}
+            borderRadius="30px"
+            width={pxToRem(547)}
+            height={pxToRem(550)}
+            marginTop={pxToRem(30)}
         >
-          <CustomTab label="Se connecter" />
-          <CustomTab label="S'inscrire" />
-        </CustomTabs>
-        <form onSubmit={handleSubmit}>
-          <Box display="flex" flexDirection="column" minWidth={pxToRem(388)}>
-            {activeTab === 0 && (
-              <>
-                <TextFieldStyled
-                  margin="normal"
-                  label="Email"
-                  name="email"
-                  type="email"
-                  value={signinEmail}
-                  onChange={(e) => setSigninEmail(e.target.value)}
-                  autoComplete="email"
-                  autoFocus
-                />
-                <Box
-                  sx={{
-                    position: "relative",
-                    display: "flex",
-                    alignItems: "center",
-                    width: "100%",
-                  }}
-                >
-                  <TextFieldStyled
-                    fullWidth
-                    margin="normal"
-                    name="password"
-                    label="Mot de passe"
-                    type={seePassWordLogin ? "text" : "password"}
-                    value={signinPassword}
-                    onChange={(e) => setSigninPassword(e.target.value)}
-                    autoComplete="current-password"
-                  />
-                  <IconButton
-                    onClick={() => {
-                      setSeePassWordLogin(!seePassWordLogin);
-                    }}
-                    sx={{
-                      position: "absolute",
-                      top: 27,
-                      right: -36,
-                    }}
-                  >
-                    <VisibilityIcon
-                      sx={{
-                        width: 20,
-                        height: 20,
-                        color: seePassWordLogin ? "rgba(250, 209, 38, 1)" : "",
-                      }}
+          <CustomTabs
+              value={activeTab}
+              onChange={handleChangeTab}
+              aria-label="tabs"
+          >
+            <CustomTab label="Se connecter" />
+            <CustomTab label="S'inscrire" />
+          </CustomTabs>
+          <form onSubmit={handleSubmit}>
+            <Box display="flex" flexDirection="column" minWidth={pxToRem(388)}>
+              {activeTab === 0 && (
+                  <>
+                    <TextFieldStyled
+                        margin="normal"
+                        label="Email"
+                        name="email"
+                        type="email"
+                        value={signinEmail}
+                        onChange={(e) => setSigninEmail(e.target.value)}
+                        autoComplete="email"
+                        autoFocus
                     />
-                  </IconButton>
-                </Box>
-                <Button
-                    onClick={() => router.push("/forgot-password")}
-                    sx={{ mt: 1, ml: 1, color: theme.palette.secondary.main }}
-                >
-                  Mot de passe oublié ?
-                </Button>
-              </>
-            )}
-            {activeTab === 1 && (
-              <>
-                <TextFieldStyled
-                  margin="normal"
-                  label="Email"
-                  name="email"
-                  type="email"
-                  value={signupEmail}
-                  onChange={(e) => setSignupEmail(e.target.value)}
-                  autoComplete="email"
-                  autoFocus
-                />
-                <Box
-                  sx={{
-                    position: "relative",
-                    display: "flex",
-                    alignItems: "center",
-                    width: "100%",
-                  }}
-                >
-                  <TextFieldStyled
-                    fullWidth
-                    margin="normal"
-                    name="password"
-                    label="Mot de passe"
-                    type={seePassWordSignUp ? "text" : "password"}
-                    value={signupPassword}
-                    onChange={(e) => setSignupPassword(e.target.value)}
-                    autoComplete="current-password"
-                  />
-                  <IconButton
-                    onClick={() => {
-                      setSeePassWordSignUp(!seePassWordSignUp);
-                    }}
-                    sx={{
-                      position: "absolute",
-                      top: 27,
-                      right: -36,
-                    }}
-                  >
-                    <VisibilityIcon
-                      sx={{
-                        width: 20,
-                        height: 20,
-                        color: seePassWordSignUp ? "rgba(250, 209, 38, 1)" : "",
-                      }}
+                    <Box
+                        sx={{
+                          position: "relative",
+                          display: "flex",
+                          alignItems: "center",
+                          width: "100%",
+                        }}
+                    >
+                      <TextFieldStyled
+                          fullWidth
+                          margin="normal"
+                          name="password"
+                          label="Mot de passe"
+                          type={seePassWordLogin ? "text" : "password"}
+                          value={signinPassword}
+                          onChange={(e) => setSigninPassword(e.target.value)}
+                          autoComplete="current-password"
+                      />
+                      <IconButton
+                          onClick={() => {
+                            setSeePassWordLogin(!seePassWordLogin);
+                          }}
+                          sx={{
+                            position: "absolute",
+                            top: 27,
+                            right: -36,
+                          }}
+                      >
+                        <VisibilityIcon
+                            sx={{
+                              width: 20,
+                              height: 20,
+                              color: seePassWordLogin ? "rgba(250, 209, 38, 1)" : "",
+                            }}
+                        />
+                      </IconButton>
+                    </Box>
+                    <Button
+                        onClick={() => router.push("/forgot-password")}
+                        sx={{ mt: 1, ml: 1, color: theme.palette.secondary.main }}
+                    >
+                      Mot de passe oublié ?
+                    </Button>
+                  </>
+              )}
+              {activeTab === 1 && (
+                  <>
+                    <TextFieldStyled
+                        margin="normal"
+                        label="Email"
+                        name="email"
+                        type="email"
+                        value={signupEmail}
+                        onChange={(e) => setSignupEmail(e.target.value)}
+                        autoComplete="email"
+                        autoFocus
                     />
-                  </IconButton>
-                </Box>
-                <Box
-                  sx={{
-                    position: "relative",
-                    display: "flex",
-                    alignItems: "center",
-                    width: "100%",
-                  }}
-                >
-                  <TextFieldStyled
-                    fullWidth
-                    margin="normal"
-                    name="confirmPassword"
-                    label="Confirmer votre mot de passe"
-                    type={seePassWordSignUp2 ? "text" : "password"}
-                    value={signupConfirmPassword}
-                    onChange={(e) => setSignupConfirmPassword(e.target.value)}
-                  />
-                  <IconButton
-                    onClick={() => {
-                      setSeePassWordSignUp2(!seePassWordSignUp2);
-                    }}
-                    sx={{
-                      position: "absolute",
-                      top: 27,
-                      right: -36,
-                    }}
-                  >
-                    <VisibilityIcon
-                      sx={{
-                        width: 20,
-                        height: 20,
-                        color: seePassWordSignUp2
-                          ? "rgba(250, 209, 38, 1)"
-                          : "",
-                      }}
-                    />
-                  </IconButton>
-                </Box>
-              </>
-            )}
-            <StyledButton type="submit" variant="contained">
-              {activeTab === 0 ? "Connexion" : "Valider mon inscription"}
-            </StyledButton>
-          </Box>
-        </form>
+                    <Box
+                        sx={{
+                          position: "relative",
+                          display: "flex",
+                          alignItems: "center",
+                          width: "100%",
+                        }}
+                    >
+                      <TextFieldStyled
+                          fullWidth
+                          margin="normal"
+                          name="password"
+                          label="Mot de passe"
+                          type={seePassWordSignUp ? "text" : "password"}
+                          value={signupPassword}
+                          onChange={(e) => setSignupPassword(e.target.value)}
+                          autoComplete="current-password"
+                      />
+                      <IconButton
+                          onClick={() => {
+                            setSeePassWordSignUp(!seePassWordSignUp);
+                          }}
+                          sx={{
+                            position: "absolute",
+                            top: 27,
+                            right: -36,
+                          }}
+                      >
+                        <VisibilityIcon
+                            sx={{
+                              width: 20,
+                              height: 20,
+                              color: seePassWordSignUp ? "rgba(250, 209, 38, 1)" : "",
+                            }}
+                        />
+                      </IconButton>
+                    </Box>
+                    <Box
+                        sx={{
+                          position: "relative",
+                          display: "flex",
+                          alignItems: "center",
+                          width: "100%",
+                        }}
+                    >
+                      <TextFieldStyled
+                          fullWidth
+                          margin="normal"
+                          name="confirmPassword"
+                          label="Confirmer votre mot de passe"
+                          type={seePassWordSignUp2 ? "text" : "password"}
+                          value={signupConfirmPassword}
+                          onChange={(e) => setSignupConfirmPassword(e.target.value)}
+                      />
+                      <IconButton
+                          onClick={() => {
+                            setSeePassWordSignUp2(!seePassWordSignUp2);
+                          }}
+                          sx={{
+                            position: "absolute",
+                            top: 27,
+                            right: -36,
+                          }}
+                      >
+                        <VisibilityIcon
+                            sx={{
+                              width: 20,
+                              height: 20,
+                              color: seePassWordSignUp2
+                                  ? "rgba(250, 209, 38, 1)"
+                                  : "",
+                            }}
+                        />
+                      </IconButton>
+                    </Box>
+                  </>
+              )}
+              <StyledButton type="submit" variant="contained" disabled={isLoading}>
+                {isLoading ? <CircularProgress size={24} /> : (activeTab === 0 ? "Connexion" : "Valider mon inscription")}
+              </StyledButton>
+            </Box>
+          </form>
+        </Box>
       </Box>
-    </Box>
   );
 }

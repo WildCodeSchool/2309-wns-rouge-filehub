@@ -1,5 +1,5 @@
+import React, { useState } from "react";
 import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
-import { useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
 import { useRouter } from "next/router";
@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UploadNewFile from "./UploadNewFile";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import CircularProgress from "@mui/material/CircularProgress"; // Importez CircularProgress depuis Material-UI
 
 export const UserProfileContent = styled.div`
   display: flex;
@@ -89,10 +90,10 @@ export const ButtonConfirm = styled(Button)`
   &.MuiButtonBase-root {
     position: relative;
     background: linear-gradient(
-      90deg,
-      rgba(250, 209, 38, 1) 0%,
-      rgba(255, 84, 79, 1) 75%,
-      rgba(255, 84, 79, 1) 100%
+        90deg,
+        rgba(250, 209, 38, 1) 0%,
+        rgba(255, 84, 79, 1) 75%,
+        rgba(255, 84, 79, 1) 100%
     );
     color: white;
     border-radius: 50px;
@@ -158,10 +159,12 @@ function UserProfile(): React.ReactNode {
   const [seePassWord, setSeePassWord] = useState<boolean>(false);
   const [seeNewPassWord, setSeeNewPassWord] = useState<boolean>(false);
   const [seeSecNewPassWord, setSeeSecNewPassWord] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false); // État de chargement
   const [updatePassword] = useMutation(mutationUpdatePassword);
 
   const changePassword = async () => {
     try {
+      setLoading(true); // Activer l'état de chargement
       const { data, errors } = await updatePassword({
         variables: {
           data: {
@@ -178,173 +181,179 @@ function UserProfile(): React.ReactNode {
         setSecNewPassWord("");
         setToggleModif(!toggleModif);
       }
+      setLoading(false); // Désactiver l'état de chargement après la réussite ou l'erreur
     } catch {
-      toast.error(
-        "Echec du changement de mdp, vérifiez les informations entrées",
-      );
+      setLoading(false); // Désactiver l'état de chargement en cas d'erreur
+      toast.error("Echec du changement de mdp, vérifiez les informations entrées");
     }
   };
 
   return (
-    <UserProfileContent>
-      <UserInfo>
-        <MenuIcon>
-          <PersonIcon color="primary" fontSize="large" />
-        </MenuIcon>
-        <Typography
-          variant="h6"
-          sx={{
-            marginY: "10px",
-            fontWeight: 700,
-            color: theme.palette.common.black,
-          }}
-        >
-          Information de mon compte
-        </Typography>
-        <Label>
-          <Typography color={theme.palette.common.black} fontSize={"14.5px"}>
-            Email :
-          </Typography>
-          <Field
-            style={{
-              fontFamily: "Poppins, sans-serif",
-              fontSize: "14.5px",
-            }}
+      <UserProfileContent>
+        <UserInfo>
+          <MenuIcon>
+            <PersonIcon color="primary" fontSize="large" />
+          </MenuIcon>
+          <Typography
+              variant="h6"
+              sx={{
+                marginY: "10px",
+                fontWeight: 700,
+                color: theme.palette.common.black,
+              }}
           >
-            {me && me.me.email}
-          </Field>
-        </Label>
+            Information de mon compte
+          </Typography>
+          <Label>
+            <Typography color={theme.palette.common.black} fontSize={"14.5px"}>
+              Email :
+            </Typography>
+            <Field
+                style={{
+                  fontFamily: "Poppins, sans-serif",
+                  fontSize: "14.5px",
+                }}
+            >
+              {me && me.me.email}
+            </Field>
+          </Label>
 
-        <Container>
-          {toggleModif ? (
-            <>
-              <Label>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: 2,
-                  }}
-                >
-                  <InputField
-                    label="Entrez votre mot de passe actuel"
-                    variant="outlined"
-                    type={seePassWord ? "text" : "password"}
-                    value={passWord}
-                    onChange={(e) => setPassWord(e.target.value)}
-                    sx={{
-                      width: "90%",
-                    }}
-                  />
-                  <IconButton
-                    onClick={() => {
-                      setSeePassWord(!seePassWord);
-                    }}
-                  >
-                    <VisibilityIcon
-                      sx={{
-                        width: 20,
-                        height: 20,
-                        color: seePassWord ? "rgba(250, 209, 38, 1)" : "",
-                      }}
-                    />
-                  </IconButton>
-                </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: 2,
-                  }}
-                >
-                  <InputField
-                    label="Entrez votre nouveau mot de passe"
-                    variant="outlined"
-                    type={seeNewPassWord ? "text" : "password"}
-                    value={newPassWord}
-                    onChange={(e) => setNewPassWord(e.target.value)}
-                    sx={{
-                      width: "90%",
-                    }}
-                  />
-                  <IconButton
-                    onClick={() => {
-                      setSeeNewPassWord(!seeNewPassWord);
-                    }}
-                  >
-                    <VisibilityIcon
-                      sx={{
-                        width: 20,
-                        height: 20,
-                        color: seeNewPassWord ? "rgba(250, 209, 38, 1)" : "",
-                      }}
-                    />
-                  </IconButton>
-                </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: 2,
-                  }}
-                >
-                  <InputField
-                    label="Confirmez votre nouveau mot de passe"
-                    variant="outlined"
-                    type={seeSecNewPassWord ? "text" : "password"}
-                    value={secNewPassWord}
-                    onChange={(e) => setSecNewPassWord(e.target.value)}
-                    sx={{
-                      width: "90%",
-                    }}
-                  />
-                  <IconButton
-                    onClick={() => {
-                      setSeeSecNewPassWord(!seeSecNewPassWord);
-                    }}
-                  >
-                    <VisibilityIcon
-                      sx={{
-                        width: 20,
-                        height: 20,
-                        color: seeSecNewPassWord ? "rgba(250, 209, 38, 1)" : "",
-                      }}
-                    />
-                  </IconButton>
-                </Box>
-              </Label>
-            </>
-          ) : (
-            <>
-              <Label>
-                <Typography
-                  color={theme.palette.common.black}
-                  fontSize={"14.5px"}
-                >
-                  Mot de passe :
-                </Typography>
-                <Field>
-                  <KeyIcon color="primary" />
-                </Field>
-              </Label>
-            </>
-          )}
-          {toggleModif ? (
-            <>
-              <ButtonConfirm onClick={changePassword}>Confirmer</ButtonConfirm>
-              <ButtonText onClick={() => setToggleModif(!toggleModif)}>
-                Abandon
-              </ButtonText>
-            </>
-          ) : (
-            <ButtonText onClick={() => setToggleModif(!toggleModif)}>
-              Modifier mon mot de passe
-            </ButtonText>
-          )}
-        </Container>
-      </UserInfo>
-      <UploadNewFile />
-    </UserProfileContent>
+          <Container>
+            {toggleModif ? (
+                <>
+                  <Label>
+                    <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          marginBottom: 2,
+                        }}
+                    >
+                      <InputField
+                          label="Entrez votre mot de passe actuel"
+                          variant="outlined"
+                          type={seePassWord ? "text" : "password"}
+                          value={passWord}
+                          onChange={(e) => setPassWord(e.target.value)}
+                          sx={{
+                            width: "90%",
+                          }}
+                      />
+                      <IconButton
+                          onClick={() => {
+                            setSeePassWord(!seePassWord);
+                          }}
+                      >
+                        <VisibilityIcon
+                            sx={{
+                              width: 20,
+                              height: 20,
+                              color: seePassWord ? "rgba(250, 209, 38, 1)" : "",
+                            }}
+                        />
+                      </IconButton>
+                    </Box>
+                    <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          marginBottom: 2,
+                        }}
+                    >
+                      <InputField
+                          label="Entrez votre nouveau mot de passe"
+                          variant="outlined"
+                          type={seeNewPassWord ? "text" : "password"}
+                          value={newPassWord}
+                          onChange={(e) => setNewPassWord(e.target.value)}
+                          sx={{
+                            width: "90%",
+                          }}
+                      />
+                      <IconButton
+                          onClick={() => {
+                            setSeeNewPassWord(!seeNewPassWord);
+                          }}
+                      >
+                        <VisibilityIcon
+                            sx={{
+                              width: 20,
+                              height: 20,
+                              color: seeNewPassWord ? "rgba(250, 209, 38, 1)" : "",
+                            }}
+                        />
+                      </IconButton>
+                    </Box>
+                    <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          marginBottom: 2,
+                        }}
+                    >
+                      <InputField
+                          label="Confirmez votre nouveau mot de passe"
+                          variant="outlined"
+                          type={seeSecNewPassWord ? "text" : "password"}
+                          value={secNewPassWord}
+                          onChange={(e) => setSecNewPassWord(e.target.value)}
+                          sx={{
+                            width: "90%",
+                          }}
+                      />
+                      <IconButton
+                          onClick={() => {
+                            setSeeSecNewPassWord(!seeSecNewPassWord);
+                          }}
+                      >
+                        <VisibilityIcon
+                            sx={{
+                              width: 20,
+                              height: 20,
+                              color: seeSecNewPassWord ? "rgba(250, 209, 38, 1)" : "",
+                            }}
+                        />
+                      </IconButton>
+                    </Box>
+                  </Label>
+                </>
+            ) : (
+                <>
+                  <Label>
+                    <Typography
+                        color={theme.palette.common.black}
+                        fontSize={"14.5px"}
+                    >
+                      Mot de passe :
+                    </Typography>
+                    <Field>
+                      <KeyIcon color="primary" />
+                    </Field>
+                  </Label>
+                </>
+            )}
+            {toggleModif ? (
+                <>
+                  <ButtonConfirm onClick={changePassword}>
+                    {loading ? (
+                        <CircularProgress size={24} color="inherit" /> // Affichage conditionnel de CircularProgress
+                    ) : (
+                        "Confirmer"
+                    )}
+                  </ButtonConfirm>
+                  <ButtonText onClick={() => setToggleModif(!toggleModif)}>
+                    Abandon
+                  </ButtonText>
+                </>
+            ) : (
+                <ButtonText onClick={() => setToggleModif(!toggleModif)}>
+                  Modifier mon mot de passe
+                </ButtonText>
+            )}
+          </Container>
+        </UserInfo>
+        <UploadNewFile />
+      </UserProfileContent>
   );
 }
 

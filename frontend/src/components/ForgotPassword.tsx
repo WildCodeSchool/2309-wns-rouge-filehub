@@ -1,7 +1,16 @@
-import { Card, CardContent, TextField, Button, Typography, Box } from "@mui/material";
+import * as React from "react";
+import {
+    Card,
+    CardContent,
+    TextField,
+    Button,
+    Typography,
+    Box,
+    CircularProgress, // Importez CircularProgress
+} from "@mui/material";
 import styled from "styled-components";
 import { pxToRem } from "@/styles/cssTheme";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { mutationforgotPassword } from "@/graphql/mutationForgotPassword";
 import { useRouter } from "next/router";
@@ -53,21 +62,24 @@ export default function EmailInput({ onSubmit }: any) {
     const [isSubmitted, setIsSubmitted] = useState(false);
     const router = useRouter();
     const [isEmail, setIsEmail] = useState(true);
+    const [loading, setLoading] = useState(false); // État de chargement
     const [forgotPassword] = useMutation(mutationforgotPassword);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (email) {
-
             try {
+                setLoading(true); // Activer l'état de chargement
                 await forgotPassword({ variables: { email } });
                 setIsSubmitted(true);
                 onSubmit(email);
             } catch (error) {
                 toast.error("Une erreur s'est produite. Veuillez réessayer.");
+            } finally {
+                setLoading(false); // Désactiver l'état de chargement
             }
         } else {
-            toast.error("Veuillez saisir votre email.")
+            toast.error("Veuillez saisir votre email.");
             setIsEmail(false);
         }
     };
@@ -89,7 +101,7 @@ export default function EmailInput({ onSubmit }: any) {
                 <CardContent>
                     {isSubmitted ? (
                         <Typography variant="h5" align="center" gutterBottom>
-                            L&apos;email a bien été envoyé. Suivez les instructions à l&apos;intérieur pour modifier votre mot de passe.
+                            L'email a bien été envoyé. Suivez les instructions à l'intérieur pour modifier votre mot de passe.
                         </Typography>
                     ) : (
                         <>
@@ -113,8 +125,12 @@ export default function EmailInput({ onSubmit }: any) {
                                             Veuillez renseigner votre email.
                                         </Typography>
                                     )}
-                                    <StyledButton type="submit" variant="contained">
-                                        Recevoir un code de vérification
+                                    <StyledButton type="submit" variant="contained" disabled={loading}>
+                                        {loading ? ( // Affichage conditionnel de CircularProgress
+                                            <CircularProgress size={24} color="inherit" />
+                                        ) : (
+                                            "Recevoir un code de vérification"
+                                        )}
                                     </StyledButton>
                                     <CancelButton onClick={handleCancel}>Annuler</CancelButton>
                                 </Box>

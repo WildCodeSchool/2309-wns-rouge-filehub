@@ -1,4 +1,9 @@
-import { Button, Typography } from "@mui/material";
+import * as React from "react";
+import {
+  Button,
+  Typography,
+  CircularProgress, // Importez CircularProgress
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
@@ -97,14 +102,15 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
   const [file, setFile] = useState<File>();
   const [fileName, setFileName] = useState("");
   const [checkAnim, setCheckAnim] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false); // État de chargement
 
   const { getRootProps, getInputProps, isDragAccept, isDragReject } =
-    useDropzone({
-      onDrop: (acceptedFiles) => {
-        setFile(acceptedFiles[0]);
-        setFileName(acceptedFiles[0].name);
-      },
-    });
+      useDropzone({
+        onDrop: (acceptedFiles) => {
+          setFile(acceptedFiles[0]);
+          setFileName(acceptedFiles[0].name);
+        },
+      });
 
   const setFileInfo = (e: React.ChangeEvent<HTMLInputElement>) => {
     const fileInput = e.target;
@@ -128,6 +134,8 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
       return;
     }
 
+    setLoading(true); // Activer l'état de chargement
+
     const formData = new FormData();
     formData.append("file", file, encodeURIComponent(fileName));
 
@@ -141,105 +149,111 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
       setCheckAnim(false);
       setTimeout(() => {
         setFileUploaded(response.data);
+        setLoading(false); // Désactiver l'état de chargement après téléchargement
       }, 250);
     } catch (error) {
       console.error("Erreur lors du dépot du fichier : ", error);
       toast.error("Erreur lors du dépot du fichier...");
+      setLoading(false); // Désactiver l'état de chargement en cas d'erreur
     }
   };
 
   return (
-    <Slide
-      direction="left"
-      in={checkAnim}
-      exit={!checkAnim}
-      mountOnEnter
-      unmountOnExit
-      timeout={{
-        enter: 250,
-        exit: 250,
-      }}
-    >
-      <FileUploadContent {...getRootProps()}>
-        <FileInfo
-          isDragAccept={isDragAccept}
-          isDragReject={isDragReject}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <MenuIcon>
-            <AddLinkIcon color="primary" fontSize="large" />
-          </MenuIcon>
-          <Typography
-            variant="h6"
-            sx={{
-              marginY: "10px",
-              fontWeight: 700,
-              color: theme.palette.common.black,
-            }}
+      <Slide
+          direction="left"
+          in={checkAnim}
+          exit={!checkAnim}
+          mountOnEnter
+          unmountOnExit
+          timeout={{
+            enter: 250,
+            exit: 250,
+          }}
+      >
+        <FileUploadContent {...getRootProps()}>
+          <FileInfo
+              isDragAccept={isDragAccept}
+              isDragReject={isDragReject}
+              onClick={(e) => e.stopPropagation()}
           >
-            Ajouter un fichier
-          </Typography>
-          <Container>
-            <FileButton
-              variant="contained"
-              sx={
-                file === undefined
-                  ? { background: theme.palette.secondary.main }
-                  : {
-                      background:
-                        "linear-gradient(90deg, rgba(250,209,38,1) 0%, rgba(255,84,79,1) 75%, rgba(255,84,79,1) 100%)",
-                    }
-              }
+            <MenuIcon>
+              <AddLinkIcon color="primary" fontSize="large" />
+            </MenuIcon>
+            <Typography
+                variant="h6"
+                sx={{
+                  marginY: "10px",
+                  fontWeight: 700,
+                  color: theme.palette.common.black,
+                }}
             >
-              <LabelButton>
-                Déposer un fichier
-                <ButtonSVGContainer>
-                  <FileOpenIcon />
-                </ButtonSVGContainer>
-                <input
-                  hidden
-                  type="file"
-                  onChange={(e) => {
-                    setFileInfo(e);
-                  }}
-                />
-              </LabelButton>
-            </FileButton>
-            {file && (
-              <ThrowFileButton
-                onClick={() => {
-                  setFile(undefined);
-                }}
+              Ajouter un fichier
+            </Typography>
+            <Container>
+              <FileButton
+                  variant="contained"
+                  sx={
+                    file === undefined
+                        ? { background: theme.palette.secondary.main }
+                        : {
+                          background:
+                              "linear-gradient(90deg, rgba(250,209,38,1) 0%, rgba(255,84,79,1) 75%, rgba(255,84,79,1) 100%)",
+                        }
+                  }
               >
-                <HighlightOffIcon color="primary" />
-              </ThrowFileButton>
-            )}
-          </Container>
-          <Container>
-            <Label>
-              <InputField
-                label="Nom du fichier"
-                variant="outlined"
-                type="text"
-                value={fileName}
-                disabled={!file}
-                onChange={(e) => {
-                  setFileName(e.target.value);
-                }}
-              />
-            </Label>
-          </Container>
-          <Container>
-            <ButtonConfirm onClick={handleUpload}>
-              Obtenir un lien
-              <ButtonSVGContainer>
-                <LinkIcon />
-              </ButtonSVGContainer>
-            </ButtonConfirm>
-          </Container>
-        </FileInfo>
-      </FileUploadContent>
-    </Slide>
+                <LabelButton>
+                  Déposer un fichier
+                  <ButtonSVGContainer>
+                    <FileOpenIcon />
+                  </ButtonSVGContainer>
+                  <input
+                      hidden
+                      type="file"
+                      onChange={(e) => {
+                        setFileInfo(e);
+                      }}
+                  />
+                </LabelButton>
+              </FileButton>
+              {file && (
+                  <ThrowFileButton
+                      onClick={() => {
+                        setFile(undefined);
+                      }}
+                  >
+                    <HighlightOffIcon color="primary" />
+                  </ThrowFileButton>
+              )}
+            </Container>
+            <Container>
+              <Label>
+                <InputField
+                    label="Nom du fichier"
+                    variant="outlined"
+                    type="text"
+                    value={fileName}
+                    disabled={!file}
+                    onChange={(e) => {
+                      setFileName(e.target.value);
+                    }}
+                />
+              </Label>
+            </Container>
+            <Container>
+              <ButtonConfirm onClick={handleUpload}>
+                {loading ? ( // Affichage conditionnel de CircularProgress
+                    <CircularProgress size={24} color="inherit" />
+                ) : (
+                    "Obtenir un lien"
+                )}
+                <ButtonSVGContainer>
+                  <LinkIcon />
+                </ButtonSVGContainer>
+              </ButtonConfirm>
+            </Container>
+          </FileInfo>
+        </FileUploadContent>
+      </Slide>
   );
 }
 
