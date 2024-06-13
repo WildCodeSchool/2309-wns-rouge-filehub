@@ -31,12 +31,13 @@ services:
     env_file:
       - .env
     environment:
-      - "MINIO_ROOT_USER:${MINIO_ROOT_USER}"
-      - "MINIO_ROOT_PASSWORD:${MINIO_ROOT_PASSWORD}"
+      - 'MINIO_ROOT_USER:${MINIO_ROOT_USER}'
+      - 'MINIO_ROOT_PASSWORD:${MINIO_ROOT_PASSWORD}'
+
     ports:
       - ${MINIO_PORT}:9000
       - ${MINIO_ADMIN_PORT}:9001
-    command: "minio server /data --console-address :9001"
+    command: 'minio server /data --console-address :9001'
 
   createbuckets:
     image: minio/mc:RELEASE.2023-11-15T22-45-58Z-cpuv1

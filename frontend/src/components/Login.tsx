@@ -133,7 +133,7 @@ export default function Login(): React.ReactNode {
               },
             });
             if (data.item) {
-              toast.success("Inscription réussie !");
+              toast.success("Inscription reçue, un mail de confirmation vous a été envoyé !");
               setTimeout(() => {
                 setActiveTab(0);
                 setSignupEmail("");
