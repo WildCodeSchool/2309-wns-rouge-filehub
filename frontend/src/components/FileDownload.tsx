@@ -6,10 +6,9 @@ import DownloadIcon from "@mui/icons-material/Download";
 import { useQuery } from "@apollo/client";
 import { getFileByUniqueName } from "@/graphql/getFileByUniqueName";
 import { API_URL } from "@/config";
+import { FileInfo, FileUploadContent } from "./FileUpload";
 
 const StyledCard = styled(Card)`
-  margin: auto;
-  margin-top: 120px;
   width: 80%;
   max-width: 600px;
   border-radius: 15px !important;
@@ -47,7 +46,7 @@ const ButtonConfirm = styled(Button)`
     display: flex;
     justify-content: center;
     text-transform: none;
-    width: 65%;
+    width: 95%;
     height: 50px;
     margin-top: 1vmin;
     font-size: 14px;
@@ -95,6 +94,7 @@ const FileDownload: React.FC<FileDownloadProps> = ({ fileName }) => {
       }
 
       document.body.appendChild(link);
+      console.log(link);
       link.click();
     } catch (error) {
       console.error("Error downloading file:", error);
@@ -102,15 +102,8 @@ const FileDownload: React.FC<FileDownloadProps> = ({ fileName }) => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-      }}
-    >
-      <StyledCard>
+    <FileUploadContent>
+      <FileInfo>
         <TableContainerWrapper>
           <Typography
             variant="h6"
@@ -136,8 +129,8 @@ const FileDownload: React.FC<FileDownloadProps> = ({ fileName }) => {
             </ButtonConfirm>
           </DivLoadFile>
         </TableContainerWrapper>
-      </StyledCard>
-    </div>
+      </FileInfo>
+    </FileUploadContent>
   );
 };
 
