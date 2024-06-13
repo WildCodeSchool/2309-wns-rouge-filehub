@@ -155,7 +155,7 @@ function rowContent(
   };
 
   const openFile = () => {
-    const fileUrl = `http://localhost:9000/bucket-filehub/${row.uniqueName}`;
+    const fileUrl = `http://minio-local:9000/myminio/bucket-filehub/${row.uniqueName}`;
 
     let fileExtension = "";
 
