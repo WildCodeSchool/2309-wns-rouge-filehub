@@ -52,13 +52,7 @@ export class UsersResolver {
     };
     
     try{
-      transporter.sendMail(mailOptions, function(error, info){
-        if (error) {
-          console.log("error occured... :"+error);
-        } else {
-          console.log('Email sent: ' + info.response);
-        }
-      });
+      transporter.sendMail(mailOptions);
     } catch(e) {
       throw new Error(String(e));
     }
