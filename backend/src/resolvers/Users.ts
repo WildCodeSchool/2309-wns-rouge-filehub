@@ -40,6 +40,7 @@ export class UsersResolver {
     return getUserFromReq(context.req, context.res);
   }
 
+  // utility function called when an email is to be sent
   async sendEmail(target: string, title: string, html: string) {
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -66,6 +67,7 @@ export class UsersResolver {
     }
   }
 
+  // mutation called when the user want to get a new email and generate a new token to verify his account
   @Mutation(() => String)
   async sendVerifCode(
     @Arg("email", () => String) email: string,
@@ -205,9 +207,10 @@ export class UsersResolver {
     }
   }
 
+  // mutation called when the connected user wants to change his password, based on cookie authentification
   @Authorized()
   @Mutation(() => User)
-  async updatePassword(
+  async updatePasswordWhenConnected(
     @Ctx() context: ContextType,
     @Arg("data") data: UserUpdateInput,
   ): Promise<User | null> {
@@ -250,6 +253,7 @@ export class UsersResolver {
     }
   }
 
+  // mutation called when user is not connected and want to get an email with a token to change his password
   @Mutation(() => Boolean)
   async forgotPassword(@Arg("email") email: string): Promise<boolean | null> {
     const user = await User.findOne({
@@ -278,8 +282,9 @@ export class UsersResolver {
     return true;
   }
 
+  // mutation used when the user click on the email url to change his password
   @Mutation(() => User)
-  async updatePasswordFromCode(
+  async updatePasswordWhenNotConnected(
     @Arg("token") token: string,
     @Arg("password") password: string,
   ): Promise<User | null> {
