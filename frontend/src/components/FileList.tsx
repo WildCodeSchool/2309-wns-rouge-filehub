@@ -128,6 +128,13 @@ function rowContent(
     return formatTimestampDate(expirationDate.toISOString());
   };
 
+  const isImageOrPdf = (fileName: string) => {
+    const fileExtension = fileName.split(".").pop()?.toLowerCase();
+    return ["pdf", "jpg", "jpeg", "png", "gif", "bmp", "webp", "tiff"].includes(
+      fileExtension || "",
+    );
+  };
+
   const downloadFile = async () => {
     try {
       const response = await axios.get(`${API_URL}/download`, {
@@ -179,7 +186,17 @@ function rowContent(
   return (
     <>
       <TableCell align="right">{formatTimestampDate(row.uploadAt)}</TableCell>
-      <TableCell align="right">{row.originalName}</TableCell>
+      <TableCell
+        align="right"
+        sx={{
+          whiteSpace: "normal",
+          wordWrap: "break-word",
+          overflowWrap: "break-word",
+          maxWidth: 150,
+        }}
+      >
+        {row.originalName}
+      </TableCell>
       <TableCell align="right">
         {calculateExpirationDate(row.uploadAt)}
       </TableCell>
@@ -197,13 +214,17 @@ function rowContent(
           </IconButton>
         </Tooltip>
       </TableCell>
-      <TableCell align="center">
-        <Tooltip title="Ouvrir">
-          <IconButton sx={{ color: "#FF544F" }} onClick={openFile}>
-            <OpenInNewIcon />
-          </IconButton>
-        </Tooltip>
-      </TableCell>
+      {isImageOrPdf(row.originalName) ? (
+        <TableCell align="center">
+          <Tooltip title="Ouvrir">
+            <IconButton sx={{ color: "#FF544F" }} onClick={openFile}>
+              <OpenInNewIcon />
+            </IconButton>
+          </Tooltip>
+        </TableCell>
+      ) : (
+        <TableCell></TableCell>
+      )}
       <TableCell align="center">
         <Tooltip title="Supprimer">
           <IconButton
