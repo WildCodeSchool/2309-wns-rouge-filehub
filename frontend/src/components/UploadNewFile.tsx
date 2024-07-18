@@ -20,8 +20,6 @@ function UploadNewFile() {
         textTransform: "none",
         width: "320px",
         height: "50px",
-        marginTop: "55px",
-        marginBottom: "20px",
       }}
     >
       Charger un nouveau fichier
