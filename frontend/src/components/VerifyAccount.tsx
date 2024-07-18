@@ -11,17 +11,17 @@ import { FilehubIcon } from "@/styles/icon/FileHubIcon";
 export default function VerifyAccount() {
     const router = useRouter();
     const token = router.query.token;
-    console.log(token);
     const [verifyAccount, {data, loading, error}] = useMutation(mutationVerifyAccount);
     
     useEffect(()=>{
         try{
-            verifyAccount({variables: { token: token }});
+            if(typeof token === 'string'){
+                verifyAccount({variables: { token: token }});
+            }
         }catch(e){
             console.log(e);
         }
-        
-    }, [])
+    }, [token])
 
     return (
         <>
