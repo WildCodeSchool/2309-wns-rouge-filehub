@@ -1,15 +1,7 @@
 import { FilehubIcon } from "@/styles/icon/FileHubIcon";
 import { theme } from "@/styles/theme";
 import { pxToRem } from "@/styles/cssTheme";
-import {
-  Box,
-  Button,
-  IconButton,
-  Link,
-  Tab,
-  Tabs,
-  TextField,
-} from "@mui/material";
+import { Box, Button, IconButton, Tab, Tabs, TextField } from "@mui/material";
 import { ChangeEvent, useState } from "react";
 import styled from "styled-components";
 import { useMutation } from "@apollo/client";
@@ -126,7 +118,9 @@ export default function Login(): React.ReactNode {
               },
             });
             if (data.item) {
-              toast.success("Inscription reçue, un mail de confirmation vous a été envoyé !");
+              toast.success(
+                "Inscription reçue, un mail de confirmation vous a été envoyé !",
+              );
               setTimeout(() => {
                 setActiveTab(0);
                 setSignupEmail("");
@@ -134,9 +128,20 @@ export default function Login(): React.ReactNode {
                 setSignupConfirmPassword("");
               }, 3000);
             }
-          } catch (error) {
+          } catch (error: any) {
             console.error(error);
-            toast.error("Erreur lors de l'inscription.");
+
+            if (error.message === "User already exist") {
+              toast.error(
+                "Compte déjà existant avec cet email, veuillez renseigner un autre email d'inscription.",
+              );
+            } else if (
+              error.message === "Password must be at least 8 characters long"
+            ) {
+              toast.error(
+                "Par mesure de sécurité, 8 caractères minimum sont requis pour le mot de passe.",
+              );
+            }
           }
         } else {
           toast.error("Les mots de passe ne correspondent pas.");
@@ -232,8 +237,8 @@ export default function Login(): React.ReactNode {
                   </IconButton>
                 </Box>
                 <Button
-                    onClick={() => router.push("/forgot-password")}
-                    sx={{ mt: 1, ml: 1, color: theme.palette.secondary.main }}
+                  onClick={() => router.push("/forgot-password")}
+                  sx={{ mt: 1, ml: 1, color: theme.palette.secondary.main }}
                 >
                   Mot de passe oublié ?
                 </Button>
