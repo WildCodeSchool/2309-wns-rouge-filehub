@@ -48,7 +48,7 @@ const CancelButton = styled(Button)`
   color: rgba(250, 209, 38, 1);
 `;
 
-export default function EmailInput({ onSubmit }: any) {
+export default function EmailInput() {
     const [email, setEmail] = useState("");
     const [isSubmitted, setIsSubmitted] = useState(false);
     const router = useRouter();
@@ -62,7 +62,6 @@ export default function EmailInput({ onSubmit }: any) {
             try {
                 await forgotPassword({ variables: { email } });
                 setIsSubmitted(true);
-                onSubmit(email);
             } catch (error) {
                 toast.error("Une erreur s'est produite. Veuillez réessayer.");
             }
