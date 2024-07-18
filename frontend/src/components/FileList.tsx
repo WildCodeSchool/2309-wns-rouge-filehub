@@ -21,7 +21,6 @@ import { API_URL } from "@/config";
 import { mutationDeleteFile } from "@/graphql/mutationDeleteFile";
 import { queryMe } from "@/graphql/queryMe";
 import { getUserFiles } from "@/graphql/getUserFiles";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 interface File {
   id: string;
