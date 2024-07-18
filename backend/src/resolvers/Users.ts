@@ -1,13 +1,21 @@
-import {Arg, Authorized, Ctx, ID, Mutation, Query, Resolver,} from "type-graphql";
-import {User, UserCreateInput, UserUpdateInput} from "../entities/User";
-import {validate} from "class-validator";
+import {
+  Arg,
+  Authorized,
+  Ctx,
+  ID,
+  Mutation,
+  Query,
+  Resolver,
+} from "type-graphql";
+import { User, UserCreateInput, UserUpdateInput } from "../entities/User";
+import { validate } from "class-validator";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import Cookies from "cookies";
-import {ContextType, getUserFromReq} from "../auth";
+import { ContextType, getUserFromReq } from "../auth";
 import nodemailer from "nodemailer";
-import {UserToken} from "../entities/UserToken";
-import {uuid} from "uuidv4";
+import { UserToken } from "../entities/UserToken";
+import { uuid } from "uuidv4";
 import { Any } from "typeorm";
 
 @Resolver(User)
@@ -35,59 +43,61 @@ export class UsersResolver {
   // utility function called when an email is to be sent
   async sendEmail(target: string, title: string, html: string) {
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      service: "gmail",
       auth: {
-        user: 'filehubwcs@gmail.com',
-        pass: 'ptom oitf kvmz oucz'
+        user: "filehubwcs@gmail.com",
+        pass: "ptom oitf kvmz oucz",
       },
       tls: {
-        rejectUnauthorized: false
-      }
+        rejectUnauthorized: false,
+      },
     });
 
     const mailOptions = {
-      from: 'filehubwcs@gmail.com',
+      from: "filehubwcs@gmail.com",
       to: target,
       subject: title,
-      html: html
+      html: html,
     };
-    
-    try{
+
+    try {
       transporter.sendMail(mailOptions);
-    } catch(e) {
+    } catch (e) {
       throw new Error(String(e));
     }
   }
 
   // mutation called when the user want to get a new email and generate a new token to verify his account
   @Mutation(() => String)
-  async sendVerifCode(@Arg("email", () => String) email: string): Promise<String>{
-    try{
+  async sendVerifCode(
+    @Arg("email", () => String) email: string,
+  ): Promise<String> {
+    try {
       const user = await User.findOne({
         where: { email: email },
       });
-      if(user){
+      if (user) {
         const token = new UserToken();
-        token.user = user
+        token.user = user;
         token.createdAt = new Date();
         token.expiresAt = new Date(Number(token.createdAt) + 1000 * 60 * 60);
         token.token = uuid();
         await token.save();
-    
+
         await this.sendEmail(
           user.email,
-          'Confirmation compte FileHub',
+          "Confirmation compte FileHub",
           `Voici votre code de confirmation du compte : ${token.token}, 
           finalisez la création de votre compte en suivant  
-          <a href="${process.env.FRONT_ADRESS}/verify-account/${token.token}">cette URL</a>`
-        )
+          <a href="${process.env.FRONT_ADRESS}/verify-account/${token.token}">cette URL</a>`,
+        );
         return token.token;
       } else {
-        throw new Error('User not found');
+        throw new Error("User not found");
       }
-    }catch(e){
+    } catch (e) {
       console.log(e);
-      throw new Error('An error occured when sending the verification code');
+      throw new Error("An error occured when sending the verification code");
     }
   }
 
@@ -106,14 +116,14 @@ export class UsersResolver {
   async signup(
     @Arg("data", () => UserCreateInput) data: UserCreateInput,
   ): Promise<User> {
-    const errors = await validate(data);
-    if (errors.length !== 0) {
-      throw new Error(`Error occured: ${JSON.stringify(errors)}`);
-    }
-
     const existingUser = await User.findOneBy({ email: data.email });
     if (existingUser) {
       throw new Error(`User already exist`);
+    }
+
+    const errors = await validate(data);
+    if (errors.length !== 0) {
+      throw new Error(`Password must be at least 8 characters long`);
     }
 
     const newUser = new User();
@@ -121,15 +131,17 @@ export class UsersResolver {
     Object.assign(newUser, {
       email: data.email,
       password: hashedPassword,
-      verified: false
+      verified: false,
     });
 
-    try{
+    try {
       await newUser.save();
       await this.sendVerifCode(newUser.email);
-    }catch(e){
+    } catch (e) {
       console.log(e);
-      throw new Error(`Une erreur est survenue lors de la creation de l'utilisation / l'envoi du mail de confirmation`);
+      throw new Error(
+        `Une erreur est survenue lors de la creation de l'utilisation / l'envoi du mail de confirmation`,
+      );
     }
     return newUser;
   }
@@ -138,13 +150,13 @@ export class UsersResolver {
   async verifyAccount(@Arg("token") token: string): Promise<User | null> {
     const userToken = await UserToken.findOne({
       where: { token: token },
-      relations: { user: true }
+      relations: { user: true },
     });
 
-    if(!userToken){
+    if (!userToken) {
       throw new Error(`Invalid token`);
     }
-    if(userToken.expiresAt < new Date()){
+    if (userToken.expiresAt < new Date()) {
       throw new Error(`Expired token`);
     }
 
@@ -166,8 +178,10 @@ export class UsersResolver {
     if (!existingUser) {
       return null;
     } else {
-      if(existingUser.verified !== true){
-        throw new Error('Your email need to be verified to connect, check your mailbox!');
+      if (existingUser.verified !== true) {
+        throw new Error(
+          "Your email need to be verified to connect, check your mailbox!",
+        );
       } else {
         if (await argon2.verify(existingUser.password, password)) {
           const token = jwt.sign(
@@ -177,14 +191,14 @@ export class UsersResolver {
             },
             process.env.JWT_SECRET || "supersecret",
           );
-  
+
           const cookies = new Cookies(context.req, context.res);
           cookies.set("token", token, {
             httpOnly: true,
             secure: false,
             maxAge: 1000 * 60 * 60 * 24,
           });
-  
+
           return existingUser;
         } else {
           return null;
@@ -241,16 +255,14 @@ export class UsersResolver {
 
   // mutation called when user is not connected and want to get an email with a token to change his password
   @Mutation(() => Boolean)
-  async forgotPassword(
-    @Arg("email") email: string,
-  ): Promise<boolean | null> {
+  async forgotPassword(@Arg("email") email: string): Promise<boolean | null> {
     const user = await User.findOne({
       where: { email: email },
     });
 
-    if(!user){
-      console.log('nada')
-      return true
+    if (!user) {
+      console.log("nada");
+      return true;
     }
 
     const token = new UserToken();
@@ -262,11 +274,11 @@ export class UsersResolver {
 
     this.sendEmail(
       email,
-      'Réinitialisation de mot de passe',
+      "Réinitialisation de mot de passe",
       `Voici votre code de reset : ${token.token}, 
       réinitialisez votre mot de passe via 
-      <a href="${process.env.FRONT_ADRESS}/reset-password/${token.token}">cette URL</a>`
-    )
+      <a href="${process.env.FRONT_ADRESS}/reset-password/${token.token}">cette URL</a>`,
+    );
     return true;
   }
 
@@ -276,18 +288,18 @@ export class UsersResolver {
     @Arg("token") token: string,
     @Arg("password") password: string,
   ): Promise<User | null> {
-    if(password.length < 8 || password.length > 50){
+    if (password.length < 8 || password.length > 50) {
       throw new Error(`Password length must be 8 to 50 caracters`);
     }
     const userToken = await UserToken.findOne({
       where: { token: token },
-      relations: { user: true }
+      relations: { user: true },
     });
 
-    if(!userToken){
+    if (!userToken) {
       throw new Error(`Invalid token`);
     }
-    if(userToken.expiresAt < new Date()){
+    if (userToken.expiresAt < new Date()) {
       throw new Error(`Expired token`);
     }
 
