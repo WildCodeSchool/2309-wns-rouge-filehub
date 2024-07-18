@@ -3,6 +3,7 @@ import { GetServerSideProps } from "next";
 import FileDownload from "@/components/FileDownload";
 import Header from "@/layout/header";
 import { useRouter } from "next/router";
+import { MainContent } from "..";
 
 interface DownloadPageProps {
   uniqueName?: string;
@@ -15,9 +16,9 @@ const DownloadPage: React.FC<DownloadPageProps> = ({ uniqueName }) => {
   return (
     <>
       <Header />
-      <div>
+      <MainContent>
         <FileDownload fileName={fileName} />
-      </div>
+      </MainContent>
     </>
   );
 };

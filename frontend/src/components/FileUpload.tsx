@@ -13,7 +13,6 @@ import {
   ButtonSVGContainer,
   ButtonConfirm,
   Container,
-  Title,
   MenuIcon,
 } from "./UserProfile";
 import LinkIcon from "@mui/icons-material/Link";
@@ -104,14 +103,6 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
   const [checkAnim, setCheckAnim] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false); // État de chargement
 
-  const { getRootProps, getInputProps, isDragAccept, isDragReject } =
-      useDropzone({
-        onDrop: (acceptedFiles) => {
-          setFile(acceptedFiles[0]);
-          setFileName(acceptedFiles[0].name);
-        },
-      });
-
   const setFileInfo = (e: React.ChangeEvent<HTMLInputElement>) => {
     const fileInput = e.target;
 
@@ -119,6 +110,14 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
       setFile(fileInput.files[0]);
     }
   };
+
+  const { getRootProps, getInputProps, isDragAccept, isDragReject } =
+    useDropzone({
+      onDrop: (acceptedFiles) => {
+        setFile(acceptedFiles[0]);
+        setFileName(acceptedFiles[0].name);
+      },
+    });
 
   useEffect(() => {
     if (file) {

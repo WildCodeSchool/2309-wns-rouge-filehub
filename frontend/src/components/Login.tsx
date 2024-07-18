@@ -34,10 +34,10 @@ export const StyledButton = styled(Button)`
     min-height: ${pxToRem(56)};
     border-radius: 30px;
     background: linear-gradient(
-        90deg,
-        rgba(250, 209, 38, 1) 0%,
-        rgba(255, 84, 79, 1) 75%,
-        rgba(255, 84, 79, 1) 100%
+      90deg,
+      rgba(250, 209, 38, 1) 0%,
+      rgba(255, 84, 79, 1) 75%,
+      rgba(255, 84, 79, 1) 100%
     );
     color: white;
   }
@@ -65,10 +65,10 @@ const CustomTab = styled(Tab)`
   }
   &.Mui-selected {
     background: linear-gradient(
-        90deg,
-        rgba(250, 209, 38, 1) 0%,
-        rgba(255, 84, 79, 1) 75%,
-        rgba(255, 84, 79, 1) 100%
+      90deg,
+      rgba(250, 209, 38, 1) 0%,
+      rgba(255, 84, 79, 1) 75%,
+      rgba(255, 84, 79, 1) 100%
     );
     color: white !important;
   }
@@ -141,11 +141,20 @@ export default function Login(): React.ReactNode {
                 setSignupConfirmPassword("");
               }, 3000);
             }
-          } catch (error) {
+          } catch (error: any) {
             console.error(error);
-            toast.error("Erreur lors de l'inscription.");
-          } finally {
-            setIsLoading(false);
+
+            if (error.message === "User already exist") {
+              toast.error(
+                "Compte déjà existant avec cet email, veuillez renseigner un autre email d'inscription.",
+              );
+            } else if (
+              error.message === "Password must be at least 8 characters long"
+            ) {
+              toast.error(
+                "Par mesure de sécurité, 8 caractères minimum sont requis pour le mot de passe.",
+              );
+            }
           }
         } else {
           toast.error("Les mots de passe ne correspondent pas.");

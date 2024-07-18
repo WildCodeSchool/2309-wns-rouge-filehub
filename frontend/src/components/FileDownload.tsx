@@ -6,10 +6,9 @@ import DownloadIcon from "@mui/icons-material/Download";
 import { useQuery } from "@apollo/client";
 import { getFileByUniqueName } from "@/graphql/getFileByUniqueName";
 import { API_URL } from "@/config";
+import { FileInfo, FileUploadContent } from "./FileUpload";
 
 const StyledCard = styled(Card)`
-  margin: auto;
-  margin-top: 120px;
   width: 80%;
   max-width: 600px;
   border-radius: 15px !important;
@@ -36,10 +35,10 @@ const ButtonConfirm = styled(Button)`
   &.MuiButtonBase-root {
     position: relative;
     background: linear-gradient(
-        90deg,
-        rgba(250, 209, 38, 1) 0%,
-        rgba(255, 84, 79, 1) 75%,
-        rgba(255, 84, 79, 1) 100%
+      90deg,
+      rgba(250, 209, 38, 1) 0%,
+      rgba(255, 84, 79, 1) 75%,
+      rgba(255, 84, 79, 1) 100%
     );
     color: white;
     border-radius: 50px;
@@ -47,7 +46,7 @@ const ButtonConfirm = styled(Button)`
     display: flex;
     justify-content: center;
     text-transform: none;
-    width: 65%;
+    width: 95%;
     height: 50px;
     margin-top: 1vmin;
     font-size: 14px;
