@@ -16,7 +16,7 @@ import { deleteOrphanFiles } from "./cron/deleteOrphanFiles";
 import AWS from "aws-sdk";
 
 async function start() {
-  await dataSource.initialize();
+  await dataSource.initialize(); // Initialisation de la connexion à la base de données
 
   const schema = await getSchema();
 

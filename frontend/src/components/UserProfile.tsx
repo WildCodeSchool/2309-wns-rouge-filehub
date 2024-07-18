@@ -10,7 +10,6 @@ import { useMutation, useQuery } from "@apollo/client";
 import { mutationUpdatePassword } from "@/graphql/mutationUpdatePassword";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import UploadNewFile from "./UploadNewFile";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
 export const UserProfileContent = styled.div`
@@ -150,7 +149,6 @@ export const MenuIcon = styled.div`
 
 function UserProfile(): React.ReactNode {
   const { data: me } = useQuery(queryMe, { fetchPolicy: "no-cache" });
-  const router = useRouter();
   const [toggleModif, setToggleModif] = useState(false);
   const [passWord, setPassWord] = useState("");
   const [newPassWord, setNewPassWord] = useState("");
@@ -188,9 +186,6 @@ function UserProfile(): React.ReactNode {
   return (
     <UserProfileContent>
       <UserInfo>
-        <MenuIcon>
-          <PersonIcon color="primary" fontSize="large" />
-        </MenuIcon>
         <Typography
           variant="h6"
           sx={{
@@ -199,7 +194,7 @@ function UserProfile(): React.ReactNode {
             color: theme.palette.common.black,
           }}
         >
-          Information de mon compte
+          Informations personnelles
         </Typography>
         <Label>
           <Typography color={theme.palette.common.black} fontSize={"14.5px"}>
@@ -338,12 +333,11 @@ function UserProfile(): React.ReactNode {
             </>
           ) : (
             <ButtonText onClick={() => setToggleModif(!toggleModif)}>
-              Modifier mon mot de passe
+              Modification de mot de passe
             </ButtonText>
           )}
         </Container>
       </UserInfo>
-      <UploadNewFile />
     </UserProfileContent>
   );
 }

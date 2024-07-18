@@ -2,8 +2,11 @@ import {
   Arg,
   Authorized,
   Ctx,
+  Field,
   ID,
+  Int,
   Mutation,
+  ObjectType,
   Query,
   Resolver,
 } from "type-graphql";
@@ -19,18 +22,38 @@ const localSetupMinio = {
   s3ForcePathStyle: true,
 };
 
+@ObjectType()
+class FilesResponse {
+  @Field(() => [File])
+  files!: File[];
+
+  @Field(() => Int)
+  total!: number;
+}
+
 @Resolver(File)
 export class FilesResolver {
+  // Permet de retourner une liste de fichiers paginée ainsi que le nombre total d'items
   @Authorized()
-  @Query(() => [File])
-  async filesCurrentUser(@Ctx() context: ContextType): Promise<File[]> {
-    const files = await File.find({
+  @Query(() => FilesResponse)
+  async filesCurrentUser(
+    @Ctx() context: ContextType,
+    @Arg("limit", () => Int, { nullable: true }) limit: number,
+    @Arg("offset", () => Int, { nullable: true }) offset: number,
+    @Arg("sortOrder", () => String, { nullable: true, defaultValue: "DESC" })
+    sortOrder: "DESC" | "ASC" | "asc" | "desc",
+  ): Promise<FilesResponse> {
+    const order = { uploadAt: sortOrder };
+    const [files, total] = await File.findAndCount({
       where: { createdBy: { id: context?.user?.id } },
       relations: {
         createdBy: true,
       },
+      take: limit,
+      skip: offset,
+      order,
     });
-    return files;
+    return { files, total };
   }
 
   @Query(() => File)

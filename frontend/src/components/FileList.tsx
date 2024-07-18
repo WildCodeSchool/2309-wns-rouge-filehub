@@ -1,6 +1,13 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { Paper, Tooltip, IconButton, Typography } from "@mui/material";
+import {
+  Paper,
+  Tooltip,
+  IconButton,
+  Typography,
+  CircularProgress,
+  Stack,
+} from "@mui/material";
 import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";
 import InsertLinkIcon from "@mui/icons-material/InsertLink";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
@@ -14,6 +21,7 @@ import { API_URL } from "@/config";
 import { mutationDeleteFile } from "@/graphql/mutationDeleteFile";
 import { queryMe } from "@/graphql/queryMe";
 import { getUserFiles } from "@/graphql/getUserFiles";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 interface File {
   id: string;
@@ -60,27 +68,24 @@ const handleCopyLink = (file: File) => {
 };
 
 const FileList = () => {
-  const {
-    loading: meLoading,
-    error: meError,
-    data: meData,
-  } = useQuery(queryMe);
-  const userId = meData?.me?.id;
+  const client = useApolloClient();
+  const [page, setPage] = useState<number>(0);
+  const [sort, setSort] = useState<string>("desc");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const [pageSize, setPageSize] = useState(5);
-  const [page, setPage] = useState(0);
-  const [totalRows, setTotalRows] = useState(0);
-  const [sortModel, setSortModel] = useState<String>("desc");
+  const { data: meData } = useQuery(queryMe);
+  const userId = meData?.me?.id;
 
   const { loading, error, data, refetch } = useQuery(getUserFiles, {
     variables: {
-      limit: pageSize,
-      offset: page * pageSize,
-      sortOrder: sortModel,
+      limit: 5,
+      offset: page * 5,
+      sortOrder: sort,
     },
     skip: !userId,
   });
-  console.log(data, data);
+
+  const total = data?.filesCurrentUser?.total;
 
   const [doDeleteFile, { error: deleteFileError }] = useMutation(
     mutationDeleteFile,
@@ -89,22 +94,11 @@ const FileList = () => {
     },
   );
 
-  const client = useApolloClient();
-
   useEffect(() => {
     client.refetchQueries({
       include: [getUserFiles],
     });
   }, [client]);
-
-  useEffect(() => {
-    if (userId) {
-      refetch();
-    }
-  }, [page, pageSize, sortModel, userId]);
-
-  if (meLoading) return <p>Loading...</p>;
-  if (meError) return <p>Error: {meError.message}</p>;
 
   const handleDeleteFile = async (fileId: string) => {
     await doDeleteFile({
@@ -120,14 +114,70 @@ const FileList = () => {
     }
   };
 
+  const handleSortModelChange = (sortModel: GridSortModel) => {
+    if (sortModel.length > 0) {
+      const newSort = sortModel[0].sort === "asc" ? "desc" : "asc";
+      setSort(newSort);
+      refetch({
+        limit: 5,
+        offset: page * 5,
+        sortOrder: newSort,
+      });
+    } else {
+      setSort("desc");
+      refetch({
+        limit: 5,
+        offset: page * 5,
+        sortOrder: "desc",
+      });
+    }
+  };
+
   const handlePageChange = (params: any) => {
     setPage(params.page);
     refetch({
-      limit: pageSize,
-      offset: params.page * pageSize,
-      sortOrder: sortModel,
+      limit: 5,
+      offset: params.page * 5,
+      sortOrder: "desc",
     });
   };
+
+  const isImageOrPdf = (fileName: string) => {
+    const fileExtension = fileName.split(".").pop()?.toLowerCase();
+    return ["pdf", "jpg", "jpeg", "png", "gif", "bmp", "webp", "tiff"].includes(
+      fileExtension || "",
+    );
+  };
+
+  const openFile = async (uniqueName: String) => {
+    try {
+      const response = await axios.get(`${API_URL}/download`, {
+        params: {
+          name: uniqueName,
+        },
+        responseType: "blob",
+      });
+
+      const file = new Blob([response.data], {
+        type: response.headers["content-type"],
+      });
+      const fileUrl = URL.createObjectURL(file);
+
+      window.open(fileUrl, "_blank");
+      //Rajouter le fait de pouvoir ouvrir le fichier dans un google doc viewer quand on aura le temps
+    } catch (error) {
+      console.error("Error opening file:", error);
+      toast.error("Problème lors de l'ouverture du fichier...");
+    }
+  };
+
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   const columns: GridColDef[] = [
     {
@@ -200,6 +250,31 @@ const FileList = () => {
       ),
     },
     {
+      field: "open",
+      headerName: "Ouvrir",
+      sortable: false,
+      disableColumnMenu: true,
+      flex: 1,
+      align: "center",
+      headerAlign: "center",
+      resizable: false,
+      renderCell: (params) => {
+        return isImageOrPdf(params.row.originalName) ? (
+          <Tooltip title="Ouvrir">
+            <IconButton
+              sx={{ color: "#FF544F" }}
+              onClick={() => openFile(params.row.uniqueName)}
+            >
+              <OpenInNewIcon />
+            </IconButton>
+          </Tooltip>
+        ) : (
+          <></>
+        );
+      },
+    },
+
+    {
       field: "delete",
       headerName: "Supprimer",
       sortable: false,
@@ -237,15 +312,15 @@ const FileList = () => {
 
   return (
     <>
-      {loading ? (
-        <p>Loading...</p>
+      {isLoading ? (
+        <CircularProgress />
       ) : error ? (
-        <p>Error: {error.message}</p>
+        <Typography>{error.message}</Typography>
       ) : (
         <>
-          {data.filesCurrentUser.length === 0 ? (
+          {total === 0 ? (
             <Typography>
-              Tous les fichiers que vous avez envoyés apparaîtront ici
+              Vous n'avez pas encore téléversé de fichiers
             </Typography>
           ) : (
             <Paper
@@ -257,19 +332,19 @@ const FileList = () => {
                 marginBottom: "15px",
               }}
             >
-              <div style={{ height: 400, width: "100%" }}>
+              <Stack height="400" width="100%">
                 <DataGrid
                   rows={data ? objectData(data) : []}
                   columns={columns}
                   pagination
                   paginationMode="server"
-                  rowCount={totalRows}
-                  paginationModel={{ page, pageSize }}
+                  rowCount={total}
+                  paginationModel={{ page: page, pageSize: 5 }}
                   onPaginationModelChange={(params) => {
                     handlePageChange(params);
                   }}
                   sortingOrder={["desc", "asc"]}
-                  onSortModelChange={(sort) => console.log(sort, "sort")}
+                  onSortModelChange={handleSortModelChange}
                   disableRowSelectionOnClick
                   localeText={{
                     MuiTablePagination: {
@@ -304,7 +379,7 @@ const FileList = () => {
                     },
                   }}
                 />
-              </div>
+              </Stack>
             </Paper>
           )}
         </>
