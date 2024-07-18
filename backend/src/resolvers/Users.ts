@@ -33,7 +33,7 @@ export class UsersResolver {
   }
 
   // utility function called when an email is to be sent
-  async sendEmail(target: string, title: string, html: string){
+  async sendEmail(target: string, title: string, html: string) {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
