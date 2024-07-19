@@ -11,6 +11,8 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/router";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import { mutationSendVerifCode } from "@/graphql/mutationSendVerifCode";
+import { palette } from "@mui/system";
 
 export const TextFieldStyled = styled(TextField)`
   & .MuiOutlinedInput-root {
@@ -84,6 +86,7 @@ export default function Login(): React.ReactNode {
 
   const [signin] = useMutation(mutationSignin);
   const [signup] = useMutation(mutationSignup);
+  const [sendVerifCode] = useMutation(mutationSendVerifCode);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -155,6 +158,28 @@ export default function Login(): React.ReactNode {
   const handleChangeTab = (e: ChangeEvent<{}>, newValue: number) => {
     setActiveTab(newValue);
   };
+
+  const handleSendVerifCode = async ()=>{
+    if (activeTab !== 0) {
+      if(signupEmail === ""){
+        toast.error("Veuillez renseigner un email");
+        return
+      }
+      try{
+        const { data } = await sendVerifCode({
+          variables: { email: signupEmail},
+        });
+        if(data){
+          toast.success(
+            `Un email de vérification a bien été renvoyé à l'adresse ${signupEmail}`,
+          );
+        }
+      } catch(e:any) {
+        console.log(e);
+        toast.error(e.message);
+      }
+    }
+  }
 
   return (
     <Box
@@ -338,6 +363,23 @@ export default function Login(): React.ReactNode {
             </StyledButton>
           </Box>
         </form>
+        {activeTab !== 0 &&
+          <Button variant="contained" onClick={handleSendVerifCode} sx={{
+            margin: '0.5rem 0 0 0',
+            backgroundColor: 'transparent',
+            color: signupEmail === "" ? theme.palette.primary.dark : theme.palette.secondary.main,
+            fontWeight: signupEmail === "" ? "initial" : "bold",
+            boxShadow: 'none',
+            borderRadius: 20,
+            textTransform: 'none',
+            '&:hover': {
+              background: "rgb(240,240,240)",
+              boxShadow: 'none'
+            },
+          }}>
+            Envoyer un nouveau mail de vérification
+          </Button>
+        }
       </Box>
     </Box>
   );

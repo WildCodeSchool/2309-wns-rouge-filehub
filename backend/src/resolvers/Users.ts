@@ -95,9 +95,13 @@ export class UsersResolver {
       } else {
         throw new Error("User not found");
       }
-    } catch (e) {
+    } catch (e:any) {
       console.log(e);
-      throw new Error("An error occured when sending the verification code");
+      if(e.message === "User not found"){
+        throw new Error("User not found");
+      } else {
+        throw new Error("An error occured when sending the verification code");
+      }
     }
   }
 
@@ -153,6 +157,9 @@ export class UsersResolver {
       relations: { user: true },
     });
 
+    if (userToken?.user.verified === true) {
+      throw new Error(`User already verified`);
+    }
     if (!userToken) {
       throw new Error(`Invalid token`);
     }

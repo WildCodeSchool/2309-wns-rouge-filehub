@@ -7,21 +7,34 @@ import { Typography, Box, CircularProgress } from "@mui/material";
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { FilehubIcon } from "@/styles/icon/FileHubIcon";
+import { theme } from "@/styles/theme";
 
 export default function VerifyAccount() {
     const router = useRouter();
     const token = router.query.token;
     const [verifyAccount, {data, loading, error}] = useMutation(mutationVerifyAccount);
-    
-    useEffect(()=>{
+
+    const handleVerifyAccount = async ()=>{
         try{
             if(typeof token === 'string'){
-                verifyAccount({variables: { token: token }});
+                await verifyAccount({variables: { token: token }});
             }
         }catch(e){
             console.log(e);
         }
+    }
+    
+    useEffect(()=>{
+        handleVerifyAccount();
     }, [token])
+
+    useEffect(()=>{
+        if(data && !error && !loading){
+            setTimeout(()=>{
+                router.replace("/login");
+            }, 4000);
+        }
+    }, [data])
 
     return (
         <>
@@ -41,7 +54,13 @@ export default function VerifyAccount() {
                 </>}
                 {error && !loading && <>
                     <Typography variant="h4" align="center" gutterBottom>
-                        Une erreur est survenue ...
+                        Une erreur est survenue :
+                    </Typography>
+                    <Typography variant="h6" align="center" sx={{
+                        color: theme.palette.secondary.main,
+                        fontWeight: 'bold'
+                    }} gutterBottom>
+                        {error.message}
                     </Typography>
                     <ErrorOutlineIcon color='error' sx={{
                         width: 50,
@@ -51,6 +70,12 @@ export default function VerifyAccount() {
                 {data && !loading && !error && <>
                     <Typography variant="h4" align="center" gutterBottom>
                         Compte vérifié avec succès !
+                    </Typography>
+                    <Typography variant="h6" align="center" sx={{
+                        color: "green",
+                        fontWeight: 'bold'
+                    }} gutterBottom>
+                        Redirection...
                     </Typography>
                     <CheckCircleOutlineIcon color='success' />
                 </>}
