@@ -163,7 +163,6 @@ const FileList = () => {
       const fileUrl = URL.createObjectURL(file);
 
       window.open(fileUrl, "_blank");
-      //Rajouter le fait de pouvoir ouvrir le fichier dans un google doc viewer quand on aura le temps
     } catch (error) {
       console.error("Error opening file:", error);
       toast.error("Problème lors de l'ouverture du fichier...");
@@ -197,6 +196,7 @@ const FileList = () => {
       align: "center",
       headerAlign: "center",
       resizable: false,
+      renderCell: (params) => <div data-testid="file-name">{params.value}</div>,
     },
     {
       field: "expirationDate",
@@ -222,6 +222,7 @@ const FileList = () => {
           <IconButton
             sx={{ color: "#FF544F" }}
             onClick={() => downloadFile(params.row)}
+            data-testid="download"
           >
             <DownloadIcon />
           </IconButton>
@@ -242,6 +243,7 @@ const FileList = () => {
           <IconButton
             sx={{ color: "#FF544F" }}
             onClick={() => handleCopyLink(params.row)}
+            data-testid="copy"
           >
             <InsertLinkIcon />
           </IconButton>
@@ -263,6 +265,7 @@ const FileList = () => {
             <IconButton
               sx={{ color: "#FF544F" }}
               onClick={() => openFile(params.row.uniqueName)}
+              data-testid="open"
             >
               <OpenInNewIcon />
             </IconButton>
@@ -272,7 +275,6 @@ const FileList = () => {
         );
       },
     },
-
     {
       field: "delete",
       headerName: "Supprimer",
@@ -287,6 +289,7 @@ const FileList = () => {
           <IconButton
             sx={{ color: "#FF544F" }}
             onClick={() => handleDeleteFile(params.row.id)}
+            data-testid="delete"
           >
             <DeleteIcon />
           </IconButton>
