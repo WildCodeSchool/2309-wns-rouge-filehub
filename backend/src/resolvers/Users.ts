@@ -157,6 +157,9 @@ export class UsersResolver {
       relations: { user: true },
     });
 
+    if (userToken?.user.verified === true) {
+      throw new Error(`User already verified`);
+    }
     if (!userToken) {
       throw new Error(`Invalid token`);
     }
