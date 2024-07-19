@@ -322,7 +322,7 @@ const FileList = () => {
         <>
           {total === 0 ? (
             <Typography>
-              Vous n'avez pas encore téléversé de fichiers
+              Vous n&apos;avez pas encore téléversé de fichiers
             </Typography>
           ) : (
             <Paper
@@ -342,6 +342,7 @@ const FileList = () => {
                   paginationMode="server"
                   rowCount={total}
                   paginationModel={{ page: page, pageSize: 5 }}
+                  pageSizeOptions={[5]}
                   onPaginationModelChange={(params) => {
                     handlePageChange(params);
                   }}
