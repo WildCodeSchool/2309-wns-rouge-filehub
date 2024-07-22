@@ -21,9 +21,11 @@ import { API_URL } from "@/config";
 import { mutationDeleteFile } from "@/graphql/mutationDeleteFile";
 import { queryMe } from "@/graphql/queryMe";
 import { getUserFiles } from "@/graphql/getUserFiles";
+import { showLogo } from "@/helpers/fileLogo";
 
 interface File {
   id: string;
+  mimeType: string;
   originalName: string;
   uniqueName: string;
   uploadAt: string;
@@ -83,6 +85,7 @@ const FileList = () => {
     },
     skip: !userId,
   });
+  console.log(data);
 
   const total = data?.filesCurrentUser?.total;
 
@@ -179,31 +182,43 @@ const FileList = () => {
 
   const columns: GridColDef[] = [
     {
-      field: "addDate",
-      headerName: "Date d'ajout",
+      field: "logo",
+      headerName: "",
       disableColumnMenu: true,
       flex: 1,
       align: "center",
       headerAlign: "center",
       resizable: false,
+      renderCell: (params) => (
+        showLogo(params.row.mimeType)
+      ),
     },
     {
       field: "originalName",
       headerName: "Nom du fichier",
       sortable: false,
       disableColumnMenu: true,
-      flex: 1,
+      flex: 2,
       align: "center",
       headerAlign: "center",
       resizable: false,
       renderCell: (params) => <div data-testid="file-name">{params.value}</div>,
     },
     {
+      field: "addDate",
+      headerName: "Date d'ajout",
+      disableColumnMenu: true,
+      flex: 2,
+      align: "center",
+      headerAlign: "center",
+      resizable: false,
+    },
+    {
       field: "expirationDate",
       headerName: "Date d'expiration",
       sortable: false,
       disableColumnMenu: true,
-      flex: 1,
+      flex: 2,
       align: "center",
       headerAlign: "center",
       resizable: false,
@@ -301,7 +316,9 @@ const FileList = () => {
   const objectData = (data: FilesData) => {
     return data.filesCurrentUser.files.map((file) => ({
       id: file.id,
+      logo: null,
       addDate: formatTimestampDate(file.uploadAt),
+      mimeType: file.mimeType,
       originalName: file.originalName,
       expirationDate: calculateExpirationDate(file.uploadAt),
       url: file.url,
