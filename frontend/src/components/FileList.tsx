@@ -144,11 +144,13 @@ const FileList = () => {
     });
   };
 
-  const isImageOrPdf = (fileName: string) => {
-    const fileExtension = fileName.split(".").pop()?.toLowerCase();
-    return ["pdf", "jpg", "jpeg", "png", "gif", "bmp", "webp", "tiff"].includes(
-      fileExtension || "",
-    );
+  const isOpenable = (mimetype: string) => {
+    if(mimetype.includes("pdf") || mimetype.includes("image") || mimetype.includes("video") || 
+    mimetype.includes("audio")){
+      return true
+    } else {
+      return false
+    }
   };
 
   const openFile = async (uniqueName: String) => {
@@ -275,7 +277,7 @@ const FileList = () => {
       headerAlign: "center",
       resizable: false,
       renderCell: (params) => {
-        return isImageOrPdf(params.row.originalName) ? (
+        return isOpenable(params.row.mimeType) ? (
           <Tooltip title="Ouvrir">
             <IconButton
               sx={{ color: "#FF544F" }}
