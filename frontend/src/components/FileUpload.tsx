@@ -106,12 +106,12 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
   };
 
   const { getRootProps, getInputProps, isDragAccept, isDragReject } =
-    useDropzone({
-      onDrop: (acceptedFiles) => {
-        setFile(acceptedFiles[0]);
-        setFileName(acceptedFiles[0].name);
-      },
-    });
+      useDropzone({
+        onDrop: (acceptedFiles) => {
+          setFile(acceptedFiles[0]);
+          setFileName(acceptedFiles[0].name);
+        },
+      });
 
   useEffect(() => {
     if (file) {
@@ -143,102 +143,108 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
       }, 250);
     } catch (error) {
       console.error("Erreur lors du dépot du fichier : ", error);
-      toast.error("Erreur lors du dépot du fichier...");
+      if (axios.isAxiosError(error) && error.response) {
+        // Afficher l'erreur spécifique du serveur
+        toast.error(`Erreur : ${error.response.data}`);
+      } else {
+        // Erreur générique
+        toast.error("Erreur lors du dépot du fichier...");
+      }
     }
   };
 
   return (
-    <Slide
-      direction="left"
-      in={checkAnim}
-      exit={!checkAnim}
-      mountOnEnter
-      unmountOnExit
-      timeout={{
-        enter: 250,
-        exit: 250,
-      }}
-    >
-      <FileUploadContent {...getRootProps()}>
-        <FileInfo
-          isDragAccept={isDragAccept}
-          isDragReject={isDragReject}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <MenuIcon>
-            <AddLinkIcon color="primary" fontSize="large" />
-          </MenuIcon>
-          <Typography
-            variant="h6"
-            sx={{
-              marginY: "10px",
-              fontWeight: 700,
-              color: theme.palette.common.black,
-            }}
+      <Slide
+          direction="left"
+          in={checkAnim}
+          exit={!checkAnim}
+          mountOnEnter
+          unmountOnExit
+          timeout={{
+            enter: 250,
+            exit: 250,
+          }}
+      >
+        <FileUploadContent {...getRootProps()}>
+          <FileInfo
+              isDragAccept={isDragAccept}
+              isDragReject={isDragReject}
+              onClick={(e) => e.stopPropagation()}
           >
-            Ajouter un fichier
-          </Typography>
-          <Container>
-            <FileButton
-              variant="contained"
-              sx={
-                file === undefined
-                  ? { background: theme.palette.secondary.main }
-                  : {
-                      background:
-                        "linear-gradient(90deg, rgba(250,209,38,1) 0%, rgba(255,84,79,1) 75%, rgba(255,84,79,1) 100%)",
-                    }
-              }
+            <MenuIcon>
+              <AddLinkIcon color="primary" fontSize="large" />
+            </MenuIcon>
+            <Typography
+                variant="h6"
+                sx={{
+                  marginY: "10px",
+                  fontWeight: 700,
+                  color: theme.palette.common.black,
+                }}
             >
-              <LabelButton>
-                Déposer un fichier
-                <ButtonSVGContainer>
-                  <FileOpenIcon />
-                </ButtonSVGContainer>
-                <input
-                  hidden
-                  type="file"
-                  onChange={(e) => {
-                    setFileInfo(e);
-                  }}
-                />
-              </LabelButton>
-            </FileButton>
-            {file && (
-              <ThrowFileButton
-                onClick={() => {
-                  setFile(undefined);
-                }}
+              Ajouter un fichier
+            </Typography>
+            <Container>
+              <FileButton
+                  variant="contained"
+                  sx={
+                    file === undefined
+                        ? { background: theme.palette.secondary.main }
+                        : {
+                          background:
+                              "linear-gradient(90deg, rgba(250,209,38,1) 0%, rgba(255,84,79,1) 75%, rgba(255,84,79,1) 100%)",
+                        }
+                  }
               >
-                <HighlightOffIcon color="primary" />
-              </ThrowFileButton>
-            )}
-          </Container>
-          <Container>
-            <Label>
-              <InputField
-                label="Nom du fichier"
-                variant="outlined"
-                type="text"
-                value={fileName}
-                disabled={!file}
-                onChange={(e) => {
-                  setFileName(e.target.value);
-                }}
-              />
-            </Label>
-          </Container>
-          <Container>
-            <ButtonConfirm onClick={handleUpload}>
-              Obtenir un lien
-              <ButtonSVGContainer>
-                <LinkIcon />
-              </ButtonSVGContainer>
-            </ButtonConfirm>
-          </Container>
-        </FileInfo>
-      </FileUploadContent>
-    </Slide>
+                <LabelButton>
+                  Déposer un fichier
+                  <ButtonSVGContainer>
+                    <FileOpenIcon />
+                  </ButtonSVGContainer>
+                  <input
+                      hidden
+                      type="file"
+                      onChange={(e) => {
+                        setFileInfo(e);
+                      }}
+                  />
+                </LabelButton>
+              </FileButton>
+              {file && (
+                  <ThrowFileButton
+                      onClick={() => {
+                        setFile(undefined);
+                      }}
+                  >
+                    <HighlightOffIcon color="primary" />
+                  </ThrowFileButton>
+              )}
+            </Container>
+            <Container>
+              <Label>
+                <InputField
+                    label="Nom du fichier"
+                    variant="outlined"
+                    type="text"
+                    value={fileName}
+                    disabled={!file}
+                    onChange={(e) => {
+                      setFileName(e.target.value);
+                    }}
+                />
+              </Label>
+            </Container>
+            <Container>
+              <ButtonConfirm onClick={handleUpload}>
+                Obtenir un lien
+                <ButtonSVGContainer>
+                  <LinkIcon />
+                </ButtonSVGContainer>
+              </ButtonConfirm>
+            </Container>
+          </FileInfo>
+        </FileUploadContent>
+      </Slide>
   );
 }
 

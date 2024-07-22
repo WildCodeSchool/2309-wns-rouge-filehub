@@ -55,9 +55,6 @@ async function start() {
 
   const upload = multer({
     storage: storage,
-    limits: {
-      fileSize: 10 * 1024 * 1024,
-    },
   });
 
   app.use("/files", express.static(path.join(__dirname, "uploads")));
