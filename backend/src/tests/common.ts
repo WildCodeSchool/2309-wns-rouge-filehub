@@ -1,6 +1,9 @@
 import { serialize, parse } from "cookie";
 import { GraphQLSchema } from "graphql";
 import { DataSource } from "typeorm";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export function mockContext(token?: string) {
   const value: { context: any; token?: string } = {

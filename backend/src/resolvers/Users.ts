@@ -7,7 +7,7 @@ import {
   Query,
   Resolver,
 } from "type-graphql";
-import { Plan, User, UserCreateInput, UserUpdateInput } from "../entities/User";
+import { User, UserCreateInput, UserUpdateInput } from "../entities/User";
 import { validate } from "class-validator";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
@@ -16,7 +16,6 @@ import { ContextType, getUserFromReq } from "../auth";
 import nodemailer from "nodemailer";
 import { UserToken } from "../entities/UserToken";
 import { uuid } from "uuidv4";
-import { Any } from "typeorm";
 import { stripe } from "../stripe";
 
 @Resolver(User)
