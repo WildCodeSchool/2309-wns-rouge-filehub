@@ -188,32 +188,33 @@ export class UsersResolver {
     @Arg("email") email: string,
     @Arg("password") password: string,
   ): Promise<User | null> {
-    const existingUser = await User.findOneBy({ email });
+    const existingUser = await User.findOneBy({ email }); // Recherche de l'utilisateur existant par email
     if (!existingUser) {
       return null;
     } else {
       if (existingUser.verified !== true) {
+        // Vérifier si l'email de l'utilisateur a été vérifié
         throw new Error(
-          "Your email need to be verified to connect, check your mailbox!",
+          "Your email needs to be verified to connect, check your mailbox!",
         );
       } else {
         if (await argon2.verify(existingUser.password, password)) {
+          // Vérifier si le mot de passe fourni correspond au mot de passe haché stocké
           const token = jwt.sign(
+            // Générer un JSON Web Token (JWT) avec une expiration de 20 heures
             {
               exp: Math.floor(Date.now() / 1000) + 60 * 60 * 20,
               userId: existingUser.id,
             },
             process.env.JWT_SECRET || "supersecret",
           );
-
-          const cookies = new Cookies(context.req, context.res);
+          const cookies = new Cookies(context.req, context.res); // Configurer et stocker le cookie avec le token
           cookies.set("token", token, {
             httpOnly: true,
             secure: false,
-            maxAge: 1000 * 60 * 60 * 24,
+            maxAge: 1000 * 60 * 60 * 24, // Expire après 24 heures
           });
-
-          return existingUser;
+          return existingUser; // Retourner l'utilisateur existant
         } else {
           return null;
         }

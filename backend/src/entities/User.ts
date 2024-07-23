@@ -41,10 +41,6 @@ export class User extends BaseEntity {
 
   @Column()
   verified!: Boolean;
-
-  // @OneToMany(() => File, (file) => file.createdBy)
-  // @Field(() => [File])
-  // files!: File[];
 }
 
 @InputType()
@@ -69,6 +65,4 @@ export class UserUpdateInput {
   @Field()
   @Matches(/^.{8,50}$/)
   newPassword2!: string;
-  // @Field(() => Plan, { nullable: true })
-  // plan?: Plan;
 }
