@@ -3,11 +3,11 @@ import { File } from "../entities/File";
 import AWS from "aws-sdk";
 
 const localSetupMinio = {
-    endpoint: process.env.MINIO_ENDPOINT,
-    accessKeyId: process.env.MINIO_ROOT_USER,
-    secretAccessKey: process.env.MINIO_ROOT_PASSWORD,
-    sslEnabled: false,
-    s3ForcePathStyle: true,
+  endpoint: process.env.MINIO_ENDPOINT,
+  accessKeyId: process.env.MINIO_ROOT_USER,
+  secretAccessKey: process.env.MINIO_ROOT_PASSWORD,
+  sslEnabled: false,
+  s3ForcePathStyle: true,
 };
 
 export const deleteOrphanFiles = async () => {

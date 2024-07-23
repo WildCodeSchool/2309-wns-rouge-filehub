@@ -6,7 +6,6 @@ import { SettingButton } from "@/components/stripe/SettingUser";
 import { queryMe } from "@/graphql/queryMe";
 import { useQuery } from "@apollo/client";
 
-
 function UserProfilePage(): React.ReactNode {
   const { data } = useQuery(queryMe, { fetchPolicy: "no-cache" });
   return (

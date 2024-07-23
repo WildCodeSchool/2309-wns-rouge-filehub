@@ -14,8 +14,8 @@ import jwt from "jsonwebtoken";
 import Cookies from "cookies";
 import { ContextType, getUserFromReq } from "../auth";
 import nodemailer from "nodemailer";
-import {  UserToken  } from "../entities/UserToken";
-import {  uuid  } from "uuidv4";
+import { UserToken } from "../entities/UserToken";
+import { uuid } from "uuidv4";
 import { Any } from "typeorm";
 import { stripe } from "../stripe";
 
@@ -96,9 +96,9 @@ export class UsersResolver {
       } else {
         throw new Error("User not found");
       }
-    } catch (e:any) {
+    } catch (e: any) {
       console.log(e);
-      if(e.message === "User not found"){
+      if (e.message === "User not found") {
         throw new Error("User not found");
       } else {
         throw new Error("An error occured when sending the verification code");

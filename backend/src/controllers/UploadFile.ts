@@ -38,12 +38,15 @@ export class UploadFileController {
         return res.status(400).send("Aucun fichier téléchargé");
       }
 
-      const { originalname, buffer, mimetype, size } = req.file as Express.Multer.File;
+      const { originalname, buffer, mimetype, size } =
+        req.file as Express.Multer.File;
 
       // Vérifier la taille du fichier
       const maxFileSize = 10 * 1024 * 1024; // 10 MB
       if (size > maxFileSize) {
-        return res.status(413).send("La taille du fichier dépasse la limite de 10 Mo");
+        return res
+          .status(413)
+          .send("La taille du fichier dépasse la limite de 10 Mo");
       }
 
       const params = {
@@ -57,7 +60,9 @@ export class UploadFileController {
         await this.s3.upload(params).promise();
       } catch (error) {
         console.error("Erreur lors du téléchargement vers S3:", error);
-        return res.status(500).send("Erreur lors du téléchargement du fichier vers S3");
+        return res
+          .status(500)
+          .send("Erreur lors du téléchargement du fichier vers S3");
       }
 
       const newFile = File.create({
@@ -75,13 +80,19 @@ export class UploadFileController {
         await newFile.save();
       } catch (error) {
         console.error("Erreur lors de l'enregistrement du fichier:", error);
-        return res.status(500).send("Erreur lors de l'enregistrement du fichier dans la base de données");
+        return res
+          .status(500)
+          .send(
+            "Erreur lors de l'enregistrement du fichier dans la base de données",
+          );
       }
 
       res.send(newFile);
     } catch (error) {
       console.error("Erreur lors du téléchargement du fichier:", error);
-      res.status(500).send("Une erreur s'est produite lors du téléchargement du fichier");
+      res
+        .status(500)
+        .send("Une erreur s'est produite lors du téléchargement du fichier");
     }
   };
 }
