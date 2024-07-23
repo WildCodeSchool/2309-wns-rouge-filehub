@@ -18,8 +18,8 @@ const MyFiles: React.FC = () => {
           padding="40px 10px"
           borderRadius="5vmin"
           gap="50px"
-          width="70%"
-          maxWidth="1000px"
+          width="80%"
+          maxWidth="1100px"
           height="max(50vmin fit-content)"
           sx={{ border: `1px solid ${theme.palette.primary.main}` }}
         >
