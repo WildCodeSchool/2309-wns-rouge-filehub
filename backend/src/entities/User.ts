@@ -28,10 +28,6 @@ export class User extends BaseEntity {
 
   @Column()
   verified!: Boolean;
-
-  // @OneToMany(() => File, (file) => file.createdBy)
-  // @Field(() => [File])
-  // files!: File[];
 }
 
 @InputType()
