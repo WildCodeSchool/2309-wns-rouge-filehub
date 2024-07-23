@@ -14,6 +14,8 @@ jobs:
   run-checks:
     name: Run checks
     runs-on: ubuntu-latest
+    env:
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
     steps:
       # Récupère le code source du repo GitHub
       - name: Check out code
