@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      NODE_ENV: test
     steps:
       # Récupère le code source du repo GitHub
       - name: Check out code
@@ -42,6 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      NODE_ENV: test
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -61,6 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      NODE_ENV: test
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3

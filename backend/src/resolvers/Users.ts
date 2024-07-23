@@ -131,9 +131,13 @@ export class UsersResolver {
     }
 
     // Créer un client Stripe
+    let stripeCustomerId = 'test_stripe_customer_id';
+    if (process.env.NODE_ENV !== 'test') {
     const stripeCustomer = await stripe.customers.create({
       email: data.email,
     });
+    stripeCustomerId = stripeCustomer.id;
+    }
 
     const newUser = new User();
     const hashedPassword = await argon2.hash(data.password);
@@ -141,7 +145,7 @@ export class UsersResolver {
       email: data.email,
       password: hashedPassword,
       verified: false,
-      stripeCustomerId: stripeCustomer.id,
+      stripeCustomerId: stripeCustomerId,
     });
 
     try {
