@@ -145,11 +145,15 @@ const FileList = () => {
   };
 
   const isOpenable = (mimetype: string) => {
-    if(mimetype.includes("pdf") || mimetype.includes("image") || mimetype.includes("video") || 
-    mimetype.includes("audio")){
-      return true
+    if (
+      mimetype.includes("pdf") ||
+      mimetype.includes("image") ||
+      mimetype.includes("video") ||
+      mimetype.includes("audio")
+    ) {
+      return true;
     } else {
-      return false
+      return false;
     }
   };
 
@@ -191,9 +195,7 @@ const FileList = () => {
       align: "center",
       headerAlign: "center",
       resizable: false,
-      renderCell: (params) => (
-        showLogo(params.row.mimeType)
-      ),
+      renderCell: (params) => showLogo(params.row.mimeType),
     },
     {
       field: "originalName",
