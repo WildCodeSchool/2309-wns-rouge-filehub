@@ -1,15 +1,14 @@
-import { Button, Typography, InputAdornment, TextField, Box } from "@mui/material";
+import {
+  Button,
+  Typography,
+  InputAdornment,
+  TextField,
+  Box,
+} from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
-import {
-  Label,
-  ButtonSVGContainer,
-  ButtonConfirm,
-  Container,
-  MenuIcon,
-  InputField,
-} from "./UserProfile";
+import { InputField } from "./UserProfile";
 import LinkIcon from "@mui/icons-material/Link";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
@@ -30,15 +29,68 @@ interface FileInfoProps {
   isDragReject?: boolean;
 }
 
-const getColor = (props: FileInfoProps) => {
-  if (props.isDragAccept) {
-    return "#00e676";
+const Container = styled.div`
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  margin: 1rem 0;
+`;
+
+export const MenuIcon = styled.div`
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  right: 0;
+  top: 0;
+  height: 65px;
+  width: 75px;
+  border-radius: 100%;
+`;
+
+const ButtonConfirm = styled(Button)`
+  &.MuiButtonBase-root {
+    position: relative;
+    background: linear-gradient(
+      90deg,
+      rgba(250, 209, 38, 1) 0%,
+      rgba(255, 84, 79, 1) 75%,
+      rgba(255, 84, 79, 1) 100%
+    );
+    color: white;
+    border-radius: 50px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    text-transform: none;
+    width: 100%;
+    height: 50px;
   }
-  if (props.isDragReject) {
-    return "#ff1744";
-  }
-  return `${theme.palette.secondary.main}`;
-};
+`;
+
+const ButtonSVGContainer = styled.div`
+  position: absolute;
+  right: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border-radius: 100%;
+  height: 40px;
+  width: 40px;
+  color: black;
+`;
+
+const Label = styled.label`
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  width: 95%;
+  font-size: 2.5vmin;
+`;
 
 export const FileUploadContent = styled.div`
   display: flex;
@@ -243,16 +295,18 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
           </Container>
           <Container>
             <Label>
-            <Box sx={{
-              position: 'absolute',
-              top: '50%',
-              left: -24,
-              transform: 'translateY(-50%)',
-              height: 24,
-              width: 24
-            }}>
-              {file && showLogo(file.type, 24)}
-            </Box>
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: -24,
+                  transform: "translateY(-50%)",
+                  height: 24,
+                  width: 24,
+                }}
+              >
+                {file && showLogo(file.type, 24)}
+              </Box>
               <InputField
                 label="Nom du fichier"
                 variant="outlined"
