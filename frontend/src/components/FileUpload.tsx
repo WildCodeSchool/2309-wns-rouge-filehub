@@ -1,4 +1,4 @@
-import { Button, Typography, InputAdornment, TextField } from "@mui/material";
+import { Button, Typography, InputAdornment, TextField, Box } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
@@ -20,6 +20,7 @@ import { dataBaseFile } from "./FileUploaded";
 import { toast } from "react-toastify";
 import { API_URL } from "@/config";
 import { useDropzone } from "react-dropzone";
+import { showLogo } from "@/helpers/fileLogo";
 
 interface fileUploadProps {
   setFileUploaded: (fun: dataBaseFile | undefined) => void;
@@ -242,6 +243,16 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
           </Container>
           <Container>
             <Label>
+            <Box sx={{
+              position: 'absolute',
+              top: '50%',
+              left: -24,
+              transform: 'translateY(-50%)',
+              height: 24,
+              width: 24
+            }}>
+              {file && showLogo(file.type, 24)}
+            </Box>
               <InputField
                 label="Nom du fichier"
                 variant="outlined"

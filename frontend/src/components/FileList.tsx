@@ -7,6 +7,7 @@ import {
   Typography,
   CircularProgress,
   Stack,
+  Box,
 } from "@mui/material";
 import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";
 import InsertLinkIcon from "@mui/icons-material/InsertLink";
@@ -195,14 +196,25 @@ const FileList = () => {
       align: "center",
       headerAlign: "center",
       resizable: false,
-      renderCell: (params) => showLogo(params.row.mimeType),
+      sortable: false,
+      renderCell: (params) => (
+        <Box sx={{
+          height: '100%',
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
+          {showLogo(params.row.mimeType, 24)}
+        </Box>
+      ),
     },
     {
       field: "originalName",
       headerName: "Nom du fichier",
       sortable: false,
       disableColumnMenu: true,
-      flex: 2,
+      flex: 3,
       align: "center",
       headerAlign: "center",
       resizable: false,
@@ -212,7 +224,7 @@ const FileList = () => {
       field: "addDate",
       headerName: "Date d'ajout",
       disableColumnMenu: true,
-      flex: 2,
+      flex: 1.5,
       align: "center",
       headerAlign: "center",
       resizable: false,
@@ -222,7 +234,7 @@ const FileList = () => {
       headerName: "Date d'expiration",
       sortable: false,
       disableColumnMenu: true,
-      flex: 2,
+      flex: 1.5,
       align: "center",
       headerAlign: "center",
       resizable: false,
@@ -349,8 +361,7 @@ const FileList = () => {
             <Paper
               sx={{
                 height: 280,
-                width: "90%",
-                maxWidth: "1000px",
+                width: "95%",
                 boxShadow: "none",
                 marginBottom: "15px",
               }}
