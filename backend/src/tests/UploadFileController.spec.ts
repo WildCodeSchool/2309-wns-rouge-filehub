@@ -134,7 +134,7 @@ describe("UploadFileController", () => {
     expect(res.status).toHaveBeenCalledWith(500);
     // Vérification que la méthode send de res a été appelée avec le message d'erreur
     expect(res.send).toHaveBeenCalledWith(
-      "An error occurred while uploading the file",
+      "Erreur lors du téléchargement du fichier vers S3",
     );
   });
 });
