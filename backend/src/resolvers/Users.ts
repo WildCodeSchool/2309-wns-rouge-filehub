@@ -14,8 +14,9 @@ import jwt from "jsonwebtoken";
 import Cookies from "cookies";
 import { ContextType, getUserFromReq } from "../auth";
 import nodemailer from "nodemailer";
-import { UserToken } from "../entities/UserToken";
-import { uuid } from "uuidv4";
+import {  UserToken  } from "../entities/UserToken";
+import {  uuid  } from "uuidv4";
+import { Any } from "typeorm";
 import { stripe } from "../stripe";
 
 @Resolver(User)
@@ -40,6 +41,71 @@ export class UsersResolver {
     return getUserFromReq(context.req, context.res);
   }
 
+  // utility function called when an email is to be sent
+  async sendEmail(target: string, title: string, html: string) {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "filehubwcs@gmail.com",
+        pass: "ptom oitf kvmz oucz",
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    });
+
+    const mailOptions = {
+      from: "filehubwcs@gmail.com",
+      to: target,
+      subject: title,
+      html: html,
+    };
+
+    try {
+      transporter.sendMail(mailOptions);
+    } catch (e) {
+      throw new Error(String(e));
+    }
+  }
+
+  // mutation called when the user want to get a new email and generate a new token to verify his account
+  @Mutation(() => String)
+  async sendVerifCode(
+    @Arg("email", () => String) email: string,
+  ): Promise<String> {
+    try {
+      const user = await User.findOne({
+        where: { email: email },
+      });
+      if (user) {
+        const token = new UserToken();
+        token.user = user;
+        token.createdAt = new Date();
+        token.expiresAt = new Date(Number(token.createdAt) + 1000 * 60 * 60);
+        token.token = uuid();
+        await token.save();
+
+        await this.sendEmail(
+          user.email,
+          "Confirmation compte FileHub",
+          `Voici votre code de confirmation du compte : ${token.token}, 
+          finalisez la création de votre compte en suivant  
+          <a href="${process.env.FRONT_ADRESS}/verify-account/${token.token}">cette URL</a>`,
+        );
+        return token.token;
+      } else {
+        throw new Error("User not found");
+      }
+    } catch (e:any) {
+      console.log(e);
+      if(e.message === "User not found"){
+        throw new Error("User not found");
+      } else {
+        throw new Error("An error occured when sending the verification code");
+      }
+    }
+  }
+
   @Mutation(() => Boolean)
   async signout(@Ctx() context: ContextType): Promise<boolean> {
     const cookies = new Cookies(context.req, context.res);
@@ -55,14 +121,14 @@ export class UsersResolver {
   async signup(
     @Arg("data", () => UserCreateInput) data: UserCreateInput,
   ): Promise<User> {
-    const errors = await validate(data);
-    if (errors.length !== 0) {
-      throw new Error(`Error occured: ${JSON.stringify(errors)}`);
-    }
-
     const existingUser = await User.findOneBy({ email: data.email });
     if (existingUser) {
       throw new Error(`User already exist`);
+    }
+
+    const errors = await validate(data);
+    if (errors.length !== 0) {
+      throw new Error(`Password must be at least 8 characters long`);
     }
 
     // Créer un client Stripe
@@ -75,11 +141,45 @@ export class UsersResolver {
     Object.assign(newUser, {
       email: data.email,
       password: hashedPassword,
+      verified: false,
       stripeCustomerId: stripeCustomer.id,
     });
 
-    await newUser.save();
+    try {
+      await newUser.save();
+      await this.sendVerifCode(newUser.email);
+    } catch (e) {
+      console.log(e);
+      throw new Error(
+        `Une erreur est survenue lors de la creation de l'utilisation / l'envoi du mail de confirmation`,
+      );
+    }
     return newUser;
+  }
+
+  @Mutation(() => User)
+  async verifyAccount(@Arg("token") token: string): Promise<User | null> {
+    const userToken = await UserToken.findOne({
+      where: { token: token },
+      relations: { user: true },
+    });
+
+    if (userToken?.user.verified === true) {
+      throw new Error(`User already verified`);
+    }
+    if (!userToken) {
+      throw new Error(`Invalid token`);
+    }
+    if (userToken.expiresAt < new Date()) {
+      throw new Error(`Expired token`);
+    }
+
+    userToken.user.verified = true;
+
+    userToken.expiresAt = new Date();
+    await userToken.save();
+    await userToken.user.save();
+    return userToken.user;
   }
 
   @Mutation(() => User, { nullable: true })
@@ -89,35 +189,42 @@ export class UsersResolver {
     @Arg("password") password: string,
   ): Promise<User | null> {
     const existingUser = await User.findOneBy({ email });
-    if (existingUser) {
-      if (await argon2.verify(existingUser.password, password)) {
-        const token = jwt.sign(
-          {
-            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 2,
-            userId: existingUser.id,
-          },
-          process.env.JWT_SECRET || "supersecret",
-        );
-
-        const cookies = new Cookies(context.req, context.res);
-        cookies.set("token", token, {
-          httpOnly: true,
-          secure: false,
-          maxAge: 1000 * 60 * 60 * 24,
-        });
-
-        return existingUser;
-      } else {
-        return null;
-      }
-    } else {
+    if (!existingUser) {
       return null;
+    } else {
+      if (existingUser.verified !== true) {
+        throw new Error(
+          "Your email need to be verified to connect, check your mailbox!",
+        );
+      } else {
+        if (await argon2.verify(existingUser.password, password)) {
+          const token = jwt.sign(
+            {
+              exp: Math.floor(Date.now() / 1000) + 60 * 60 * 20,
+              userId: existingUser.id,
+            },
+            process.env.JWT_SECRET || "supersecret",
+          );
+
+          const cookies = new Cookies(context.req, context.res);
+          cookies.set("token", token, {
+            httpOnly: true,
+            secure: false,
+            maxAge: 1000 * 60 * 60 * 24,
+          });
+
+          return existingUser;
+        } else {
+          return null;
+        }
+      }
     }
   }
 
+  // mutation called when the connected user wants to change his password, based on cookie authentification
   @Authorized()
   @Mutation(() => User)
-  async updatePassword(
+  async updatePasswordWhenConnected(
     @Ctx() context: ContextType,
     @Arg("data") data: UserUpdateInput,
   ): Promise<User | null> {
@@ -160,6 +267,7 @@ export class UsersResolver {
     }
   }
 
+  // mutation called when user is not connected and want to get an email with a token to change his password
   @Mutation(() => Boolean)
   async forgotPassword(@Arg("email") email: string): Promise<boolean | null> {
     const user = await User.findOne({
@@ -178,41 +286,19 @@ export class UsersResolver {
     token.token = uuid();
     await token.save();
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: "filehubwcs@gmail.com",
-        pass: "ptom oitf kvmz oucz",
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
-    });
-
-    const mailOptions = {
-      from: "filehubwcs@gmail.com",
-      to: email,
-      subject: "Réinitialisation de mot de passe",
-      html: `Voici votre code de reset : ${token.token}, 
-      entrez le via <a href="${process.env.FRONT_ADRESS}/reset-password/${token.token}">cette URL</a>`,
-    };
-
-    try {
-      transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-          console.log("error occured... :" + error);
-        } else {
-          console.log("Email sent: " + info.response);
-        }
-      });
-    } catch (e) {
-      throw new Error(String(e));
-    }
+    this.sendEmail(
+      email,
+      "Réinitialisation de mot de passe",
+      `Voici votre code de reset : ${token.token}, 
+      réinitialisez votre mot de passe via 
+      <a href="${process.env.FRONT_ADRESS}/reset-password/${token.token}">cette URL</a>`,
+    );
     return true;
   }
 
+  // mutation used when the user click on the email url to change his password
   @Mutation(() => User)
-  async updatePasswordFromCode(
+  async updatePasswordWhenNotConnected(
     @Arg("token") token: string,
     @Arg("password") password: string,
   ): Promise<User | null> {

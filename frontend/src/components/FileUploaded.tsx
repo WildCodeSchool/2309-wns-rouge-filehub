@@ -110,7 +110,7 @@ function FileUploaded({
                 {copied ? <DoneIcon /> : <ContentCopyIcon />}
               </ButtonSVGContainer>
             </ButtonCopy>
-          </Container>
+          </Container>*
           <Container>
             <ButtonConfirm onClick={() => setFileUploaded(undefined)}>
               Nouveau fichier

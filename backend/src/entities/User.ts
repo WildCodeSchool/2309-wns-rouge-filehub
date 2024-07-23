@@ -39,6 +39,9 @@ export class User extends BaseEntity {
   @CreateDateColumn()
   createdAt!: Date;
 
+  @Column()
+  verified!: Boolean;
+
   // @OneToMany(() => File, (file) => file.createdBy)
   // @Field(() => [File])
   // files!: File[];

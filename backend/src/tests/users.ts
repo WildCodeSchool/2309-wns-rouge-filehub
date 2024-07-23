@@ -5,8 +5,11 @@ import { mutationSignup } from "./graphql/mutationSignUp";
 import { User } from "../entities/User";
 import { mutationSignin } from "./graphql/mutationSignIn";
 import { queryMe } from "./graphql/queryMe";
+import { mutationSendVerifCode } from "./graphql/mutationSendVerifCode";
+import { mutationVerifAccount } from "./graphql/mutationVerifAccount";
 
 export default function (args: TestArgs) {
+  let token = "";
   describe("users resolvers", () => {
     it("creates a new user", async () => {
       const result = (await graphql({
@@ -27,6 +30,29 @@ export default function (args: TestArgs) {
       // Vérifie si l'utilisateur récupéré existe
       expect(user?.password !== "supersecret").toBe(true);
       // Vérifie si le mot de passe de l'utilisateur est bien hashé dans la db
+    });
+    it("send a new verif token again", async () => {
+      const result = (await graphql({
+        schema: args.schema,
+        source: print(mutationSendVerifCode),
+        variableValues: {
+          email: "test1@gmail.com",
+        },
+      })) as any;
+      expect(typeof(result.data.sendVerifCode)).toBe("string");
+      // Vérifie que le token a bien été généré
+      token = result.data.sendVerifCode;
+    });
+    it("verify the account with the token", async () => {
+      const result = (await graphql({
+        schema: args.schema,
+        source: print(mutationVerifAccount),
+        variableValues: {
+          token: token,
+        },
+      })) as any;
+      expect(result.data.verifyAccount.id).toBe('1');
+      // Vérifie que la réponse renvoi bien un user avec l'id 1
     });
     it("cannot creates the same user", async () => {
       const result = (await graphql({

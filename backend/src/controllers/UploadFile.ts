@@ -15,31 +15,50 @@ export class UploadFileController {
     try {
       let userId = 0;
       const cookies = new Cookies(req, res);
-      if (cookies) {
-        const token = cookies.get("token");
-        if (token) {
-          const payload = jwt.verify(
-            token,
-            process.env.JWT_SECRET || "supersecret",
-          );
-          if (typeof payload === "object" && "userId" in payload) {
-            userId = payload.userId;
-          }
-        }
+
+      const token = cookies.get("token");
+      if (!token) {
+        return res.status(401).send("Aucun token fourni");
       }
 
-      const { originalname, buffer, mimetype, size } =
-        req.file as Express.Multer.File;
+      let payload;
+      try {
+        payload = jwt.verify(token, process.env.JWT_SECRET || "supersecret");
+      } catch (error) {
+        return res.status(401).send("token invalide");
+      }
+
+      if (typeof payload === "object" && "userId" in payload) {
+        userId = payload.userId;
+      } else {
+        return res.status(401).send("Contenu du token invalide");
+      }
+
+      if (!req.file) {
+        return res.status(400).send("Aucun fichier téléchargé");
+      }
+
+      const { originalname, buffer, mimetype, size } = req.file as Express.Multer.File;
+
+      // Vérifier la taille du fichier
+      const maxFileSize = 10 * 1024 * 1024; // 10 MB
+      if (size > maxFileSize) {
+        return res.status(413).send("La taille du fichier dépasse la limite de 10 Mo");
+      }
 
       const params = {
-        Bucket: "bucket-filehub",
-        Key: Date.now() + decodeURIComponent(originalname),
+        Bucket: process.env.AWS_BUCKET_NAME || "bucket-filehub",
+        Key: Date.now() + "-" + decodeURIComponent(originalname),
         Body: buffer,
         ContentType: mimetype,
       };
 
-      // Stockage du fichier sur Minio
-      await this.s3.upload(params).promise();
+      try {
+        await this.s3.upload(params).promise();
+      } catch (error) {
+        console.error("Erreur lors du téléchargement vers S3:", error);
+        return res.status(500).send("Erreur lors du téléchargement du fichier vers S3");
+      }
 
       const newFile = File.create({
         originalName: decodeURIComponent(originalname),
@@ -48,16 +67,21 @@ export class UploadFileController {
         size: size,
         path: params.Key,
         uploadAt: new Date(),
-        url: `${process.env.FRONT_ADRESS}/downloads/${params.Key}`,
+        url: `${process.env.FRONT_ADDRESS}/downloads/${params.Key}`,
         createdBy: { id: userId },
       });
 
-      await newFile.save();
+      try {
+        await newFile.save();
+      } catch (error) {
+        console.error("Erreur lors de l'enregistrement du fichier:", error);
+        return res.status(500).send("Erreur lors de l'enregistrement du fichier dans la base de données");
+      }
 
       res.send(newFile);
     } catch (error) {
-      console.error("Error uploading file:", error);
-      res.status(500).send("An error occurred while uploading the file");
+      console.error("Erreur lors du téléchargement du fichier:", error);
+      res.status(500).send("Une erreur s'est produite lors du téléchargement du fichier");
     }
   };
 }

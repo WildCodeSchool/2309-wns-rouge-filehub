@@ -1,15 +1,7 @@
 import { FilehubIcon } from "@/styles/icon/FileHubIcon";
 import { theme } from "@/styles/theme";
 import { pxToRem } from "@/styles/cssTheme";
-import {
-  Box,
-  Button,
-  IconButton,
-  Link,
-  Tab,
-  Tabs,
-  TextField,
-} from "@mui/material";
+import { Box, Button, IconButton, Tab, Tabs, TextField } from "@mui/material";
 import { ChangeEvent, useState } from "react";
 import styled from "styled-components";
 import { useMutation } from "@apollo/client";
@@ -19,6 +11,8 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/router";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import { mutationSendVerifCode } from "@/graphql/mutationSendVerifCode";
+import { palette } from "@mui/system";
 
 export const TextFieldStyled = styled(TextField)`
   & .MuiOutlinedInput-root {
@@ -92,6 +86,7 @@ export default function Login(): React.ReactNode {
 
   const [signin] = useMutation(mutationSignin);
   const [signup] = useMutation(mutationSignup);
+  const [sendVerifCode] = useMutation(mutationSendVerifCode);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -126,7 +121,9 @@ export default function Login(): React.ReactNode {
               },
             });
             if (data.item) {
-              toast.success("Inscription réussie !");
+              toast.success(
+                "Inscription reçue, un mail de confirmation vous a été envoyé !",
+              );
               setTimeout(() => {
                 setActiveTab(0);
                 setSignupEmail("");
@@ -134,9 +131,20 @@ export default function Login(): React.ReactNode {
                 setSignupConfirmPassword("");
               }, 3000);
             }
-          } catch (error) {
+          } catch (error: any) {
             console.error(error);
-            toast.error("Erreur lors de l'inscription.");
+
+            if (error.message === "User already exist") {
+              toast.error(
+                "Compte déjà existant avec cet email, veuillez renseigner un autre email d'inscription.",
+              );
+            } else if (
+              error.message === "Password must be at least 8 characters long"
+            ) {
+              toast.error(
+                "Par mesure de sécurité, 8 caractères minimum sont requis pour le mot de passe.",
+              );
+            }
           }
         } else {
           toast.error("Les mots de passe ne correspondent pas.");
@@ -150,6 +158,28 @@ export default function Login(): React.ReactNode {
   const handleChangeTab = (e: ChangeEvent<{}>, newValue: number) => {
     setActiveTab(newValue);
   };
+
+  const handleSendVerifCode = async ()=>{
+    if (activeTab !== 0) {
+      if(signupEmail === ""){
+        toast.error("Veuillez renseigner un email");
+        return
+      }
+      try{
+        const { data } = await sendVerifCode({
+          variables: { email: signupEmail},
+        });
+        if(data){
+          toast.success(
+            `Un email de vérification a bien été renvoyé à l'adresse ${signupEmail}`,
+          );
+        }
+      } catch(e:any) {
+        console.log(e);
+        toast.error(e.message);
+      }
+    }
+  }
 
   return (
     <Box
@@ -232,8 +262,8 @@ export default function Login(): React.ReactNode {
                   </IconButton>
                 </Box>
                 <Button
-                    onClick={() => router.push("/forgot-password")}
-                    sx={{ mt: 1, ml: 1, color: theme.palette.secondary.main }}
+                  onClick={() => router.push("/forgot-password")}
+                  sx={{ mt: 1, ml: 1, color: theme.palette.secondary.main }}
                 >
                   Mot de passe oublié ?
                 </Button>
@@ -333,6 +363,23 @@ export default function Login(): React.ReactNode {
             </StyledButton>
           </Box>
         </form>
+        {activeTab !== 0 &&
+          <Button variant="contained" onClick={handleSendVerifCode} sx={{
+            margin: '0.5rem 0 0 0',
+            backgroundColor: 'transparent',
+            color: signupEmail === "" ? theme.palette.primary.dark : theme.palette.secondary.main,
+            fontWeight: signupEmail === "" ? "initial" : "bold",
+            boxShadow: 'none',
+            borderRadius: 20,
+            textTransform: 'none',
+            '&:hover': {
+              background: "rgb(240,240,240)",
+              boxShadow: 'none'
+            },
+          }}>
+            Envoyer un nouveau mail de vérification
+          </Button>
+        }
       </Box>
     </Box>
   );

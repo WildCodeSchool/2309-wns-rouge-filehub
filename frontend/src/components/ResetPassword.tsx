@@ -54,13 +54,13 @@ export default function VerificationInput({ onSubmit }: any) {
   const router = useRouter();
   const token = router.query.token;
 
-  const [updatePasswordFromCode] = useMutation(mutationResetPassword);
+  const [updatePasswordWhenNotConnected] = useMutation(mutationResetPassword);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword && confirmPassword && newPassword === confirmPassword) {
       try {
-        const response = await updatePasswordFromCode({
+        const response = await updatePasswordWhenNotConnected({
           variables: { password: newPassword, token }
         });
         if (response.data) {
