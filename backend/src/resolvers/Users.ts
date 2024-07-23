@@ -16,7 +16,7 @@ import { ContextType, getUserFromReq } from "../auth";
 import nodemailer from "nodemailer";
 import { UserToken } from "../entities/UserToken";
 import { uuid } from "uuidv4";
-import { Any } from "typeorm";
+import { stripe } from "../stripe";
 
 @Resolver(User)
 export class UsersResolver {
@@ -95,9 +95,9 @@ export class UsersResolver {
       } else {
         throw new Error("User not found");
       }
-    } catch (e:any) {
+    } catch (e: any) {
       console.log(e);
-      if(e.message === "User not found"){
+      if (e.message === "User not found") {
         throw new Error("User not found");
       } else {
         throw new Error("An error occured when sending the verification code");
@@ -130,12 +130,18 @@ export class UsersResolver {
       throw new Error(`Password must be at least 8 characters long`);
     }
 
+    // Créer un client Stripe
+    const stripeCustomer = await stripe.customers.create({
+      email: data.email,
+    });
+
     const newUser = new User();
     const hashedPassword = await argon2.hash(data.password);
     Object.assign(newUser, {
       email: data.email,
       password: hashedPassword,
       verified: false,
+      stripeCustomerId: stripeCustomer.id,
     });
 
     try {

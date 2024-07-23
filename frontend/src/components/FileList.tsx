@@ -146,11 +146,15 @@ const FileList = () => {
   };
 
   const isOpenable = (mimetype: string) => {
-    if(mimetype.includes("pdf") || mimetype.includes("image") || mimetype.includes("video") || 
-    mimetype.includes("audio")){
-      return true
+    if (
+      mimetype.includes("pdf") ||
+      mimetype.includes("image") ||
+      mimetype.includes("video") ||
+      mimetype.includes("audio")
+    ) {
+      return true;
     } else {
-      return false
+      return false;
     }
   };
 

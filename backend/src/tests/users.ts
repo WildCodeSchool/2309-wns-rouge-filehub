@@ -39,7 +39,7 @@ export default function (args: TestArgs) {
           email: "test1@gmail.com",
         },
       })) as any;
-      expect(typeof(result.data.sendVerifCode)).toBe("string");
+      expect(typeof result.data.sendVerifCode).toBe("string");
       // Vérifie que le token a bien été généré
       token = result.data.sendVerifCode;
     });
@@ -51,7 +51,7 @@ export default function (args: TestArgs) {
           token: token,
         },
       })) as any;
-      expect(result.data.verifyAccount.id).toBe('1');
+      expect(result.data.verifyAccount.id).toBe("1");
       // Vérifie que la réponse renvoi bien un user avec l'id 1
     });
     it("cannot creates the same user", async () => {
