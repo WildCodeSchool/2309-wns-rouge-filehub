@@ -24,7 +24,6 @@ export interface dataBaseFile {
   id: number;
   mimeType: string;
   name: string;
-  path: string;
   size: number;
   uploadedAt: string;
   url: string;

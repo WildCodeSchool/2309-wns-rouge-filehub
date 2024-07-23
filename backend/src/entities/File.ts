@@ -35,10 +35,6 @@ export class File extends BaseEntity {
 
   @Column({ length: 255 })
   @Field()
-  path!: string;
-
-  @Column({ length: 255 })
-  @Field()
   url!: string;
 
   @CreateDateColumn()
@@ -66,9 +62,6 @@ export class FilesWhere {
 
   @Field(() => Int, { nullable: true })
   size?: number;
-
-  @Field({ nullable: true })
-  path?: string;
 
   @Field({ nullable: true })
   url?: string;

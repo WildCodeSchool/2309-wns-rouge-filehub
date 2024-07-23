@@ -6,7 +6,6 @@ export const queryGetFile = gql`
       id
       mimeType
       originalName
-      path
       size
       uniqueName
       uploadAt
