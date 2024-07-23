@@ -1,13 +1,22 @@
-import {Arg, Authorized, Ctx, ID, Mutation, Query, Resolver,} from "type-graphql";
-import {User, UserCreateInput, UserUpdateInput} from "../entities/User";
-import {validate} from "class-validator";
+import {
+  Arg,
+  Authorized,
+  Ctx,
+  ID,
+  Mutation,
+  Query,
+  Resolver,
+} from "type-graphql";
+import { Plan, User, UserCreateInput, UserUpdateInput } from "../entities/User";
+import { validate } from "class-validator";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import Cookies from "cookies";
-import {ContextType, getUserFromReq} from "../auth";
+import { ContextType, getUserFromReq } from "../auth";
 import nodemailer from "nodemailer";
-import {UserToken} from "../entities/UserToken";
-import {uuid} from "uuidv4";
+import { UserToken } from "../entities/UserToken";
+import { uuid } from "uuidv4";
+import { stripe } from "../stripe";
 
 @Resolver(User)
 export class UsersResolver {
@@ -56,11 +65,17 @@ export class UsersResolver {
       throw new Error(`User already exist`);
     }
 
+    // Créer un client Stripe
+    const stripeCustomer = await stripe.customers.create({
+      email: data.email,
+    });
+
     const newUser = new User();
     const hashedPassword = await argon2.hash(data.password);
     Object.assign(newUser, {
       email: data.email,
       password: hashedPassword,
+      stripeCustomerId: stripeCustomer.id,
     });
 
     await newUser.save();
@@ -146,16 +161,14 @@ export class UsersResolver {
   }
 
   @Mutation(() => Boolean)
-  async forgotPassword(
-    @Arg("email") email: string,
-  ): Promise<boolean | null> {
+  async forgotPassword(@Arg("email") email: string): Promise<boolean | null> {
     const user = await User.findOne({
       where: { email: email },
     });
 
-    if(!user){
-      console.log('nada')
-      return true
+    if (!user) {
+      console.log("nada");
+      return true;
     }
 
     const token = new UserToken();
@@ -166,33 +179,33 @@ export class UsersResolver {
     await token.save();
 
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      service: "gmail",
       auth: {
-        user: 'filehubwcs@gmail.com',
-        pass: 'ptom oitf kvmz oucz'
+        user: "filehubwcs@gmail.com",
+        pass: "ptom oitf kvmz oucz",
       },
       tls: {
-        rejectUnauthorized: false
-      }
+        rejectUnauthorized: false,
+      },
     });
 
     const mailOptions = {
-      from: 'filehubwcs@gmail.com',
+      from: "filehubwcs@gmail.com",
       to: email,
-      subject: 'Réinitialisation de mot de passe',
+      subject: "Réinitialisation de mot de passe",
       html: `Voici votre code de reset : ${token.token}, 
-      entrez le via <a href="${process.env.FRONT_ADRESS}/reset-password/${token.token}">cette URL</a>`
+      entrez le via <a href="${process.env.FRONT_ADRESS}/reset-password/${token.token}">cette URL</a>`,
     };
-    
-    try{
-      transporter.sendMail(mailOptions, function(error, info){
+
+    try {
+      transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
-          console.log("error occured... :"+error);
+          console.log("error occured... :" + error);
         } else {
-          console.log('Email sent: ' + info.response);
+          console.log("Email sent: " + info.response);
         }
       });
-    } catch(e) {
+    } catch (e) {
       throw new Error(String(e));
     }
     return true;
@@ -203,18 +216,18 @@ export class UsersResolver {
     @Arg("token") token: string,
     @Arg("password") password: string,
   ): Promise<User | null> {
-    if(password.length < 8 || password.length > 50){
+    if (password.length < 8 || password.length > 50) {
       throw new Error(`Password length must be 8 to 50 caracters`);
     }
     const userToken = await UserToken.findOne({
       where: { token: token },
-      relations: { user: true }
+      relations: { user: true },
     });
 
-    if(!userToken){
+    if (!userToken) {
       throw new Error(`Invalid token`);
     }
-    if(userToken.expiresAt < new Date()){
+    if (userToken.expiresAt < new Date()) {
       throw new Error(`Expired token`);
     }
 

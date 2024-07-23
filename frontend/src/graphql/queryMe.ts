@@ -5,6 +5,7 @@ export const queryMe = gql`
     me {
       id
       email
+      plan
     }
   }
 `;

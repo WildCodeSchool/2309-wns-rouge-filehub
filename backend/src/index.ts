@@ -14,6 +14,10 @@ import { DownloadFileController } from "./controllers/DownloadFile";
 import { getSchema } from "./schema";
 import { deleteOrphanFiles } from "./cron/deleteOrphanFiles";
 import AWS from "aws-sdk";
+import { stripe } from "./stripe";
+import Stripe from "stripe";
+import { Plan, User } from "./entities/User";
+import { UsersResolver } from "./resolvers/Users";
 
 async function start() {
   await dataSource.initialize();
@@ -76,6 +80,77 @@ async function start() {
   app.get(`${process.env.ROOT_PATH}/download`, function (req, res) {
     downloadFileController.downloadingFile(req, res);
   });
+
+  app.post(`${process.env.ROOT_PATH}/webhook`, express.json(), async (req, res) => {
+    console.log('Webhook received');
+    res.status(200).send('OK');
+    const event = req.body as Stripe.Event;
+
+    // Handle the event
+    switch (event.type) {    
+      case 'checkout.session.completed': {
+        const session = event.data.object as Stripe.Checkout.Session;
+        const stripeCustomerId = session.customer;
+        if (typeof stripeCustomerId !== 'string') {
+          return null;
+        }
+        const user = await User.findOneBy({ stripeCustomerId });
+        if (!user) {
+          return res.status(404).send('User not found');
+      }
+        user.plan = Plan.PREMIUM;
+        await user.save();
+        console.log(`Checkout session ${session.id} was completed!`);
+        break;
+      }
+      case 'invoice.paid': {
+        const invoice = event.data.object as Stripe.Invoice;
+        const stripeCustomerId = invoice.customer;
+        if (typeof stripeCustomerId !== 'string') {
+          return null;
+        }
+        const user = await User.findOneBy({ stripeCustomerId });
+        if (!user) {
+          return res.status(404).send('User not found');
+      }
+        user.plan = Plan.PREMIUM;
+        await user.save();
+        console.log(`Invoice ${invoice.id} was paid!`);
+        break;
+      }
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object as Stripe.Invoice;
+        const stripeCustomerId = invoice.customer;
+        if (typeof stripeCustomerId !== 'string') {
+          return null;
+        }
+        const user = await User.findOneBy({ stripeCustomerId });
+        if (!user) {
+          return res.status(404).send('User not found');
+      }
+        console.log(`Invoice ${invoice.id} payment failed.`);
+        break;
+      }
+      case 'customer.subscription.deleted': {
+        const subscription = event.data.object as Stripe.Subscription;
+        const stripeCustomerId = subscription.customer;
+        if (typeof stripeCustomerId !== 'string') {
+          return null;
+        }
+        const user = await User.findOneBy({ stripeCustomerId });
+        if (!user) {
+          return res.status(404).send('User not found');
+      }
+        user.plan = Plan.FREE;
+        await user.save();
+        console.log(`Subscription ${subscription.id} was deleted.`);
+        break;
+      }
+      default:
+        console.log(`Unhandled event type ${event.type}`);
+    }
+  });
+
 
   app.use(
     "/",
