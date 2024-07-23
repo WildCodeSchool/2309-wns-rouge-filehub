@@ -8,7 +8,6 @@ export const getUserFiles = gql`
         mimeType
         originalName
         uniqueName
-        path
         size
         uploadAt
         url

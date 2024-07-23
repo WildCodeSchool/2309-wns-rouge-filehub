@@ -47,7 +47,6 @@ export const customAuthChecker: AuthChecker<ContextType> = async ({
   context,
 }) => {
   const connectedUser = await getUserFromReq(context.req, context.res);
-  console.log(context, "context");
 
   if (connectedUser) {
     context.user = connectedUser;
