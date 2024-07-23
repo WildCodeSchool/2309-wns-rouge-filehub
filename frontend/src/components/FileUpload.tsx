@@ -1,14 +1,14 @@
-import { Button, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { Button, Typography, InputAdornment, TextField } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
 import {
   Label,
-  InputField,
   ButtonSVGContainer,
   ButtonConfirm,
   Container,
   MenuIcon,
+  InputField,
 } from "./UserProfile";
 import LinkIcon from "@mui/icons-material/Link";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
@@ -95,29 +95,44 @@ export const ThrowFileButton = styled(Button)`
 function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
   const [file, setFile] = useState<File>();
   const [fileName, setFileName] = useState("");
+  const [fileExtension, setFileExtension] = useState("");
   const [checkAnim, setCheckAnim] = useState<boolean>(true);
+  const fileInputRef = useRef<HTMLInputElement | null>(null); // Référence à l'input
 
   const setFileInfo = (e: React.ChangeEvent<HTMLInputElement>) => {
     const fileInput = e.target;
 
     if (fileInput.files && fileInput.files.length === 1) {
-      setFile(fileInput.files[0]);
+      const selectedFile = fileInput.files[0];
+      const nameParts = selectedFile.name.split(".");
+      const extension = nameParts.pop();
+      setFile(selectedFile);
+      setFileName(nameParts.join("."));
+      setFileExtension(extension ? `.${extension}` : "");
     }
   };
 
   const { getRootProps, getInputProps, isDragAccept, isDragReject } =
     useDropzone({
       onDrop: (acceptedFiles) => {
-        setFile(acceptedFiles[0]);
-        setFileName(acceptedFiles[0].name);
+        const selectedFile = acceptedFiles[0];
+        const nameParts = selectedFile.name.split(".");
+        const extension = nameParts.pop();
+        setFile(selectedFile);
+        setFileName(nameParts.join("."));
+        setFileExtension(extension ? `.${extension}` : "");
       },
     });
 
   useEffect(() => {
     if (file) {
-      setFileName(file.name);
+      const nameParts = file.name.split(".");
+      const extension = nameParts.pop();
+      setFileName(nameParts.join("."));
+      setFileExtension(extension ? `.${extension}` : "");
     } else {
       setFileName("");
+      setFileExtension("");
     }
   }, [file]);
 
@@ -127,8 +142,9 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
       return;
     }
 
+    const fullFileName = `${fileName}${fileExtension}`;
     const formData = new FormData();
-    formData.append("file", file, encodeURIComponent(fileName));
+    formData.append("file", file, encodeURIComponent(fullFileName));
 
     try {
       const response = await axios.post(`${API_URL}/upload`, formData, {
@@ -150,6 +166,13 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
         // Erreur générique
         toast.error("Erreur lors du dépot du fichier...");
       }
+    }
+  };
+
+  const deleteFile = () => {
+    setFile(undefined);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
@@ -204,6 +227,7 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
                 <input
                   hidden
                   type="file"
+                  ref={fileInputRef}
                   onChange={(e) => {
                     setFileInfo(e);
                   }}
@@ -211,11 +235,7 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
               </LabelButton>
             </FileButton>
             {file && (
-              <ThrowFileButton
-                onClick={() => {
-                  setFile(undefined);
-                }}
-              >
+              <ThrowFileButton onClick={deleteFile}>
                 <HighlightOffIcon color="primary" />
               </ThrowFileButton>
             )}
@@ -230,6 +250,15 @@ function FileUpload({ setFileUploaded }: fileUploadProps): React.ReactNode {
                 disabled={!file}
                 onChange={(e) => {
                   setFileName(e.target.value);
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="start">
+                      <Typography variant="body1" color="textSecondary">
+                        {fileExtension}
+                      </Typography>
+                    </InputAdornment>
+                  ),
                 }}
               />
             </Label>
