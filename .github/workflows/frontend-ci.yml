@@ -80,6 +80,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: "{{defaultContext}}:frontend"
+          file: frontend/Dockerfile.prod
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_REPO_FRONTEND }}:latest
