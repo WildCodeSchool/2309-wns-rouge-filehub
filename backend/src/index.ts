@@ -81,24 +81,24 @@ async function start() {
     `${process.env.ROOT_PATH}/webhook`,
     express.json(),
     async (req, res) => {
-      const sig = request.headers["Stripe-Signature"];
-      if (!sig || !process.env.STRIPE_SECRET_KEY) {
-        return res
-          .status(400)
-          .send("Webhook Error: Missing signature or endpoint secret");
-      }
+      // const sig = request.headers["Stripe-Signature"];
+      // if (!sig || !process.env.STRIPE_SECRET_KEY) {
+      //   return res
+      //     .status(400)
+      //     .send("Webhook Error: Missing signature or endpoint secret");
+      // }
 
       let event = req.body as Stripe.Event;
 
-      try {
-        event = stripe.webhooks.constructEvent(
-          request.body,
-          sig,
-          process.env.STRIPE_SECRET_KEY,
-        );
-      } catch (err) {
-        response.status(400).send(`Webhook Error`);
-      }
+      // try {
+      //   event = stripe.webhooks.constructEvent(
+      //     request.body,
+      //     sig,
+      //     process.env.STRIPE_SECRET_KEY,
+      //   );
+      // } catch (err) {
+      //   response.status(400).send(`Webhook Error`);
+      // }
 
       // Handle the event
       switch (event.type) {
