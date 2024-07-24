@@ -89,7 +89,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: "{{defaultContext}}:backend"
-          file: Dockerfile.prod
+          #file: Dockerfile.prod
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_REPO_BACKEND }}:latest
