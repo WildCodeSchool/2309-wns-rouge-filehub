@@ -7,7 +7,9 @@ services:
       - /var/lib/postgresql/data
     env_file: .env
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
     ports:
       - 5001:5001
     volumes:
