@@ -9,7 +9,7 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile
     ports:
       - 5001:5001
     volumes:
