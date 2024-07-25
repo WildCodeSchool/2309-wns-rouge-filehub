@@ -1,15 +1,18 @@
 import { FilehubIcon } from "@/styles/icon/FileHubIcon";
 import { theme } from "@/styles/theme";
 import { pxToRem } from "@/styles/cssTheme";
-import { Box, Button, Link, Tab, Tabs, TextField } from "@mui/material";
+import { Box, Button, IconButton, Tab, Tabs, TextField } from "@mui/material";
 import { ChangeEvent, useState } from "react";
 import styled from "styled-components";
 import { useMutation } from "@apollo/client";
 import { mutationSignup } from "@/graphql/mutationSignup";
 import { mutationSignin } from "@/graphql/mutationSignin";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/router";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import { mutationSendVerifCode } from "@/graphql/mutationSendVerifCode";
+import { palette } from "@mui/system";
 
 export const TextFieldStyled = styled(TextField)`
   & .MuiOutlinedInput-root {
@@ -38,7 +41,7 @@ const CustomTabs = styled(Tabs)`
     display: flex;
     justify-content: space-between;
     border-radius: 30px;
-    border: 1px solid ${theme.palette.secondary.main};
+    border: 1px solid ${theme.palette.primary.light};
     min-height: ${pxToRem(56)};
     margin-bottom: ${pxToRem(30)};
   }
@@ -69,6 +72,9 @@ const CustomTab = styled(Tab)`
 
 export default function Login(): React.ReactNode {
   const [activeTab, setActiveTab] = useState(0);
+  const [seePassWordLogin, setSeePassWordLogin] = useState<boolean>(false);
+  const [seePassWordSignUp, setSeePassWordSignUp] = useState<boolean>(false);
+  const [seePassWordSignUp2, setSeePassWordSignUp2] = useState<boolean>(false);
   const router = useRouter();
 
   const [signinEmail, setSigninEmail] = useState("");
@@ -80,6 +86,7 @@ export default function Login(): React.ReactNode {
 
   const [signin] = useMutation(mutationSignin);
   const [signup] = useMutation(mutationSignup);
+  const [sendVerifCode] = useMutation(mutationSendVerifCode);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,7 +121,9 @@ export default function Login(): React.ReactNode {
               },
             });
             if (data.item) {
-              toast.success("Inscription réussie !");
+              toast.success(
+                "Inscription reçue, un mail de confirmation vous a été envoyé !",
+              );
               setTimeout(() => {
                 setActiveTab(0);
                 setSignupEmail("");
@@ -122,9 +131,20 @@ export default function Login(): React.ReactNode {
                 setSignupConfirmPassword("");
               }, 3000);
             }
-          } catch (error) {
+          } catch (error: any) {
             console.error(error);
-            toast.error("Erreur lors de l'inscription.");
+
+            if (error.message === "User already exist") {
+              toast.error(
+                "Compte déjà existant avec cet email, veuillez renseigner un autre email d'inscription.",
+              );
+            } else if (
+              error.message === "Password must be at least 8 characters long"
+            ) {
+              toast.error(
+                "Par mesure de sécurité, 8 caractères minimum sont requis pour le mot de passe.",
+              );
+            }
           }
         } else {
           toast.error("Les mots de passe ne correspondent pas.");
@@ -137,6 +157,28 @@ export default function Login(): React.ReactNode {
 
   const handleChangeTab = (e: ChangeEvent<{}>, newValue: number) => {
     setActiveTab(newValue);
+  };
+
+  const handleSendVerifCode = async () => {
+    if (activeTab !== 0) {
+      if (signupEmail === "") {
+        toast.error("Veuillez renseigner un email");
+        return;
+      }
+      try {
+        const { data } = await sendVerifCode({
+          variables: { email: signupEmail },
+        });
+        if (data) {
+          toast.success(
+            `Un email de vérification a bien été renvoyé à l'adresse ${signupEmail}`,
+          );
+        }
+      } catch (e: any) {
+        console.log(e);
+        toast.error(e.message);
+      }
+    }
   };
 
   return (
@@ -154,7 +196,7 @@ export default function Login(): React.ReactNode {
         alignItems="center"
         justifyContent="center"
         border={1}
-        borderColor={theme.palette.secondary.main}
+        borderColor={theme.palette.primary.light}
         borderRadius="30px"
         width={pxToRem(547)}
         height={pxToRem(550)}
@@ -182,23 +224,49 @@ export default function Login(): React.ReactNode {
                   autoComplete="email"
                   autoFocus
                 />
-                <TextFieldStyled
-                  margin="normal"
-                  name="password"
-                  label="Mot de passe"
-                  type="password"
-                  value={signinPassword}
-                  onChange={(e) => setSigninPassword(e.target.value)}
-                  autoComplete="current-password"
-                />
-                <Link
-                  href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Box
+                  sx={{
+                    position: "relative",
+                    display: "flex",
+                    alignItems: "center",
+                    width: "100%",
+                  }}
+                >
+                  <TextFieldStyled
+                    fullWidth
+                    margin="normal"
+                    name="password"
+                    label="Mot de passe"
+                    type={seePassWordLogin ? "text" : "password"}
+                    value={signinPassword}
+                    onChange={(e) => setSigninPassword(e.target.value)}
+                    autoComplete="current-password"
+                  />
+                  <IconButton
+                    onClick={() => {
+                      setSeePassWordLogin(!seePassWordLogin);
+                    }}
+                    sx={{
+                      position: "absolute",
+                      top: 27,
+                      right: -36,
+                    }}
+                  >
+                    <VisibilityIcon
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        color: seePassWordLogin ? "rgba(250, 209, 38, 1)" : "",
+                      }}
+                    />
+                  </IconButton>
+                </Box>
+                <Button
+                  onClick={() => router.push("/forgot-password")}
                   sx={{ mt: 1, ml: 1, color: theme.palette.secondary.main }}
                 >
                   Mot de passe oublié ?
-                </Link>
+                </Button>
               </>
             )}
             {activeTab === 1 && (
@@ -213,23 +281,81 @@ export default function Login(): React.ReactNode {
                   autoComplete="email"
                   autoFocus
                 />
-                <TextFieldStyled
-                  margin="normal"
-                  name="password"
-                  label="Mot de passe"
-                  type="password"
-                  value={signupPassword}
-                  onChange={(e) => setSignupPassword(e.target.value)}
-                  autoComplete="current-password"
-                />
-                <TextFieldStyled
-                  margin="normal"
-                  name="confirmPassword"
-                  label="Confirmer votre mot de passe"
-                  type="password"
-                  value={signupConfirmPassword}
-                  onChange={(e) => setSignupConfirmPassword(e.target.value)}
-                />
+                <Box
+                  sx={{
+                    position: "relative",
+                    display: "flex",
+                    alignItems: "center",
+                    width: "100%",
+                  }}
+                >
+                  <TextFieldStyled
+                    fullWidth
+                    margin="normal"
+                    name="password"
+                    label="Mot de passe"
+                    type={seePassWordSignUp ? "text" : "password"}
+                    value={signupPassword}
+                    onChange={(e) => setSignupPassword(e.target.value)}
+                    autoComplete="current-password"
+                  />
+                  <IconButton
+                    onClick={() => {
+                      setSeePassWordSignUp(!seePassWordSignUp);
+                    }}
+                    sx={{
+                      position: "absolute",
+                      top: 27,
+                      right: -36,
+                    }}
+                  >
+                    <VisibilityIcon
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        color: seePassWordSignUp ? "rgba(250, 209, 38, 1)" : "",
+                      }}
+                    />
+                  </IconButton>
+                </Box>
+                <Box
+                  sx={{
+                    position: "relative",
+                    display: "flex",
+                    alignItems: "center",
+                    width: "100%",
+                  }}
+                >
+                  <TextFieldStyled
+                    fullWidth
+                    margin="normal"
+                    name="confirmPassword"
+                    label="Confirmer votre mot de passe"
+                    type={seePassWordSignUp2 ? "text" : "password"}
+                    value={signupConfirmPassword}
+                    onChange={(e) => setSignupConfirmPassword(e.target.value)}
+                  />
+                  <IconButton
+                    onClick={() => {
+                      setSeePassWordSignUp2(!seePassWordSignUp2);
+                    }}
+                    sx={{
+                      position: "absolute",
+                      top: 27,
+                      right: -36,
+                    }}
+                  >
+                    <VisibilityIcon
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        color: seePassWordSignUp2
+                          ? "rgba(250, 209, 38, 1)"
+                          : "",
+                      }}
+                    />
+                  </IconButton>
+                </Box>
               </>
             )}
             <StyledButton type="submit" variant="contained">
@@ -237,7 +363,30 @@ export default function Login(): React.ReactNode {
             </StyledButton>
           </Box>
         </form>
-        <ToastContainer position="bottom-right" autoClose={3000} />
+        {activeTab !== 0 && (
+          <Button
+            variant="contained"
+            onClick={handleSendVerifCode}
+            sx={{
+              margin: "0.5rem 0 0 0",
+              backgroundColor: "transparent",
+              color:
+                signupEmail === ""
+                  ? theme.palette.primary.dark
+                  : theme.palette.secondary.main,
+              fontWeight: signupEmail === "" ? "initial" : "bold",
+              boxShadow: "none",
+              borderRadius: 20,
+              textTransform: "none",
+              "&:hover": {
+                background: "rgb(240,240,240)",
+                boxShadow: "none",
+              },
+            }}
+          >
+            Envoyer un nouveau mail de vérification
+          </Button>
+        )}
       </Box>
     </Box>
   );

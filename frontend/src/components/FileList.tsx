@@ -1,26 +1,32 @@
 import * as React from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { TableVirtuoso, TableComponents } from "react-virtuoso";
-import { formatTimestampDate } from "@/helpers/Date";
+import { useEffect, useState } from "react";
+import {
+  Paper,
+  Tooltip,
+  IconButton,
+  Typography,
+  CircularProgress,
+  Stack,
+  Box,
+} from "@mui/material";
+import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";
 import InsertLinkIcon from "@mui/icons-material/InsertLink";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import DownloadIcon from "@mui/icons-material/Download";
-import { Tooltip, IconButton, Stack, Button } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useApolloClient, useMutation, useQuery } from "@apollo/client";
-import { mutationDeleteFile } from "@/graphql/mutationDeleteFile";
 import axios from "axios";
+import { toast } from "react-toastify";
+import { formatTimestampDate } from "@/helpers/Date";
+import { API_URL } from "@/config";
+import { mutationDeleteFile } from "@/graphql/mutationDeleteFile";
 import { queryMe } from "@/graphql/queryMe";
 import { getUserFiles } from "@/graphql/getUserFiles";
-import { useEffect } from "react";
+import { showLogo } from "@/helpers/fileLogo";
 
-interface FileData {
+interface File {
   id: string;
+  mimeType: string;
   originalName: string;
   uniqueName: string;
   uploadAt: string;
@@ -28,184 +34,68 @@ interface FileData {
   url: string;
 }
 
-interface ColumnData {
-  label: string;
-  width: number;
+interface FilesData {
+  filesCurrentUser: { files: File[]; total: number };
 }
 
-const columns: ColumnData[] = [
-  {
-    width: 80,
-    label: "Date d'ajout",
-  },
-  {
-    width: 110,
-    label: "Nom du fichier",
-  },
-  {
-    width: 110,
-    label: "Date d'expiration",
-  },
-  {
-    width: 65,
-    label: "Télécharger",
-  },
-  {
-    width: 65,
-    label: "Copier",
-  },
-  {
-    width: 65,
-    label: "Supprimer",
-  },
-];
-
-const VirtuosoTableComponents: TableComponents<FileData> = {
-  // eslint-disable-next-line react/display-name
-  Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
-    <TableContainer {...props} ref={ref} />
-  )),
-  Table: (props) => (
-    <Table
-      {...props}
-      sx={{
-        borderCollapse: "collapse",
-        tableLayout: "fixed",
-      }}
-    />
-  ),
-  TableHead,
-  TableRow: ({ item: _item, ...props }) => <TableRow {...props} />,
-
-  // eslint-disable-next-line react/display-name
-  TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
-    <TableBody {...props} ref={ref} />
-  )),
+const calculateExpirationDate = (uploadDate: string): string => {
+  const expirationDate = new Date(uploadDate);
+  expirationDate.setMonth(expirationDate.getMonth() + 6);
+  return formatTimestampDate(expirationDate.toISOString());
 };
 
-function fixedHeaderContent() {
-  return (
-    <TableRow>
-      {columns.map((column, index) => (
-        <TableCell
-          key={index}
-          variant="head"
-          align={
-            ["Télécharger", "Copier", "Supprimer"].includes(column.label)
-              ? "center"
-              : "right"
-          }
-          style={{ width: column.width }}
-          sx={{
-            backgroundColor: "background.paper",
-          }}
-        >
-          {column.label}
-        </TableCell>
-      ))}
-    </TableRow>
-  );
-}
-
-function rowContent(
-  _index: number,
-  row: FileData,
-  deleteFile: (fileId: FileData["id"]) => void,
-) {
-  const calculateExpirationDate = (uploadDate: string): string => {
-    const expirationDate = new Date(uploadDate);
-    expirationDate.setMonth(expirationDate.getMonth() + 6);
-    return formatTimestampDate(expirationDate.toISOString());
-  };
-
-  const downloadFile = async () => {
-    try {
-      const response = await axios.get("http://localhost:5001/download", {
-        params: {
-          name: row.uniqueName,
-        },
-        responseType: "blob",
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", row.originalName);
-      document.body.appendChild(link);
-      link.click();
-    } catch (error) {
-      console.error("Error downloading file:", error);
-    }
-  };
-
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(row.url);
-  };
-
-  return (
-    <>
-      <TableCell align="right">{formatTimestampDate(row.uploadAt)}</TableCell>
-      <TableCell align="right">
-        {row.originalName.length > 10
-          ? row.originalName.substring(0, 20) + "..."
-          : row.originalName}
-      </TableCell>
-      <TableCell align="right">
-        {calculateExpirationDate(row.uploadAt)}
-      </TableCell>
-      <TableCell align="center">
-        <Tooltip title="Télécharger">
-          <IconButton sx={{ color: "orange" }} onClick={downloadFile}>
-            <DownloadIcon />
-          </IconButton>
-        </Tooltip>
-      </TableCell>
-      <TableCell align="center">
-        <Tooltip title="Copier le lien">
-          <IconButton sx={{ color: "orange" }} onClick={handleCopyLink}>
-            <InsertLinkIcon />
-          </IconButton>
-        </Tooltip>
-      </TableCell>
-      <TableCell align="center">
-        <Tooltip title="Supprimer">
-          <IconButton
-            sx={{ color: "orange" }}
-            onClick={() => deleteFile(row.id)}
-          >
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-      </TableCell>
-    </>
-  );
-}
-
-export default function FileList() {
-  const [doDeleteFile] = useMutation(mutationDeleteFile, {
-    refetchQueries: [getUserFiles],
-  });
-
-  const deleteFile = async (fileId: FileData["id"]) => {
-    await doDeleteFile({
-      variables: {
-        id: fileId,
-      },
+const downloadFile = async (file: File) => {
+  try {
+    const response = await axios.get(`${API_URL}/download`, {
+      params: { name: file.uniqueName },
+      responseType: "blob",
     });
-  };
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", file.originalName);
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode!.removeChild(link);
+    toast.success("Fichier téléchargé avec succès!");
+  } catch (error) {
+    console.error("Error downloading file:", error);
+    toast.error("Problème lors du téléchargement...");
+  }
+};
 
-  const {
-    loading: meLoading,
-    error: meError,
-    data: meData,
-  } = useQuery(queryMe);
+const handleCopyLink = (file: File) => {
+  navigator.clipboard.writeText(file.url);
+  toast.success("Lien copié avec succès!");
+};
+
+const FileList = () => {
+  const client = useApolloClient();
+  const [page, setPage] = useState<number>(0);
+  const [sort, setSort] = useState<string>("desc");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const { data: meData } = useQuery(queryMe);
   const userId = meData?.me?.id;
 
-  const { loading, error, data } = useQuery(getUserFiles, {
-    variables: { userId },
+  const { loading, error, data, refetch } = useQuery(getUserFiles, {
+    variables: {
+      limit: 5,
+      offset: page * 5,
+      sortOrder: sort,
+    },
     skip: !userId,
   });
+  console.log(data);
 
-  const client = useApolloClient();
+  const total = data?.filesCurrentUser?.total;
+
+  const [doDeleteFile, { error: deleteFileError }] = useMutation(
+    mutationDeleteFile,
+    {
+      refetchQueries: [getUserFiles],
+    },
+  );
 
   useEffect(() => {
     client.refetchQueries({
@@ -213,33 +103,324 @@ export default function FileList() {
     });
   }, [client]);
 
-  if (meLoading) return <p>Loading...</p>;
-  if (meError) return <p>Error: {meError.message}</p>;
+  const handleDeleteFile = async (fileId: string) => {
+    await doDeleteFile({
+      variables: {
+        id: fileId,
+      },
+    });
+
+    if (!deleteFileError) {
+      toast.success("Fichier supprimé avec succès!");
+    } else {
+      toast.error("Problème lors de la suppression...");
+    }
+  };
+
+  const handleSortModelChange = (sortModel: GridSortModel) => {
+    if (sortModel.length > 0) {
+      const newSort = sortModel[0].sort === "asc" ? "desc" : "asc";
+      setSort(newSort);
+      refetch({
+        limit: 5,
+        offset: page * 5,
+        sortOrder: newSort,
+      });
+    } else {
+      setSort("desc");
+      refetch({
+        limit: 5,
+        offset: page * 5,
+        sortOrder: "desc",
+      });
+    }
+  };
+
+  const handlePageChange = (params: any) => {
+    setPage(params.page);
+    refetch({
+      limit: 5,
+      offset: params.page * 5,
+      sortOrder: "desc",
+    });
+  };
+
+  const isOpenable = (mimetype: string) => {
+    if (
+      mimetype.includes("pdf") ||
+      mimetype.includes("image") ||
+      mimetype.includes("video") ||
+      mimetype.includes("audio")
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const openFile = async (uniqueName: String) => {
+    try {
+      const response = await axios.get(`${API_URL}/download`, {
+        params: {
+          name: uniqueName,
+        },
+        responseType: "blob",
+      });
+
+      const file = new Blob([response.data], {
+        type: response.headers["content-type"],
+      });
+      const fileUrl = URL.createObjectURL(file);
+
+      window.open(fileUrl, "_blank");
+    } catch (error) {
+      console.error("Error opening file:", error);
+      toast.error("Problème lors de l'ouverture du fichier...");
+    }
+  };
+
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [loading]);
+
+  const columns: GridColDef[] = [
+    {
+      field: "logo",
+      headerName: "",
+      disableColumnMenu: true,
+      flex: 1,
+      align: "center",
+      headerAlign: "center",
+      resizable: false,
+      sortable: false,
+      renderCell: (params) => (
+        <Box sx={{
+          height: '100%',
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
+          {showLogo(params.row.mimeType, 24)}
+        </Box>
+      ),
+    },
+    {
+      field: "originalName",
+      headerName: "Nom du fichier",
+      sortable: false,
+      disableColumnMenu: true,
+      flex: 3,
+      align: "center",
+      headerAlign: "center",
+      resizable: false,
+      renderCell: (params) => <div data-testid="file-name">{params.value}</div>,
+    },
+    {
+      field: "addDate",
+      headerName: "Date d'ajout",
+      disableColumnMenu: true,
+      flex: 1.5,
+      align: "center",
+      headerAlign: "center",
+      resizable: false,
+    },
+    {
+      field: "expirationDate",
+      headerName: "Date d'expiration",
+      sortable: false,
+      disableColumnMenu: true,
+      flex: 1.5,
+      align: "center",
+      headerAlign: "center",
+      resizable: false,
+    },
+    {
+      field: "download",
+      headerName: "Télécharger",
+      sortable: false,
+      disableColumnMenu: true,
+      flex: 1,
+      align: "center",
+      headerAlign: "center",
+      resizable: false,
+      renderCell: (params) => (
+        <Tooltip title="Télécharger">
+          <IconButton
+            sx={{ color: "#FF544F" }}
+            onClick={() => downloadFile(params.row)}
+            data-testid="download"
+          >
+            <DownloadIcon />
+          </IconButton>
+        </Tooltip>
+      ),
+    },
+    {
+      field: "copy",
+      headerName: "Copier",
+      sortable: false,
+      disableColumnMenu: true,
+      flex: 1,
+      align: "center",
+      headerAlign: "center",
+      resizable: false,
+      renderCell: (params) => (
+        <Tooltip title="Copier le lien">
+          <IconButton
+            sx={{ color: "#FF544F" }}
+            onClick={() => handleCopyLink(params.row)}
+            data-testid="copy"
+          >
+            <InsertLinkIcon />
+          </IconButton>
+        </Tooltip>
+      ),
+    },
+    {
+      field: "open",
+      headerName: "Ouvrir",
+      sortable: false,
+      disableColumnMenu: true,
+      flex: 1,
+      align: "center",
+      headerAlign: "center",
+      resizable: false,
+      renderCell: (params) => {
+        return isOpenable(params.row.mimeType) ? (
+          <Tooltip title="Ouvrir">
+            <IconButton
+              sx={{ color: "#FF544F" }}
+              onClick={() => openFile(params.row.uniqueName)}
+              data-testid="open"
+            >
+              <OpenInNewIcon />
+            </IconButton>
+          </Tooltip>
+        ) : (
+          <></>
+        );
+      },
+    },
+    {
+      field: "delete",
+      headerName: "Supprimer",
+      sortable: false,
+      disableColumnMenu: true,
+      flex: 1,
+      align: "center",
+      headerAlign: "center",
+      resizable: false,
+      renderCell: (params) => (
+        <Tooltip title="Supprimer">
+          <IconButton
+            sx={{ color: "#FF544F" }}
+            onClick={() => handleDeleteFile(params.row.id)}
+            data-testid="delete"
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+      ),
+    },
+  ];
+
+  const objectData = (data: FilesData) => {
+    return data.filesCurrentUser.files.map((file) => ({
+      id: file.id,
+      logo: null,
+      addDate: formatTimestampDate(file.uploadAt),
+      mimeType: file.mimeType,
+      originalName: file.originalName,
+      expirationDate: calculateExpirationDate(file.uploadAt),
+      url: file.url,
+      uniqueName: file.uniqueName,
+      download: null,
+      copy: null,
+      delete: null,
+    }));
+  };
 
   return (
     <>
-      {loading ? (
-        <p>Loading...</p>
+      {isLoading ? (
+        <CircularProgress />
       ) : error ? (
-        <p>Error: {error.message}</p>
+        <Typography>{error.message}</Typography>
       ) : (
-        <Paper
-          sx={{
-            height: 280,
-            width: "90%",
-            maxWidth: "1000px",
-            boxShadow: "none",
-            marginBottom: "15px",
-          }}
-        >
-          <TableVirtuoso
-            data={data.filesCurrentUser}
-            components={VirtuosoTableComponents}
-            fixedHeaderContent={fixedHeaderContent}
-            itemContent={(index, row) => rowContent(index, row, deleteFile)}
-          />
-        </Paper>
+        <>
+          {total === 0 ? (
+            <Typography>
+              Vous n&apos;avez pas encore téléversé de fichiers
+            </Typography>
+          ) : (
+            <Paper
+              sx={{
+                height: 280,
+                width: "95%",
+                boxShadow: "none",
+                marginBottom: "15px",
+              }}
+            >
+              <Stack height="400" width="100%">
+                <DataGrid
+                  rows={data ? objectData(data) : []}
+                  columns={columns}
+                  pagination
+                  paginationMode="server"
+                  rowCount={total}
+                  paginationModel={{ page: page, pageSize: 5 }}
+                  pageSizeOptions={[5]}
+                  onPaginationModelChange={(params) => {
+                    handlePageChange(params);
+                  }}
+                  sortingOrder={["desc", "asc"]}
+                  onSortModelChange={handleSortModelChange}
+                  disableRowSelectionOnClick
+                  localeText={{
+                    MuiTablePagination: {
+                      labelDisplayedRows: ({ from, to, count }) =>
+                        `${from}–${to} sur ${count}`,
+                    },
+                  }}
+                  sx={{
+                    borderStyle: "none",
+                    "& .MuiDataGrid-cell:focus": {
+                      outline: "none",
+                    },
+                    "& .MuiDataGrid-columnHeader:focus": {
+                      outline: "none",
+                    },
+                    "& .MuiDataGrid-row:hover": {
+                      backgroundColor: "inherit",
+                    },
+                    "& .MuiIconButton-root:focus": {
+                      outline: "none",
+                    },
+                    "& .MuiDataGrid-cell:focus-within": {
+                      outline: "none",
+                    },
+                    "& .MuiDataGrid-footerContainer": {
+                      borderTop: "none",
+                    },
+                  }}
+                  initialState={{
+                    pagination: {
+                      paginationModel: { page: 0, pageSize: 5 },
+                    },
+                  }}
+                />
+              </Stack>
+            </Paper>
+          )}
+        </>
       )}
     </>
   );
-}
+};
+
+export default FileList;

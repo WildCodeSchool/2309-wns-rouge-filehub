@@ -1,14 +1,16 @@
-import React, { useEffect } from "react";
-import { Button, Card } from "@mui/material";
+import React from "react";
+import { Box, Button, Card, Typography } from "@mui/material";
 import axios from "axios";
 import styled from "styled-components";
 import DownloadIcon from "@mui/icons-material/Download";
 import { useQuery } from "@apollo/client";
 import { getFileByUniqueName } from "@/graphql/getFileByUniqueName";
+import { API_URL } from "@/config";
+import { FileInfo, FileUploadContent } from "./FileUpload";
+import { showLogo } from "@/helpers/fileLogo";
+import { theme } from "@/styles/theme";
 
 const StyledCard = styled(Card)`
-  margin: auto;
-  margin-top: 120px;
   width: 80%;
   max-width: 600px;
   border-radius: 15px !important;
@@ -20,7 +22,7 @@ const StyledCard = styled(Card)`
 
 const TableContainerWrapper = styled.div`
   border-radius: 15px;
-  overflow: hidden;
+  overflow: visible;
   text-align: center;
 `;
 
@@ -46,7 +48,7 @@ const ButtonConfirm = styled(Button)`
     display: flex;
     justify-content: center;
     text-transform: none;
-    width: 40%;
+    width: 95%;
     height: 50px;
     margin-top: 1vmin;
     font-size: 14px;
@@ -76,15 +78,9 @@ const FileDownload: React.FC<FileDownloadProps> = ({ fileName }) => {
     skip: !fileName,
   });
 
-  useEffect(() => {
-    if (!loading && !error && data) {
-      console.log("Data:", data);
-    }
-  }, [loading, error, data]);
-
   const handleDownload = async () => {
     try {
-      const response = await axios.get("http://localhost:5001/download", {
+      const response = await axios.get(`${API_URL}/download`, {
         params: {
           name: fileName,
         },
@@ -100,6 +96,7 @@ const FileDownload: React.FC<FileDownloadProps> = ({ fileName }) => {
       }
 
       document.body.appendChild(link);
+      console.log(link);
       link.click();
     } catch (error) {
       console.error("Error downloading file:", error);
@@ -107,19 +104,43 @@ const FileDownload: React.FC<FileDownloadProps> = ({ fileName }) => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-      }}
-    >
-      <StyledCard>
+    <FileUploadContent>
+      <FileInfo>
         <TableContainerWrapper>
-          <h1>Votre fichier est à portée de clic !</h1>
+          <Typography
+            variant="h6"
+            sx={{
+              marginY: "10px",
+              fontWeight: 700,
+              color: "black",
+            }}
+          >
+            Votre fichier est à portée de clic !
+          </Typography>
           {data && data.getFile && (
-            <p>Nom du fichier: {data.getFile.originalName}</p>
+            <Box sx={{
+              position: 'relative',
+              display: 'flex',
+              overflow: 'visible',
+              marginBottom: 2
+            }}>
+              <Box sx={{
+                position: 'absolute',
+                top: '50%',
+                left: -48,
+                transform: 'translateY(-50%)',
+                height: 36,
+                width: 36
+              }}>
+                {showLogo(data.getFile.mimeType, 36)}
+              </Box>
+              <Typography sx={{
+                textDecoration: 'underline',
+                color: theme.palette.primary.main
+              }}>
+                {data.getFile.originalName}
+              </Typography>
+            </Box>
           )}
           <DivLoadFile>
             <ButtonConfirm variant="contained" onClick={handleDownload}>
@@ -130,8 +151,8 @@ const FileDownload: React.FC<FileDownloadProps> = ({ fileName }) => {
             </ButtonConfirm>
           </DivLoadFile>
         </TableContainerWrapper>
-      </StyledCard>
-    </div>
+      </FileInfo>
+    </FileUploadContent>
   );
 };
 

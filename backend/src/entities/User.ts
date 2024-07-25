@@ -9,6 +9,11 @@ import {
 import { Field, ID, ObjectType, InputType } from "type-graphql";
 import { IsEmail, Matches } from "class-validator";
 
+export enum Plan {
+  FREE = "FREE",
+  PREMIUM = "PREMIUM",
+}
+
 @Entity()
 @ObjectType()
 export class User extends BaseEntity {
@@ -23,12 +28,19 @@ export class User extends BaseEntity {
   @Column({ length: 255 })
   password!: string;
 
+  @Column({ length: 255 })
+  @Field()
+  stripeCustomerId!: string;
+
+  @Column({ default: Plan.FREE })
+  @Field()
+  plan!: Plan;
+
   @CreateDateColumn()
   createdAt!: Date;
 
-  // @OneToMany(() => File, (file) => file.createdBy)
-  // @Field(() => [File])
-  // files!: File[];
+  @Column()
+  verified!: Boolean;
 }
 
 @InputType()

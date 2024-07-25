@@ -1,90 +1,30 @@
-import { Button, TextField } from "@mui/material";
+import { Button, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
-import { useRouter } from "next/router";
-import KeyIcon from "@mui/icons-material/Key";
-import PersonIcon from "@mui/icons-material/Person";
 import { queryMe } from "@/graphql/queryMe";
 import { useMutation, useQuery } from "@apollo/client";
 import { mutationUpdatePassword } from "@/graphql/mutationUpdatePassword";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import UploadNewFile from "./UploadNewFile";
-
-export const UserProfileContent = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  height: 100%;
-`;
-
-export const UserInfo = styled.div`
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding: 2vmin 15vmin;
-  border: 1px solid ${theme.palette.secondary.main};
-  border-radius: 5vmin;
-  width: 50vmin;
-  color: ${theme.palette.primary.main};
-`;
-
-export const Title = styled.h2`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-`;
-
-export const Label = styled.label`
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  width: 100%;
-  font-size: 2.5vmin;
-`;
-
-export const FieldTitle = styled.p`
-  width: 100%;
-  margin: 0;
-`;
-
-export const Field = styled.p`
-  width: 95%;
-  min-height: 25px;
-  margin: 2px 0;
-  border: 1px solid ${theme.palette.secondary.main};
-  border-radius: 50px;
-  padding: 2vmin 5% 2vmin 5%;
-  overflow-wrap: anywhere;
-`;
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 export const InputField = styled(TextField)`
+  fontfamily: Poppins, sans-serif;
+  fontsize: 14.5px;
+  width: 100%;
+  height: 55px;
   & .MuiOutlinedInput-root {
-    height: 55px;
-    margin: 2px 0;
     border-radius: 55px;
-    padding: 2vmin 5% 2vmin 5%;
+  }
+  & .MuiInputBase-input:-webkit-autofill {
+    box-shadow: 0 0 0 1000px white inset;
+    -webkit-box-shadow: 0 0 0 1000px white inset;
+    -webkit-text-fill-color: black;
   }
 `;
 
-export const ButtonText = styled(Button)`
-  &.MuiButtonBase-root {
-    color: ${theme.palette.secondary.main};
-    border-radius: 50px;
-    padding: 0;
-    display: flex;
-    justify-content: left;
-    text-transform: none;
-    width: 100%;
-  }
-`;
-
-export const ButtonConfirm = styled(Button)`
+export const CustomButton = styled(Button)`
   &.MuiButtonBase-root {
     position: relative;
     background: linear-gradient(
@@ -104,55 +44,34 @@ export const ButtonConfirm = styled(Button)`
   }
 `;
 
-export const DivLoadFile = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 50vmin;
-  margin: 1rem 0;
-`;
+export const ButtonAbort = styled(Button)`
+  &.MuiButtonBase-root {
+    position: relative;
+    background: #8080807d;
+    color: white;
+    border-radius: 50px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    text-transform: none;
+    width: 100%;
+    height: 50px;
 
-export const ButtonSVGContainer = styled.div`
-  position: absolute;
-  right: 5px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: white;
-  border-radius: 100%;
-  height: 40px;
-  width: 40px;
-`;
-
-export const Container = styled.div`
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  width: 100%;
-  margin: 1rem 0;
-`;
-
-export const MenuIcon = styled.div`
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  right: 0;
-  top: 0;
-  height: 50px;
-  width: 50px;
-  border-radius: 100%;
+    &:hover {
+      background: #808080c2;
+    }
+  }
 `;
 
 function UserProfile(): React.ReactNode {
   const { data: me } = useQuery(queryMe, { fetchPolicy: "no-cache" });
-  const router = useRouter();
-  const [toggleModif, setToggleModif] = useState(false);
-  const [passWord, setPassWord] = useState("");
-  const [newPassWord, setNewPassWord] = useState("");
-  const [secNewPassWord, setSecNewPassWord] = useState("");
+  const [toggleModif, setToggleModif] = useState<boolean>(false);
+  const [passWord, setPassWord] = useState<string>("");
+  const [newPassWord, setNewPassWord] = useState<string>("");
+  const [secNewPassWord, setSecNewPassWord] = useState<string>("");
+  const [seePassWord, setSeePassWord] = useState<boolean>(false);
+  const [seeNewPassWord, setSeeNewPassWord] = useState<boolean>(false);
+  const [seeSecNewPassWord, setSeeSecNewPassWord] = useState<boolean>(false);
   const [updatePassword] = useMutation(mutationUpdatePassword);
 
   const changePassword = async () => {
@@ -167,7 +86,7 @@ function UserProfile(): React.ReactNode {
         },
       });
       if (data && !errors) {
-        toast.success("Password changed");
+        toast.success("Mot de passe remplacé avec succès !");
         setPassWord("");
         setNewPassWord("");
         setSecNewPassWord("");
@@ -175,83 +94,145 @@ function UserProfile(): React.ReactNode {
       }
     } catch {
       toast.error(
-        "Echec du changement de mdp, vérifiez les informations entrées",
+        "Echec lors du changement de mot de passe, vérifiez les informations du formulaire",
       );
     }
   };
 
   return (
-    <UserProfileContent>
-      <UserInfo>
-        <MenuIcon>
-          <PersonIcon color="primary" fontSize="large" />
-        </MenuIcon>
-        <Title>Information de mon compte</Title>
-        <Container>
-          <Label>
-            <FieldTitle>Email :</FieldTitle>
-            <Field>{me && me.me.email}</Field>
-          </Label>
-        </Container>
-        <Container>
-          {toggleModif ? (
-            <>
-              <Label>
-                <InputField
-                  label="Password"
-                  variant="outlined"
-                  helperText="Entrez votre mot de passe actuel"
-                  type="password"
-                  value={passWord}
-                  onChange={(e) => setPassWord(e.target.value)}
-                />
+    <Stack
+      padding="30px 70px"
+      border={`1px solid ${theme.palette.primary.main}`}
+      borderRadius="5vmin"
+      gap="30px"
+      width="22rem"
+    >
+      <Typography
+        variant="h6"
+        mx="auto"
+        sx={{
+          fontWeight: 700,
+          color: theme.palette.common.black,
+        }}
+      >
+        Informations personnelles
+      </Typography>
+      <InputField
+        value={me && me.me ? me.me.email : ""}
+        label="Email"
+        disabled
+      />
 
-                <InputField
-                  label="New Password"
-                  variant="outlined"
-                  helperText="Entrez votre nouveau mot de passe"
-                  type="password"
-                  value={newPassWord}
-                  onChange={(e) => setNewPassWord(e.target.value)}
-                />
+      {toggleModif ? (
+        <>
+          <Stack
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+            gap="10px"
+          >
+            <InputField
+              label="Mot de passe actuel"
+              variant="outlined"
+              type={seePassWord ? "text" : "password"}
+              value={passWord}
+              onChange={(e) => setPassWord(e.target.value)}
+            />
 
-                <InputField
-                  label="New Password"
-                  variant="outlined"
-                  helperText="Confirmez votre nouveau mot de passe"
-                  type="password"
-                  value={secNewPassWord}
-                  onChange={(e) => setSecNewPassWord(e.target.value)}
-                />
-              </Label>
-            </>
-          ) : (
-            <>
-              <Label>
-                <FieldTitle>Mot de passe :</FieldTitle>
-                <Field>
-                  <KeyIcon color="primary" />
-                </Field>
-              </Label>
-            </>
-          )}
-          {toggleModif ? (
-            <>
-              <ButtonConfirm onClick={changePassword}>Confirmer</ButtonConfirm>
-              <ButtonText onClick={() => setToggleModif(!toggleModif)}>
-                Abandon
-              </ButtonText>
-            </>
-          ) : (
-            <ButtonText onClick={() => setToggleModif(!toggleModif)}>
-              Modifier mon mot de passe
-            </ButtonText>
-          )}
-        </Container>
-      </UserInfo>
-      <UploadNewFile />
-      <ToastContainer position="bottom-right" autoClose={3000} />
-    </UserProfileContent>
+            <VisibilityIcon
+              onClick={() => {
+                setSeePassWord(!seePassWord);
+              }}
+              sx={{
+                width: 20,
+                height: 20,
+                color: seePassWord ? "rgba(250, 209, 38, 1)" : "grey",
+                cursor: "pointer",
+                "&:hover": {
+                  backgroundColor: "none",
+                },
+              }}
+            />
+          </Stack>
+          <Stack
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+            gap="10px"
+          >
+            <InputField
+              label="Nouveau mot de passe"
+              variant="outlined"
+              type={seeNewPassWord ? "text" : "password"}
+              value={newPassWord}
+              onChange={(e) => setNewPassWord(e.target.value)}
+            />
+            <VisibilityIcon
+              onClick={() => {
+                setSeeNewPassWord(!seeNewPassWord);
+              }}
+              sx={{
+                width: 20,
+                height: 20,
+                color: seeNewPassWord ? "rgba(250, 209, 38, 1)" : "grey",
+                cursor: "pointer",
+                "&:hover": {
+                  backgroundColor: "none",
+                },
+              }}
+            />
+          </Stack>
+          <Stack
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+            gap="10px"
+          >
+            <InputField
+              label="Nouveau mot de passe"
+              variant="outlined"
+              type={seeSecNewPassWord ? "text" : "password"}
+              value={secNewPassWord}
+              onChange={(e) => setSecNewPassWord(e.target.value)}
+            />
+
+            <VisibilityIcon
+              onClick={() => {
+                setSeeSecNewPassWord(!seeSecNewPassWord);
+              }}
+              sx={{
+                width: 20,
+                height: 20,
+                color: seeSecNewPassWord ? "rgba(250, 209, 38, 1)" : "grey",
+                cursor: "pointer",
+                "&:hover": {
+                  backgroundColor: "none",
+                },
+              }}
+            />
+          </Stack>
+        </>
+      ) : (
+        <InputField
+          value="12345678910"
+          type="password"
+          label="Mot de passe"
+          disabled
+        />
+      )}
+      {toggleModif ? (
+        <>
+          <CustomButton onClick={changePassword}>Confirmer</CustomButton>
+          <ButtonAbort onClick={() => setToggleModif(!toggleModif)}>
+            Abandon
+          </ButtonAbort>
+        </>
+      ) : (
+        <CustomButton onClick={() => setToggleModif(!toggleModif)}>
+          Modification du mot de passe
+        </CustomButton>
+      )}
+    </Stack>
   );
 }
 

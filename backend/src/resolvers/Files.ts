@@ -2,27 +2,58 @@ import {
   Arg,
   Authorized,
   Ctx,
+  Field,
   ID,
+  Int,
   Mutation,
+  ObjectType,
   Query,
   Resolver,
 } from "type-graphql";
 import { File } from "../entities/File";
 import { ContextType } from "../auth";
-import fs from "fs";
+import AWS from "aws-sdk";
+
+const localSetupMinio = {
+  endpoint: process.env.MINIO_ENDPOINT,
+  accessKeyId: process.env.MINIO_ROOT_USER,
+  secretAccessKey: process.env.MINIO_ROOT_PASSWORD,
+  sslEnabled: false,
+  s3ForcePathStyle: true,
+};
+
+@ObjectType()
+class FilesResponse {
+  @Field(() => [File])
+  files!: File[];
+
+  @Field(() => Int)
+  total!: number;
+}
 
 @Resolver(File)
 export class FilesResolver {
+  // Permet de retourner une liste de fichiers paginée ainsi que le nombre total d'items
   @Authorized()
-  @Query(() => [File])
-  async filesCurrentUser(@Ctx() context: ContextType): Promise<File[]> {
-    const files = await File.find({
+  @Query(() => FilesResponse)
+  async filesCurrentUser(
+    @Ctx() context: ContextType,
+    @Arg("limit", () => Int, { nullable: true }) limit: number,
+    @Arg("offset", () => Int, { nullable: true }) offset: number,
+    @Arg("sortOrder", () => String, { nullable: true, defaultValue: "DESC" })
+    sortOrder: "DESC" | "ASC" | "asc" | "desc",
+  ): Promise<FilesResponse> {
+    const order = { uploadAt: sortOrder };
+    const [files, total] = await File.findAndCount({
       where: { createdBy: { id: context?.user?.id } },
       relations: {
         createdBy: true,
       },
+      take: limit,
+      skip: offset,
+      order,
     });
-    return files;
+    return { files, total };
   }
 
   @Query(() => File)
@@ -39,62 +70,23 @@ export class FilesResolver {
     const file = await File.findOne({
       where: { id: id },
     });
+
     if (file) {
-      await file.remove();
-      file.id = id;
       try {
-        await fs.promises.unlink(file.path);
+        const awsBucket = new AWS.S3(localSetupMinio);
+        const params = {
+          Bucket: "bucket-filehub",
+          Key: file.uniqueName,
+        };
+        await awsBucket.deleteObject(params).promise();
+        await file.remove();
       } catch (err) {
-        throw new Error(`An error occured on the actual file deletion: ${err}`);
+        throw new Error(
+          `Une erreur s'est produite lors de la suppression du fichier : ${err}`,
+        );
       }
     } else {
-      throw new Error(`File not found in database`);
+      throw new Error(`Fichier non trouvé dans la base de données`);
     }
   }
-
-  // @Authorized()
-  // @Query(() => [File])
-  // async filesByFilter(
-  //   @Arg('data', () => FilesWhere) data: FilesWhere
-  // ): Promise<File[]> {
-  //   const queryWhere: any = {};
-
-  //   queryWhere.id = data?.id;
-  //   queryWhere.originalName = data?.originalName;
-  //   queryWhere.uniqueName = data?.uniqueName;
-  //   queryWhere.path = data?.path;
-  //   queryWhere.mimeType = data?.mimeType;
-  //   queryWhere.size = data?.size;
-  //   queryWhere.url = data?.url;
-  //   queryWhere.createdBy = { id: data?.createdBy };
-
-  //   const files = await File.find({
-  //     where: queryWhere,
-  //     relations: {
-  //       createdBy: true,
-  //     },
-  //   });
-  //   return files;
-  // }
-
-  // @Authorized()
-  // @Mutation(() => File, { nullable: true })
-  // async updateFile(
-  //   @Arg('id', () => ID) id: number,
-  //   @Arg('data') data: FileUpdateInput
-  // ): Promise<File | null> {
-  //   const file = await File.findOne({
-  //     where: { id: id },
-  //   });
-  //   if (file) {
-  //     Object.assign(file, data);
-  //     const errors = await validate(file);
-  //     if (errors.length === 0) {
-  //       await file.save();
-  //     } else {
-  //       throw new Error(`Error occured : ${JSON.stringify(errors)}`);
-  //     }
-  //   }
-  //   return file;
-  // }
 }

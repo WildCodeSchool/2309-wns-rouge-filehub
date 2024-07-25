@@ -1,20 +1,22 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
 
 export const getUserFiles = gql`
-  query FilesCurrentUser {
-    filesCurrentUser {
-      id
-      mimeType
-      originalName
-      uniqueName
-      path
-      size
-      uploadAt
-      url
-      createdBy {
+  query FilesCurrentUser($limit: Int, $offset: Int, $sortOrder: String) {
+    filesCurrentUser(limit: $limit, offset: $offset, sortOrder: $sortOrder) {
+      files {
         id
-        email
+        mimeType
+        originalName
+        uniqueName
+        size
+        uploadAt
+        url
+        createdBy {
+          id
+          email
+        }
       }
+      total
     }
   }
 `;
