@@ -13,6 +13,7 @@ import { UploadFileController } from "./controllers/UploadFile";
 import { DownloadFileController } from "./controllers/DownloadFile";
 import { getSchema } from "./schema";
 import { deleteOrphanFiles } from "./cron/deleteOrphanFiles";
+import { deleteOldFiles } from "./cron/deleteOldDateFiles";
 import AWS from "aws-sdk";
 import Stripe from "stripe";
 import { Plan, User } from "./entities/User";
@@ -189,6 +190,7 @@ async function start() {
   );
   console.log(`🚀 Server ready at http://localhost:5001/`);
   deleteOrphanFiles();
+  deleteOldFiles();
 }
 
 start();
