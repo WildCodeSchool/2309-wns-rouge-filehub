@@ -15,6 +15,7 @@ function UserProfilePage(): React.ReactNode {
         <UserProfile />
         {data?.me?.plan == "FREE" && <BuyButton />}
         {data?.me?.plan == "PREMIUM" && <SettingButton />}
+
       </MainContent>
     </>
   );

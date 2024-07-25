@@ -78,7 +78,7 @@ export class UploadFileController {
         mimeType: mimetype,
         size: size,
         uploadAt: new Date(),
-        url: `${process.env.FRONT_ADDRESS}/downloads/${params.Key}`,
+        url: `${process.env.FRONT_ADRESS}/downloads/${params.Key}`,
         createdBy: { id: userId },
       });
 
